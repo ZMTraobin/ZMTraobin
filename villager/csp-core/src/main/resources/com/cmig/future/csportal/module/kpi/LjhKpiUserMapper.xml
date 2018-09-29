@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.kpi.mapper.LjhKpiUserMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.kpi.dto.LjhKpiUser">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="APP_KEY" property="appKey" jdbcType="VARCHAR" />
+        <result column="KPI_DATE" property="kpiDate" jdbcType="DATE" />
+        <result column="INSTALLATIONS" property="installations" jdbcType="DECIMAL" />
+        <result column="NEW_USERS" property="newUsers" jdbcType="DECIMAL" />
+        <result column="ACTIVE_USERS" property="activeUsers" jdbcType="DECIMAL" />
+        <result column="LAUNCHES" property="launches" jdbcType="DECIMAL" />
+        <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="selectReport" resultMap="BaseResultMap">
+          select
+          a.groupName,a.kpiDate,a.installations,a.newUsers,a.activeUsers,a.launches
+          from umeng_kpi_user_v a
+          order by a.kpiDate desc limit 0,#{days}
+    </select>
+
+    <select id="selectReportForDate" resultMap="BaseResultMap">
+        select a.* from umeng_kpi_user_v a where a.kpiDate BETWEEN #{startDate} and #{endDate} order by a.kpiDate desc
+    </select>
+
+</mapper>

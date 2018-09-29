@@ -1,0 +1,203 @@
+
+<!--
+图片上传控件：
+id="functionImgDiv"// div id ,动态修改控件参数时需要，建议给一个
+class="cmig_img_upload_div"//图片上传控件class，不可修改
+data-id="functionImg" //图片值input框id
+data-readonly=false//是否只读
+data-minWidth=66//最小宽度
+data-minHeight=66//最小高度
+data-showWidth=66//略缩图宽
+data-showHeight=66//略缩图高
+data-maxNum=1//允许最大上传图片数
+data-checkImageWidthHeightFlag=true//是否严格校验上传图片尺寸
+data-maxSize=1//图片大小限制，单位 M
+data-required=true//是否必填
+data-medioType=video//
+data-callBakFun=modelBindFunctionImg//回调函数名，绑定input和modelview
+-->
+<link href="${base.contextPath}/lib/js/layer-v3.0.3/layer/skin/default/layer.css" rel="stylesheet" type="text/css"/>
+<script src="${base.contextPath}/lib/kendoui/js/jquery.min.js"></script>
+<script src="${base.contextPath}/lib/js/ajaxfileupload/jquery-migrate-1.1.1.min.js"></script>
+<script src="${base.contextPath}/lib/js/ajaxfileupload/ajaxfileupload.js?version=2"></script>
+<script src="${base.contextPath}/lib/js/layer-v3.0.3/layer/layer.js"></script>
+<style>
+    .deleteImage{
+        position: relative;
+        top: -23px;
+        left: -8px;
+        opacity: 0.8;
+        margin-left: -20px;
+    }
+    .deleteImage > img{
+        width: 20px;
+        height: 20px;
+    }
+</style>
+    <ul id="${RequestParameters.dataId}_Preview" style="margin:0;padding:0;"></ul>
+    <input type="file" id="${RequestParameters.dataId}_uploadFile" name="${RequestParameters.dataId}_uploadFile"  style="display: none">
+    <div id="${RequestParameters.dataId}_tip_id"></div>
+
+    <script>
+        var ${RequestParameters.dataId}_c_i_u_d =new Object();
+        ${RequestParameters.dataId}_c_i_u_d.dataId="${RequestParameters.dataId}";
+        ${RequestParameters.dataId}_c_i_u_d.readonly=${RequestParameters.readonly!false};
+        ${RequestParameters.dataId}_c_i_u_d.minWidth=${RequestParameters.minWidth!1366};
+        ${RequestParameters.dataId}_c_i_u_d.minHeight=${RequestParameters.minHeight!768};
+        ${RequestParameters.dataId}_c_i_u_d.showWidth=${RequestParameters.showWidth!100};
+        ${RequestParameters.dataId}_c_i_u_d.showHeight=${RequestParameters.showHeight!100};
+        ${RequestParameters.dataId}_c_i_u_d.maxNum=${RequestParameters.maxNum!1};
+        ${RequestParameters.dataId}_c_i_u_d.checkImageWidthHeightFlag=${RequestParameters.checkImageWidthHeightFlag!true};
+        ${RequestParameters.dataId}_c_i_u_d.maxSize=${RequestParameters.maxSize!2};
+        ${RequestParameters.dataId}_c_i_u_d.required=${RequestParameters.required!false};
+        ${RequestParameters.dataId}_c_i_u_d.callBakFun="${RequestParameters.callBakFun}";
+        ${RequestParameters.dataId}_c_i_u_d.medioType="${RequestParameters.medioType}";
+
+        ${RequestParameters.dataId}_c_i_u_d.tip="(";
+        if(${RequestParameters.dataId}_c_i_u_d.required){
+            ${RequestParameters.dataId}_c_i_u_d.tip+="<font color='red'>必填</font>|";
+        }
+        ${RequestParameters.dataId}_c_i_u_d.tip+="支持JPG、JPEG、PNG、BMP格式|最多"+${RequestParameters.dataId}_c_i_u_d.maxNum+"张";
+        if(${RequestParameters.dataId}_c_i_u_d.checkImageWidthHeightFlag){
+            ${RequestParameters.dataId}_c_i_u_d.tip+="|(宽X高)不小于（"+${RequestParameters.dataId}_c_i_u_d.minWidth+" X "+${RequestParameters.dataId}_c_i_u_d.minHeight+"）的等比例图片";
+        }
+        ${RequestParameters.dataId}_c_i_u_d.tip+="|不大于"+${RequestParameters.dataId}_c_i_u_d.maxSize+"MB)";
+        $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"_tip_id").html(${RequestParameters.dataId}_c_i_u_d.tip);
+
+        $(function() {
+            //选择文件之后执行上传
+            $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"_uploadFile").live('change', function() {
+                ${RequestParameters.dataId}_UploadFile();
+            });
+        });
+
+            //修改添加=======================start===============
+        var ${RequestParameters.dataId}_UploadFile=function(){
+
+            var ${RequestParameters.dataId}_fileUploadIndex =layer.msg("图片上传中,请稍候......",{shade:[0.3, '#393D49'],time:180000});
+            var params={
+                "checkImageWidthHeightFlag" : ${RequestParameters.dataId}_c_i_u_d.checkImageWidthHeightFlag,
+                "mWidth":${RequestParameters.dataId}_c_i_u_d.minWidth,
+                "mHeight":${RequestParameters.dataId}_c_i_u_d.minHeight,
+                "mSize" : ${RequestParameters.dataId}_c_i_u_d.maxSize
+            };
+            $.ajaxFileUpload({
+                type:"POST",
+                url:'${base.contextPath}/common/file/uploadImage?checkImageWidthHeightFlag='+${RequestParameters.dataId}_c_i_u_d.checkImageWidthHeightFlag+'&mWidth='+${RequestParameters.dataId}_c_i_u_d.minWidth+'&mHeight='+${RequestParameters.dataId}_c_i_u_d.minHeight+'&mSize='+${RequestParameters.dataId}_c_i_u_d.maxSize+'&medioType='+${RequestParameters.dataId}_c_i_u_d.medioType,
+                secureuri:false,                       //是否启用安全提交,默认为false
+                fileElementId:${RequestParameters.dataId}_c_i_u_d.dataId+"_uploadFile",           //文件选择框的id属性
+                dataType:'JSON',                       //服务器返回的格式,可以是json或xml等
+                //data:params,                           //一同上传的数据
+                success:function(data,status){        //服务器响应成功时的处理函数
+                    data = data.replace("<PRE>", '');  //ajaxFileUpload会对服务器响应回来的text内容加上<pre>text</pre>前后缀
+                    data = data.replace("</PRE>", '');
+                    data = data.replace("<pre>", '');
+                    data = data.replace("</pre>", ''); //本例中设定上传文件完毕后,服务端会返回给前
+                    data = data.substring(data.indexOf(">")+1);
+                    //将String字符串转换成json
+                    var dataset = eval('(' + data + ')');
+                    layer.close(${RequestParameters.dataId}_fileUploadIndex);
+                    if(dataset.status=="1"){
+                        var file=dataset.data[0];
+                        var attachUrl=file.attachUrl;
+                        var fastdfsImageServer=file.fastdfsImageServer;
+                        if(parseInt(${RequestParameters.dataId}_c_i_u_d.maxNum)>1){
+                            var oldAttachUrl=$("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").attr("data-thisOldAttachUrl");
+                            if(!oldAttachUrl) oldAttachUrl="";
+
+                            if(""!=oldAttachUrl){
+                                $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val($("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val().replace(oldAttachUrl,attachUrl,""));
+                            }else{
+                                $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val($("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val()+($("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val()==""?attachUrl:","+attachUrl));
+                            }
+                        }else{
+                            $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val(attachUrl);
+                        }
+                        $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").attr("data-fastdfsImageServer",fastdfsImageServer);
+                        ${RequestParameters.dataId}_Preview();
+                    }else{
+                        alert(dataset.message);
+                    }
+
+                },
+                error: function (data,status,e) {
+                    if(status){
+                        alert("上传图片异常！");
+                        layer.close(${RequestParameters.dataId}_fileUploadIndex);
+                    }
+                }
+            });
+        }
+        //修改添加=======================end===============
+
+        function ${RequestParameters.dataId}_showLi(thisObj){
+            $(thisObj).children("div.deleteImage").css("display","inline-block");
+        }
+
+        function ${RequestParameters.dataId}_hideLi(thisObj){
+            $(thisObj).children("div.deleteImage").css("display","none");
+        }
+
+        function ${RequestParameters.dataId}_Del(obj){
+            var attachUrl = $(obj).next().text();
+            if(!attachUrl){
+                attachUrl="";
+            }
+            $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val($("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val().replace(","+attachUrl,"","").replace(attachUrl+",","","").replace(attachUrl,"",""));
+            ${RequestParameters.dataId}_Preview();
+        }
+        function ${RequestParameters.dataId}_DelAll(){
+            $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val("");
+            ${RequestParameters.dataId}_Preview();
+        }
+        function ${RequestParameters.dataId}_Preview(){
+            var li;
+            var attachUrls= $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val().split(",");
+            $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"_Preview").children().remove();
+            for (var i=0; i<attachUrls.length; i++){
+                if (attachUrls[i]!=""){
+                    var attachUrl=attachUrls[i];
+                    var fastdfsImageServer =$("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").attr("data-fastdfsImageServer");
+                    if(!fastdfsImageServer) fastdfsImageServer="";
+                    if(fastdfsImageServer=="") fastdfsImageServer=$("input[type='hidden'][name='fastdfsImageServer']").eq(0).val();
+                    var showAttachUrl=fastdfsImageServer+attachUrl;
+                    if(showAttachUrl.endsWith(".mp4")){
+                        showAttachUrl=showAttachUrl+"@thumb";
+                    }
+                    li = "<li style='list-style:none;display:inline;' onmouseover='"+${RequestParameters.dataId}_c_i_u_d.dataId+"_showLi(this)' onmouseout='"+${RequestParameters.dataId}_c_i_u_d.dataId+"_hideLi(this)'  ><img class='"+${RequestParameters.dataId}_c_i_u_d.dataId+"_btn_id' src=\""+showAttachUrl+"\" url=\""+attachUrl+"\" style=\"cursor:pointer;max-width:"+${RequestParameters.dataId}_c_i_u_d.showWidth+" px;max-height:"+${RequestParameters.dataId}_c_i_u_d.showHeight+"px;\">";
+                    li += "&nbsp;&nbsp;";
+                    if(!${RequestParameters.dataId}_c_i_u_d.readonly){
+                       li +='<div class="deleteImage" style="display:none;" ><img src="${base.contextPath}/resources/images/img_delete.jpg" style="cursor:pointer;max-width:50px;max-height:50px;" onclick="'+${RequestParameters.dataId}_c_i_u_d.dataId+'_Del(this);" /><div style="display: none">'+attachUrl+'</div></div>';
+                    //    li +="<a href=\"javascript:\" id=\""+dataId+i+"_a\" onclick=\""+dataId+"_Del(this);\">×</a><div style='display: none'>"+attachUrl+"</div> ";
+                    }
+                    li +="</li>";
+
+                    $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"_Preview").append(li);
+                }
+            }
+
+            var thisLenght=attachUrls.length;
+            if(""==$("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").val()) thisLenght=0;
+            if(thisLenght>=parseInt(${RequestParameters.dataId}_c_i_u_d.maxNum)){
+
+            }else if(!${RequestParameters.dataId}_c_i_u_d.readonly){
+                li = "<li style='list-style:none;display:inline;' ><img class='"+${RequestParameters.dataId}_c_i_u_d.dataId+"_btn_id' src='${base.contextPath}/resources/images/image_add.jpg' url='' style='cursor:pointer;max-width:"+${RequestParameters.dataId}_c_i_u_d.showWidth+" px;max-height:"+${RequestParameters.dataId}_c_i_u_d.showHeight+"px;\'>";
+                li +="</li>";
+                $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"_Preview").append(li);
+            }
+            //回调设置input和modelview
+            eval("this."+${RequestParameters.dataId}_c_i_u_d.callBakFun+"()");
+
+            //点击打开文件选择器
+            if(!${RequestParameters.dataId}_c_i_u_d.readonly){
+                $("."+${RequestParameters.dataId}_c_i_u_d.dataId+"_btn_id").on('click', function () {
+                    $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"").attr("data-thisOldAttachUrl",$(this).attr("url"));
+                    $("#"+${RequestParameters.dataId}_c_i_u_d.dataId+"_uploadFile").click();
+                });
+            }
+
+        }
+
+        ${RequestParameters.dataId}_Preview();
+
+    </script>

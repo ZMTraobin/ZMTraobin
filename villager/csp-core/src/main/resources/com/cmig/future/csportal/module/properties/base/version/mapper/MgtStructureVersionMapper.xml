@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.base.version.mapper.MgtStructureVersionMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.base.version.dto.MgtStructureVersion">
+        <result column="VERSION_ID" property="versionId" jdbcType="DECIMAL" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="VERSION_NO" property="versionNo" jdbcType="VARCHAR" />
+        <result column="VERSION_NAME" property="versionName" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="IS_DEFAULT" property="isDefault" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="communityColumns">
+        a.VERSION_ID AS "versionId",
+        a.COMMUNITY_ID AS "communityId",
+        a.VERSION_NO AS "versionNo",
+        a.VERSION_NAME AS "versionName",
+        a.STATUS AS "status",
+        a.IS_DEFAULT AS "isDefault",
+        b.COMMUNITY_NAME AS "communityName",
+        b.COMPANY_NAME AS "companyName"
+
+    </sql>
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_mgt_structure_version a
+        left join csp_ljh_base_community b on a.COMMUNITY_ID=b.id
+        WHERE
+        b.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        AND b.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        <if test="communityId != null and communityId != '' ">
+            AND a.COMMUNITY_ID = #{communityId}
+        </if>
+        <if test="versionNo != null and versionNo != '' ">
+            AND a.VERSION_NO = #{versionNo}
+        </if>
+        <if test="versionName != null and versionName != '' ">
+            AND a.VERSION_NAME = #{versionName}
+        </if>
+    </select>
+
+    <select id="queryByVersionId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_mgt_structure_version a
+        left join csp_ljh_base_community b on a.COMMUNITY_ID=b.id
+        WHERE
+        b.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        AND b.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        AND a.VERSION_ID = #{versionId}
+    </select>
+
+    <delete id="versionDel">
+        DELETE FROM csp_mgt_structure_version
+        WHERE VERSION_ID = #{versionId}
+    </delete>
+
+    <!--查询该建筑结构是否存在默认-->
+    <select id="findByCommunityIdAndDefault" resultMap="BaseResultMap">
+        SELECT a.* FROM csp_mgt_structure_version a
+        WHERE
+        a.COMMUNITY_ID=#{communityId} AND a.IS_DEFAULT="Y"
+    </select>
+</mapper>

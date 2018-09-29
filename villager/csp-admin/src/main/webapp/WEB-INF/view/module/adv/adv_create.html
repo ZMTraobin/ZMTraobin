@@ -1,0 +1,856 @@
+
+<#include "../../include/header.html">
+
+<body style="padding: 15px">
+
+	<div id="content-container">
+		<div id="page-content">
+			<form class="form-horizontal" id="editForm"
+				enctype="application/json;charset=UTF-8">
+				
+				  <div class="row" style="margin-bottom: 20px">
+					<div class="col-sm-5">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" style="text-align:right;">广告名称:</label>
+							<div class="col-sm-10">
+								<input class="k-textbox" id="title" name="广告名称" type="text"
+									required style="width: 60%" />&nbsp
+								<font color="red">*</font>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row" style="margin-bottom: 20px">
+					<div class="col-sm-5">
+						<div class="form-group">
+							<label class="col-sm-2 control-label" style="text-align:right;">广告类型:</label>
+							<div class="col-sm-10">
+								<input id="adv_type" name="广告类型" required data-bind="value:ss"
+									style="width: 60%;" />&nbsp <font color="red">*</font>注：最多添加10条广告
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- 新增集成是否单点 end -->
+				<!-- 广告图位置start -->
+				<div class="row" style="margin-bottom: 20px" id="titleP">
+					<div class="col-xs-5">
+						<div class="form-group">
+							<label class="col-xs-2 control-label">标题广告:</label>
+							<div class="col-xs-9">
+								<input id="pic" type="hidden" name="pic"
+									>
+								<div id="miguploadId" class="cmig_img_upload_div" data-id="pic"
+									data-readonly=false data-minWidth=1080 data-minHeight=163
+									data-showWidth=66 data-showHeight=66 data-maxNum=1
+									data-checkImageWidthHeightFlag=true data-maxSize=2
+									data-required=true data-callBakFun="modelBindFunctionImg">
+									<input type="hidden" name="fastdfsImageServer"
+										data-bind="value:model.fastdfsImageServer">
+								</div>
+							</div>
+							<div class="col-xs-3">
+								<span data-for="notifyUrl" class=".k-invalid-msg"></span>
+							</div>
+						</div>
+					</div>
+			
+					<div class="col-sm-7">
+						<div class="form-group col-sm-6">
+							<label class="col-sm-3 control-label">地址:</label>
+							<div class="col-sm-9">
+								<input id="url_type" name="urlType" class="k-textbox"
+									 style="width: 75%;" />
+									&nbsp <a id="aA" style="cursor:pointer" onclick="preview()">预览</a>
+							</div>
+						</div>
+						<div class="form-group col-sm-6">
+							<label class="col-sm-5 control-label">是否支持单点登陆:</label>
+							<div class="col-sm-7">
+								<input id="is_cas" name="支持单点" required
+									data-bind="value:is_cas"
+									style="width: 80%;" />&nbsp <font color="red">*</font>
+							</div>
+							<div class="col-sm-35" style="margin-left:-17px;">
+								<ul>
+									<li style="list-style-type:none;">不传tgt:不需要登陆即可打开链接，适用于外部链接、hshop等；</li>
+									<li style="list-style-type:none;">传TGT不验证:需要登录才可以打开链接，适用于hshop等内部链接；</li>
+									<li style="list-style-type:none;">传TGT并验证:需要登录才可以打开链接，适用于i投等外部链接。</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				<!-- 广告图位置end -->
+				
+				<div class="row" style="margin-bottom: 20px">
+					<div class="col-xs-5">
+						<div class="form-group">
+							<label id="oneLabel" class="col-xs-2 control-label">左一广告:</label>
+							<div class="col-xs-9">
+								<input id="pic2" type="hidden" name="pic2"
+									>
+								<div id="miguploadId2" class="cmig_img_upload_div" data-id="pic2"
+									data-readonly=false data-minWidth=360 data-minHeight=270
+									data-showWidth=66 data-showHeight=66 data-maxNum=1
+									data-checkImageWidthHeightFlag=true data-maxSize=2
+									data-required=true data-callBakFun="modelBindFunctionImg">
+									<input type="hidden" name="fastdfsImageServer2"
+										data-bind="value:model.fastdfsImageServer2">
+								</div>
+							</div>
+							<div class="col-xs-3">
+								<span data-for="notifyUrl" class=".k-invalid-msg"></span>
+							</div>
+						</div>
+					</div>
+			
+					<div class="col-sm-7">
+						<div class="form-group col-sm-6">
+							<label class="col-sm-3 control-label">地址:</label>
+							<div class="col-sm-9">
+								<input id="url_type2" name="urlType" class="k-textbox"
+									style="width: 75%;" />
+									&nbsp <a id="aA" style="cursor:pointer" onclick="previewTow()">预览</a>
+							</div>
+						</div>
+						<div class="form-group col-sm-6">
+							<label class="col-sm-5 control-label">是否支持单点登陆:</label>
+							<div class="col-sm-7">
+								<input id="is_cas2" name="支持单点" required
+									data-bind="value:is_cas2"
+									style="width: 80%;" />&nbsp <font color="red">*</font>
+							</div>
+							<div class="col-sm-35" style="margin-left:-17px;display:none" id="not-need">
+								<ul>
+									<li style="list-style-type:none;">不传tgt:不需要登陆即可打开链接，适用于外部链接、hshop等；</li>
+									<li style="list-style-type:none;">传TGT不验证:需要登录才可以打开链接，适用于hshop等内部链接；</li>
+									<li style="list-style-type:none;">传TGT并验证:需要登录才可以打开链接，适用于i投等外部链接。</li>
+								</ul>
+							</div>
+						</div>
+						<div class="form-group col-sm-6 yc" id="character">
+						    <label class="col-sm-3 control-label">第一行:</label>
+						    <div class="col-sm-9">
+						         <input type="text" id="descriptionOne" name="第一行" class="k-textbox" style="width:100%;">
+						    </div>
+						</div>
+						<div class="form-group col-sm-6 yc" id="character2">
+						    <label class="col-sm-5 control-label" >第二行:</label>
+						    <div class="col-sm-7">
+						         <input type="text" id="descriptionTwo" name="第二行" class="k-textbox" style="width:100%;">
+						        <p>若描述中含<font color="red">￥</font>或<font color="red">$</font>符号，前台按金额样式显示</p>
+						    </div>
+						</div>
+					</div>
+				</div>
+				<div id="hide">
+				<div class="row" style="margin-bottom: 20px">
+					<div class="col-xs-5">
+						<div class="form-group">
+							<label id="twoLabel" class="col-xs-2 control-label">中广告:</label>
+							<div class="col-xs-9">
+								<input id="pic3" type="hidden" name="pic3"
+									>
+								<div id="miguploadId3" class="cmig_img_upload_div" data-id="pic3"
+									data-readonly=false data-minWidth=360 data-minHeight=270
+									data-showWidth=66 data-showHeight=66 data-maxNum=1
+									data-checkImageWidthHeightFlag=true data-maxSize=2
+									data-required=true data-callBakFun="modelBindFunctionImg">
+									<input type="hidden" name="fastdfsImageServer3"
+										data-bind="value:model.fastdfsImageServer3">
+								</div>
+							</div>
+							<div class="col-xs-3">
+								<span data-for="notifyUrl" class=".k-invalid-msg"></span>
+							</div>
+						</div>
+					</div>
+			
+					<div class="col-sm-7">
+						<div class="form-group col-sm-6">
+							<label class="col-sm-3 control-label">地址:</label>
+							<div class="col-sm-9">
+								<input id="url_type3" name="urlType" class="k-textbox"
+									 style="width: 75%;" />
+									&nbsp <a id="aA" style="cursor:pointer" onclick="previewThree()">预览</a>
+							</div>
+						</div>
+						<div class="form-group col-sm-6">
+							<label class="col-sm-5 control-label">是否支持单点登陆:</label>
+							<div class="col-sm-7">
+								<input id="is_cas3" name="支持单点" required
+									data-bind="value:is_cas3"
+									style="width: 80%;" />&nbsp <font color="red">*</font>
+							</div>
+						</div>
+						<div class="form-group col-sm-6 yc" id="character">
+						    <label class="col-sm-3 control-label" >第一行:</label>
+						    <div class="col-sm-9" id="character">
+						         <input type="text" id="descriptionOne2" name="第一行" class="k-textbox" style="width:100%;">
+						    </div>
+						</div>
+						<div class="form-group col-sm-6 yc" id="character">
+						    <label class="col-sm-5 control-label" >第二行:</label>
+						    <div class="col-sm-7">
+						         <input type="text" id="descriptionTwo2" name="第二行" class="k-textbox" style="width:100%;">
+						    	 <p>若描述中含<font color="red">￥</font>或<font color="red">$</font>符号，前台按金额样式显示</p>
+						    </div>
+						</div>
+					</div>
+				</div>	
+				
+				<div class="row" style="margin-bottom: 20px">
+					<div class="col-xs-5">
+						<div class="form-group">
+							<label id="threeLabel" class="col-xs-2 control-label">右广告:</label>
+							<div class="col-xs-9">
+								<input id="pic4" type="hidden" name="pic4"
+									data-bind="value:model.pic4">
+								<div id="miguploadId4" class="cmig_img_upload_div" data-id="pic4"
+									data-readonly=false data-minWidth=360 data-minHeight=270
+									data-showWidth=66 data-showHeight=66 data-maxNum=1
+									data-checkImageWidthHeightFlag=true data-maxSize=2
+									data-required=true data-callBakFun="modelBindFunctionImg">
+									<input type="hidden" name="fastdfsImageServer4"
+										data-bind="value:model.fastdfsImageServer4">
+								</div>
+							</div>
+							<div class="col-xs-3">
+								<span data-for="notifyUrl" class=".k-invalid-msg"></span>
+							</div>
+						</div>
+					</div>
+			
+					<div class="col-sm-7">
+						<div class="form-group col-sm-6">
+							<label class="col-sm-3 control-label">地址:</label>
+							<div class="col-sm-9">
+								<input id="url_type4" name="urlType" class="k-textbox"
+									 style="width: 75%;" />
+									&nbsp <a id="aA" style="cursor:pointer" onclick="previewFour()">预览</a>
+							</div>
+						</div>
+						<div class="form-group col-sm-6">
+							<label class="col-sm-5 control-label">是否支持单点登陆:</label>
+							<div class="col-sm-7">
+								<input id="is_cas4" name="支持单点" required
+									data-bind="value:is_cas4"
+									style="width: 80%;" />&nbsp <font color="red">*</font>
+							</div>
+						</div>
+						<div class="form-group col-sm-6 yc" id="character">
+						    <label class="col-sm-3 control-label" >第一行:</label>
+						    <div class="col-sm-9">
+						         <input type="text"  id="descriptionOne3" name="第一行" class="k-textbox" style="width:100%;">
+						    </div>
+						</div>
+						<div class="form-group col-sm-6 yc" id="character">
+						    <label class="col-sm-5 control-label">第二行:</label>
+						    <div class="col-sm-7">
+						         <input type="text" id="descriptionTwo3" name="第二行" class="k-textbox" style="width:100%;">
+						    	 <p>若描述中含<font color="red">￥</font>或<font color="red">$</font>符号，前台按金额样式显示</p>
+						    </div>
+						</div>
+					</div>
+				</div>
+				    </div>
+			</form>
+		</div>
+	</div>
+	<div class="col-sm-12" style="text-align:center;">
+		<div class="form-group">
+			<label> <span class="btn btn-success"
+					style="float: right" onclick="save()" type="submit"><i
+					class="fa fa-save" style="margin-right: 6px;"></i>保存</span>
+			</label>
+			<label> <span class="btn btn-success"
+					style="float: right" onclick="closeWin()" type="submit"><i
+					class="fa fa-undo" style="margin-right: 6px;"></i>取消</span>
+			</label>
+		</div>
+	</div>
+					
+	<script>
+	//上传图片大小限制
+	var width;
+    var height;
+	//判断新增删除
+	var isedit = '${RequestParameters.groupIdentifying}';
+	var editAdvType ='${RequestParameters.advType}';
+	if(isedit=="0")
+	{    
+		isedit=false;
+	}
+	 window.viewModel = kendo.observable({
+	        model    : {}, 
+	    });
+	    kendo.bind($('#page-content'), viewModel);
+    $("#adv_type").kendoDropDownList({
+    	dataTextField : "fieldName",
+		dataValueField : "fieldValue",
+		dataSource : [ {
+			fieldName : "单图广告",
+			fieldValue : 1
+		},
+		{
+			fieldName : "轮播广告",
+			fieldValue : 2
+		},{
+			fieldName : "左一右二广告",
+			fieldValue : 3
+		},{
+			fieldName : "单行三图广告",
+			fieldValue : 4
+		},{
+			fieldName : "弹窗广告",
+			fieldValue : 5
+		}],
+		index:3,
+		change: onChange
+  });
+    
+   function onChange(){   
+	   var adv_type=$("#adv_type").val();
+	   if(adv_type=="3"){   
+		   $("#titleP").hide();
+	       $(".yc").hide();
+	       $("#hide").show();
+	       $("#oneLabel").html("左一广告");
+	       $("#twoLabel").html("右上广告");
+	       $("#threeLabel").html("右下广告");
+	       $("#not-need").show();
+		   reloadcmig_img_upload_div("miguploadId2",538,453,1);//左
+		   reloadcmig_img_upload_div("miguploadId3",538,225,1);//右
+		   reloadcmig_img_upload_div("miguploadId4",538,225,1);//右
+	   }else if(adv_type=="1"){
+		    $("#titleP").hide();
+	   		$(".yc").hide();
+	        $("#hide").hide();
+	        $("#oneLabel").html("单图广告");
+	        $("#not-need").show();
+		   reloadcmig_img_upload_div("miguploadId2",800,395,1);
+	   }else if(adv_type=="2"){     
+		     $("#titleP").hide();
+	   		 $(".yc").hide();
+             $("#hide").hide();
+             $("#oneLabel").html("轮播广告");
+             $("#not-need").show();
+		   reloadcmig_img_upload_div("miguploadId2",640,422,1);
+	   }else if(adv_type=="5"){     
+		   $("#titleP").hide();
+	   	   $(".yc").hide();
+           $("#hide").hide();
+           $("#oneLabel").html("弹窗广告");
+           $("#not-need").show();
+		   reloadcmig_img_upload_div("miguploadId2",760,870,1);
+	   }else{
+		   $("#titleP").show();
+	       $(".yc").show();
+           $("#hide").show();
+           $("#oneLabel").html("左广告");
+ 	       $("#twoLabel").html("中广告");
+ 	       $("#threeLabel").html("右广告");
+ 	       $("#not-need").hide();
+           reloadcmig_img_upload_div("miguploadId",1080,163,1);
+           reloadcmig_img_upload_div("miguploadId2",360,270,1);
+ 		   reloadcmig_img_upload_div("miguploadId3",360,270,1);
+ 		   reloadcmig_img_upload_div("miguploadId4",360,270,1)
+	   }  
+   }
+   //标题广告路径预览
+    function preview()
+    {
+    	var path=$("#url_type").val();
+    	if(path !="" || path !=null)
+    	{
+	        if(path.length>6 && path.substr(0,7)=='http://')
+	        {   
+	        	window.open(path);
+	        }else
+	        {
+	        	kendo.ui.showInfoDialog({
+					message : $l('路径格式不正确,请添加请求协议:http://')
+				});
+	        }
+    	}
+    }
+   
+    //广告1路径预览
+    function previewTow()
+    {
+    	var path=$("#url_type2").val();
+    	if(path !="" || path !=null)
+    	{
+	        if(path.length>6 && path.substr(0,7)=='http://')
+	        {   
+	        	window.open(path);
+	        }else
+	        {
+	        	kendo.ui.showInfoDialog({
+					message : $l('路径格式不正确,请添加请求协议:http://')
+				});
+	        }
+    	}
+    }
+    
+    //广告2路径预览
+    function previewThree()
+    {
+    	var path=$("#url_type3").val();
+    	if(path !="" || path !=null)
+    	{
+	        if(path.length>6 && path.substr(0,7)=='http://')
+	        {   
+	        	window.open(path);
+	        }else
+	        {
+	        	kendo.ui.showInfoDialog({
+					message : $l('路径格式不正确,请添加请求协议:http://')
+				});
+	        }
+    	}
+    }
+    
+    
+    //广告3路径预览
+    function previewFour()
+    {
+    	var path=$("#url_type4").val();
+    	if(path !="" || path !=null)
+    	{
+	        if(path.length>6 && path.substr(0,7)=='http://')
+	        {   
+	        	window.open(path);
+	        }else
+	        {
+	        	kendo.ui.showInfoDialog({
+					message : $l('路径格式不正确,请添加请求协议:http://')
+				});
+	        }
+    	}
+    }
+    
+    //取消事件
+    function closeWin(){
+    	window.parent.$("#editWin").data("kendoWindow").close();
+     }
+    //修改事件所需ID
+    var advId1;
+    var advId2;
+    var advId3;
+    var advId4;
+    //如果是编辑按钮
+    if (isedit!=0){  
+    	if(editAdvType =="1"){
+    	    $("#titleP").hide();
+	   		$(".yc").hide();
+	        $("#hide").hide();
+	        $("#miguploadId2").attr({"data-minWidth":800,"data-minHeight":395});
+	        $("#oneLabel").html("单图广告");
+       }else if(editAdvType=="2"){
+    	    $("#titleP").hide();
+	   		$(".yc").hide();
+            $("#hide").hide();
+            $("#miguploadId2").attr({"data-minWidth":640,"data-minHeight":422});
+            $("#oneLabel").html("轮播广告");
+       }else if(editAdvType=="5"){
+   	    $("#titleP").hide();
+	   		$(".yc").hide();
+           $("#hide").hide();
+           $("#miguploadId2").attr({"data-minWidth":760,"data-minHeight":870});
+           $("#oneLabel").html("弹窗广告");
+           $("#not-need").show();
+	   }else if(editAdvType=="3"){
+		   $("#titleP").hide();
+      	   $(".yc").hide();
+           $("#hide").show();
+           $("#miguploadId2").attr({"data-minWidth":538,"data-minHeight":453});
+           $("#oneLabel").html("左一广告");
+           $("#miguploadId3").attr({"data-minWidth":538,"data-minHeight":225});
+	       $("#twoLabel").html("右上广告");
+           $("#miguploadId4").attr({"data-minWidth":538,"data-minHeight":225});
+	       $("#threeLabel").html("右下广告");
+	       $("#not-need").show();
+       }
+       $.ajax({
+            url : '${base.contextPath}/app/adv/query/neweditadv?groupIdentifying='+isedit,
+            type : "post",
+            dataType : "json",
+            contentType : "application/json",
+            data : {advId:${RequestParameters.id!0}},
+            success : function(args) {
+            	var length=args.rows.length;
+            	var profile0 = args.rows[0]||{};
+        		$("#title").val(profile0.title);
+        		var advertising = $("#adv_type").data("kendoDropDownList");
+        		var advertisingType=parseInt(profile0.advType);
+        		advertising.select(advertisingType-1);
+            	if(length == 1){   
+            		 advId1=profile0.advId;
+            		 $("#pic2").val(profile0.pic);
+            		 $("#url_type2").val(profile0.url);
+            		 var cas = $("#is_cas2").data("kendoDropDownList");
+            		 var isCas=parseInt(profile0.isCas);
+            		 cas.select(isCas-1);
+            	}if(length == 3){
+            	 var profile1 = args.rows[1]||{};
+                 var profile2 = args.rows[2]||{};
+                 advId1=profile0.advId;
+                 advId2=profile1.advId;
+                 advId3=profile2.advId;
+            	 //图1
+                 $("#pic2").val(profile0.pic);
+          		 $("#url_type2").val(profile0.url);
+          		 var cas2 = $("#is_cas2").data("kendoDropDownList");
+          		 var isCas2=parseInt(profile0.isCas);
+          		 cas2.select(isCas2-1);
+          		 //图2
+          		 $("#pic3").val(profile1.pic);
+          		 $("#url_type3").val(profile1.url);
+          		 var cas3 = $("#is_cas3").data("kendoDropDownList");
+          		 var isCas3=parseInt(profile1.isCas);
+          		 cas3.select(isCas3-1);
+          		 //图三
+          		 $("#pic4").val(profile2.pic);
+          		 $("#url_type4").val(profile2.url);
+          		 var cas4 = $("#is_cas4").data("kendoDropDownList");
+          		 var isCas4=parseInt(profile2.isCas);
+          		 cas4.select(isCas4-1);
+               }if(length == 4){   
+            	   var profile1 = args.rows[1]||{};
+                   var profile2 = args.rows[2]||{};
+                   var profile3 = args.rows[3]||{};
+            	   advId1=profile0.advId;
+                   advId2=profile1.advId;
+                   advId3=profile2.advId;
+                   advId4=profile3.advId;
+             	 //标题图
+                 $("#pic").val(profile0.pic);
+           		 $("#url_type").val(profile0.url);
+           		 var cas = $("#is_cas").data("kendoDropDownList");
+           		 var isCas=parseInt(profile0.isCas);
+           		 cas.select(isCas-1);
+           		 //图1
+           		 $("#pic2").val(profile1.pic);
+           		 $("#url_type2").val(profile1.url);
+           		 $("#descriptionOne").val(profile1.descriptionOne);
+           		  $("#descriptionTwo").val(profile1.descriptionTwo);
+           		 var cas2 = $("#is_cas2").data("kendoDropDownList");
+           		 var isCas2=parseInt(profile1.isCas);
+           		 cas2.select(isCas2-1);
+           		 //图2
+           		 $("#pic3").val(profile2.pic);
+           		 $("#url_type3").val(profile2.url);
+           		 $("#descriptionOne2").val(profile2.descriptionOne);
+           		 $("#descriptionTwo2").val(profile2.descriptionTwo);
+           		 var cas3 = $("#is_cas3").data("kendoDropDownList");
+           		 var isCas3=parseInt(profile2.isCas);
+           		 cas3.select(isCas3-1);
+           		 //图2
+           		 $("#pic4").val(profile3.pic);
+           		 $("#url_type4").val(profile3.url);
+           		 $("#descriptionOne3").val(profile3.descriptionOne);
+                    $("#descriptionTwo3").val(profile3.descriptionTwo);
+           		 var cas4 = $("#is_cas4").data("kendoDropDownList");
+           		 var isCas4=parseInt(profile3.isCas);
+           		 cas4.select(isCas4-1);
+               }
+            }
+       });
+    }else{
+	     $("#adv_type").data("kendoDropDownList").select(3);
+    }
+	//图片上传
+    function modelBindFunctionImg()
+	{   
+		
+    }
+	//必输验证
+	var flag =false;
+	function validate(title,advType,isCas,isCas2,isCas3,isCas4,pic,pic2,pic3,pic4)
+	{
+		if(title == "" || advType =="" || isCas=="" || isCas2=="" || isCas3=="" || isCas4=="" || pic=="" || pic2 =="" || pic3 =="" || pic4 =="")
+		{ 
+			flag=true;
+		}else
+		{
+			flag=false;
+		}
+		
+	}
+	
+    //根据不同的广告类型返回不通的json
+	 function getJson(advType){ 
+      var json;
+      var title =$("#title").val();
+      var type=$("#adv_type").val();
+      if(advType == "1" || advType == "2" || advType == "5"){
+    	  var isCas = $("#is_cas2").val();
+          var pic = $("#pic2").val();
+          var url = $("#url_type2").val();
+          var urlType;
+          if(url == ""){
+        	  urlType =1;
+          }else{
+        	  urlType =0;  
+          }
+          validate(title,type,isCas,"1","2","3",pic,"pic2","pic3","pic3");
+    	  json ={
+    			"advTitle" : title,
+    			"advType" : type,
+    			"appAdvs" :[{
+    		    "isCas": isCas,
+    		    "advRank":1,
+    		    "pic" :pic,
+    		    "url" :url,
+    		    "urlType" :urlType,
+    		    "groupIdentifying":isedit,
+    		    "advId":advId1
+    			}]
+           }
+	   return json;
+	}else if(advType == "3"){   
+		 var isCas2 = $("#is_cas2").val();
+         var pic2 = $("#pic2").val();
+         var url2 = $("#url_type2").val();
+         var isCas3 = $("#is_cas3").val();
+         var pic3 = $("#pic3").val();
+         var url3 = $("#url_type3").val();
+         var isCas4 = $("#is_cas4").val();
+         var pic4 = $("#pic4").val();
+         var url4 = $("#url_type4").val();
+         validate(title,type,isCas,"1","2","3",pic2,pic3,pic4,"pic3");
+         json ={
+     			"advTitle" : title,
+     			"advType" : type,
+     			"appAdvs" :[{
+     		    "isCas": isCas2,
+     		    "pic" :pic2,
+     		    "advRank":1,
+     		    "url" :url2,
+     		    "urlType" :1,
+     		   "groupIdentifying":isedit,
+     		  "advId":advId1
+     			},{
+     				"isCas": isCas3,
+         		    "pic" :pic3,
+         		    "url" :url3,
+         		    "advRank":2,
+         		    "urlType" :1,
+         		    "groupIdentifying":isedit,
+         		    "advId":advId2
+     			},{
+     				"isCas": isCas4,
+         		    "pic" :pic4,
+         		    "advRank":3,
+         		    "url" :url4,
+         		    "urlType" :1,
+         		    "groupIdentifying":isedit,
+         		    "advId":advId3
+     			}]
+            }
+         return json;
+	}else if(advType == "4"){    
+		 var isCas = $("#is_cas").val();
+         var pic = $("#pic").val();
+         var url = $("#url_type").val();
+		 var isCas2 = $("#is_cas2").val();
+         var pic2 = $("#pic2").val();
+         var url2 = $("#url_type2").val();
+         var isCas3 = $("#is_cas3").val();
+         var pic3 = $("#pic3").val();
+         var url3 = $("#url_type3").val();
+         var isCas4 = $("#is_cas4").val();
+         var pic4 = $("#pic4").val();
+         var url4 = $("#url_type4").val();
+         var descriptionOne = $("#descriptionOne").val();
+         var descriptionTwo = $("#descriptionTwo").val();
+         var descriptionOne2 = $("#descriptionOne2").val();
+         var descriptionTwo2 = $("#descriptionTwo2").val();
+         var descriptionOne3 = $("#descriptionOne3").val();
+         var descriptionTwo3 = $("#descriptionTwo3").val();
+         validate(title,type,isCas,isCas2,isCas3,isCas4,pic,pic2,pic3,pic4);
+         json ={
+     			"advTitle" : title,
+     			"advType" : type,
+     			"appAdvs" :[
+     		    {
+     			"descriptionOne": "",
+     			"descriptionTwo": "",
+     		    "isCas": isCas,
+     		    "advRank":1,
+     		    "pic" :pic,
+     		    "url" :url,
+     		    "urlType" :1,
+     		    "groupIdentifying":isedit,
+     		    "advId":advId1
+     			},
+     			{   "descriptionOne": descriptionOne,
+         			"descriptionTwo":descriptionTwo,
+     				"isCas": isCas2,
+         		    "pic" :pic2,
+         		    "url" :url2,
+         		    "advRank":2,
+         		    "urlType" :1,
+         		    "groupIdentifying":isedit,
+         		    "advId":advId2
+     			},
+     			{   "descriptionOne": descriptionOne2,
+         			"descriptionTwo":descriptionTwo2,
+     				"isCas": isCas3,
+         		    "pic" :pic3,
+         		    "url" :url3,
+         		    "advRank":3,
+         		    "urlType" :1,
+         		    "groupIdentifying":isedit,
+         		    "advId":advId3
+     			},{
+     				"descriptionOne": descriptionOne3,
+          			"descriptionTwo":descriptionTwo3,
+     				"isCas": isCas4,
+         		    "pic" :pic4,
+         		    "url" :url4,
+         		    "advRank":4,
+         		    "urlType" :1,
+         		    "groupIdentifying":isedit,
+         		    "advId":advId4
+     			}]
+            }
+         return json;
+	}else
+	{
+		return null;
+	}
+		
+	}
+	
+    //是否支持单点登录下拉框
+        $("#is_cas").kendoDropDownList({
+    	dataTextField : "fieldName",
+		dataValueField : "fieldValue",
+		dataSource : [ {
+			fieldName : "不传TGT",
+			fieldValue : 1
+		},
+		{
+			fieldName : "传TGT不验证",
+			fieldValue : 2
+		},{
+			fieldName : "传TGT并验证",
+			fieldValue : 3
+		}]
+		
+  });
+   
+        //是否支持单点登录下拉框
+        $("#is_cas2").kendoDropDownList({
+    	dataTextField : "fieldName",
+		dataValueField : "fieldValue",
+		dataSource : [ {
+			fieldName : "不传TGT",
+			fieldValue : 1
+		},
+		{
+			fieldName : "传TGT不验证",
+			fieldValue : 2
+		},{
+			fieldName : "传TGT并验证",
+			fieldValue : 3
+		}]
+		
+  });
+        
+        //是否支持单点登录下拉框
+        $("#is_cas3").kendoDropDownList({
+    	dataTextField : "fieldName",
+		dataValueField : "fieldValue",
+		dataSource : [ {
+			fieldName : "不传TGT",
+			fieldValue : 1
+		},
+		{
+			fieldName : "传TGT不验证",
+			fieldValue : 2
+		},{
+			fieldName : "传TGT并验证",
+			fieldValue : 3
+		}]
+		
+  });
+        //是否支持单点登录下拉框
+        $("#is_cas4").kendoDropDownList({
+    	dataTextField : "fieldName",
+		dataValueField : "fieldValue",
+		dataSource : [ {
+			fieldName : "不传TGT",
+			fieldValue : 1
+		},
+		{
+			fieldName : "传TGT不验证",
+			fieldValue : 2
+		},{
+			fieldName : "传TGT并验证",
+			fieldValue : 3
+		}]
+		
+  });
+ 
+ //提交   
+function save()
+{   var type=$("#adv_type").val();
+	var json = getJson(type);
+	var url;
+	if(isedit){
+		url = "app/adv/edit/newadv";
+	}else{
+		url = "app/adv/submit/newadv";
+	}
+	if(json == null)
+	{
+		kendo.ui.showInfoDialog({
+         	message: $l('请输入新增数据')
+         });
+		return;
+	}
+	if(flag)
+	{
+		kendo.ui.showInfoDialog({
+         	message: $l('请输入完整数据')
+         });
+		return;
+	}
+	   $.ajax({
+	        type: "POST",
+	        url: "${base.contextPath}/"+url,
+	        contentType: "application/json;charset=utf-8",
+	        beforeSend: function(xhr) {
+	        	               xhr.setRequestHeader($('meta[name=_csrf_header]').attr('content'),$('meta[name=_csrf]').attr('content'));
+	        	        }, 
+	        data: JSON.stringify(json),
+	        dataType: "json",
+	        success: function (data) {
+	          if(data.success)
+	          {  
+	        	  kendo.ui.showInfoDialog({
+                      title:'提示信息',
+                      message:'保存成功!'
+                  }).done(function(e){
+                	  window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+                      window.parent.$("#editWin").data("kendoWindow").close();
+                  });
+	          }else
+		        {
+		        	kendo.ui.showInfoDialog({
+	                 	message: $l('保存失败')
+	                 });	
+		        }
+	        }
+	    }); 
+
+} 
+ 
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "result": [
+    {
+      "fee_name": "物业管理费",
+      "price": "1.0",
+      "quantity": 137.45,
+      "total_amount": "137.45",
+      "adjust_amount": "0.0",
+      "period": "2017-04"
+    },
+    {
+      "fee_name": "灯管",
+      "price": "7.0",
+      "quantity": 1,
+      "total_amount": "7.0",
+      "adjust_amount": "0.0",
+      "period": "2017-04"
+    }
+  ],
+  "status_code": 200
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.base.map.mapper.StructureBuildingMapMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.base.map.dto.StructureBuildingMap">
+        <result column="MAP_ID" property="mapId" jdbcType="DECIMAL" />
+        <result column="BUILDING_TYPE" property="buildingType" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_ID" property="structureId" jdbcType="DECIMAL" />
+        <result column="BUILDING_ID" property="buildingId" jdbcType="DECIMAL" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="findByBuildingIdAndStructureId" resultMap="BaseResultMap">
+        SELECT a.*
+        FROM csp_structure_building_map a
+        WHERE
+        a.BUILDING_TYPE = #{buildingType}
+        AND a.BUILDING_ID = #{buildingId}
+        <if test="structureId != null and structureId != '' ">
+            AND a.STRUCTURE_ID = #{structureId}
+        </if>
+    </select>
+
+    <delete id="deleteByStructureVersionId">
+        DELETE FROM csp_structure_building_map
+        WHERE
+        BUILDING_TYPE =#{buildingType}
+        AND STRUCTURE_ID IN
+        (select s.STRUCTURE_ID from csp_mgt_structure s
+          where s.VERSION_ID = #{versionId})
+    </delete>
+</mapper>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>MiniCheckout</title>
+    <link rel="stylesheet" href="${base.contextPath}/resources/app/css/pinus.css">
+    <script src="${base.contextPath}/lib/js/dist/pingpp.js" type="text/javascript"></script>
+    <script src="${base.contextPath}/lib/kendoui/js/jquery.min.js"></script>
+    <script src="${base.contextPath}/lib/js/layer-v3.0.3/layer/layer.js"></script>
+    <script src="http://pv.sohu.com/cityjson?ie=utf-8"></script>
+</head>
+<body>
+<header>
+    <div class="h_content">
+        <span></span>
+    </div>
+</header>
+<body>
+<form id="orderInfo"  method="post"  >
+    <section class="block">
+        <div class="content2">
+            <div class="app">
+                <span class="iphone" ><img src="${base.contextPath}/resources/upload/logo.png" style="align:center;max-width:100px;max-height:100px;" ></span>
+                <div align="center" style="font-size:20px;color:#38a9ac;">模拟第三方商户提交订单</div>
+                <div class="text_amount">
+                    商户订单号：<input type="text" id="tradeNo" name="tradeNo" value="10000003" />
+                </div>
+                <div class="text_amount">
+                    商品标题：<input type="text" id="subject" name="subject" value="iphone7 玫瑰金" />
+                </div>
+                <div class="text_amount">
+                    商品描述：<input type="text" id="body" name="body" value="iphone7 玫瑰金 64G 港版 保修三年" />
+                </div>
+                <div class="text_amount">
+                    服务端通知地址：<input type="text" id="backUrl" name="backUrl" value="" />
+                </div>
+                <div class="text_amount">
+                    订单总金额(元)：<input type="text" id="amount" name="amount" value="0.01" />
+                    <div id="integralDiv"></div>
+                    是否使用乐家易付：是 <input type="radio" name="lejiaPay"  value="Y" /> 否 <input type="radio" checked name="lejiaPay" value="N" />
+                </div>
+                <div class="text_amount" style="display: none">
+                    <input type="hidden" id="orderAmount" name="orderAmount" value="1" />
+                    使用积分数：<input type="hidden" id="maxAvailableNum" name="maxAvailableNum" value="" />
+                                <input type="hidden" id="integralAmount" name="integralAmount" value="0" />
+                    前端通知地址：<input type="text" id="frontUrl" name="frontUrl" value="" />
+                    订单类型：<input type="text" id="orderType" name="orderType" value="" />
+                    订单描述：<input type="text" id="description" name="description" value="" />
+                    订单失效时间：<input type="text" id="timeExpire" name="timeExpire" value="" />
+                    ip地址：<input type="text" id="clientIp" name="clientIp" value="" />
+
+                    appid：<input type="text" id="appid" name="appid" value="146c74602a3c422b8e5aaf41d5eb73db" />
+                    openid：<input type="text" id="openid" name="openid" value="72f6d91a22c7410887802a0e16ed5992" />
+                    sign：<input type="text" id="sign" name="sign" value="" />
+                    cardId:<input type="text" id="cardId" name="cardId" value="" />
+                    token:<input type="text" id="token" name="token" value="6266ae9c3f5aca959a1151803912e6d4" />
+                    merchantId:<input type="hidden" id="merchantId" name="merchantId" value="300010000001">
+                </div>
+                <div class="ch" style="display: none" >
+                    <span class="up" onclick="wap_pay('alipay_pc_direct')">支付宝电脑网站支付 </span>
+                    <span class="up" onclick="wap_pay('upacp_pc')">银联网关支付</span>
+                </div>
+                <div align="center" >
+                    <button id="pay">提交订单</button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</form>
+</body>
+<script>
+
+    var protocol=location.protocol;
+    var origin=location.origin;
+    var host=location.host;
+    var port=location.port;//默认为80的就为空
+    var pathname=location.pathname;
+
+    if(host.indexOf("localhost")>=0){
+        origin+="/hap";
+    }else{
+        $("#token").val("");
+        $("#openid").val("");
+    }
+
+    console.log("protocol="+protocol);
+    console.log("origin="+origin);
+    console.log("host="+host);
+    console.log("port="+port);
+    console.log("pathname="+pathname);
+
+    $("#clientIp").val(returnCitySN["cip"]);
+
+    function getToken(data){
+        var ajaxData=eval("("+data+")");
+        $("#token").val(ajaxData.user_token);
+    }
+
+    function getOpenId(data){
+        var ajaxData=eval("("+data+")");
+        $("#openid").val(ajaxData.user_openid);
+    }
+
+    function getProtocol(){
+        $.ajax({
+            url: 'http://csportal.cm-dev.cn/user/operate/cms/article/getByContentType?contentType=OWNER_PROTOCOL',
+            async: false,
+            type: "get",
+            dataType: "json",
+            success: function (args) {
+                console.log(args);
+
+
+            }
+        });
+    }
+
+    function getUseIntegralNum(token,type,orderAmount){
+        var params="token="+token+"&type="+type+"&orderAmount="+orderAmount;
+        $.ajax({
+            url: origin + '/user/st/integral/integralrule/findIntegralByType',
+            async: false,
+            type: "POST",
+            dataType: "json",
+            data: params,// 要提交的表单
+            success: function (args) {
+                console.log(args);
+                var status=args.status;
+                if("1"==status){
+                    var maxAvailableNum=args.data.maxAvailableNum;
+                    var maxAvailableAmount=args.data.maxAvailableAmount;
+                    $("#integralDiv").empty();
+                    $("#maxAvailableNum").val(maxAvailableNum);
+                    $("#integralDiv").append('可用'+maxAvailableNum+'积分抵￥'+maxAvailableAmount+' <input type="checkbox" id="useIntegralFlag" name="useIntegralFlag" value="" />');
+                }else{
+                    alert(args.message);
+                    return ;
+                }
+
+            }
+        });
+    }
+
+
+   $(document).ready(function(){
+       getProtocol();
+        if(""==$("#token").val()) {
+            var prop_ = prompt('ljh://user_token/getToken?{"login_required":"true"}');
+            //alert("prop_1:"+prop_);
+            getToken(prop_);
+        }
+
+        if(""==$("#openid").val()) {
+            prop_ = prompt('ljh://user_openid/getOpenId?params?{"login_required":"true"}');
+            //alert("prop_2:"+prop_);
+            getOpenId(prop_);
+        }
+
+
+        $("#backUrl").val(origin+"/user/order/notifyDemo");
+
+        var timestamp=new Date().getTime();
+        $('#tradeNo').val(timestamp);
+
+        var lejiaPay=$("input[name='lejiaPay']:checked").val();
+        if("Y"==lejiaPay&&$('#amount').val()<10.01){
+            $('#amount').val(10.01);
+            $('#orderAmount').val($('#amount').val()*100);
+        }
+
+        //初始化积分
+       getUseIntegralNum($("#token").val(),"R0003", $('#orderAmount').val());
+
+        $("#pay").click(function(){
+            var lejiaPay=$("input[name='lejiaPay']:checked").val();
+            if("Y"==lejiaPay&&$('#amount').val()<10.01){
+                $('#amount').val(10.01);
+                $('#orderAmount').val($('#amount').val()*100);
+            }
+
+            var amount = $('#amount').val() * 100;
+            $('#orderAmount').val(amount);
+
+            //初始化积分
+            getUseIntegralNum($("#token").val(),"R0003", $('#orderAmount').val());
+
+            var timeExpire=new Date().getTime()+(1000 * 60*30);
+            //$('#timeExpire').val(Math.round(timeExpire/1000));
+
+            //参数签名
+            $.ajax({
+                url: origin+'/user/order/orderSign',
+                async:false,
+                type : "POST",
+                dataType : "json",
+                data : $('#orderInfo').serialize(),// 要提交的表单
+                success: function (args) {
+                    console.log(args);
+                    var sign=args.data.sign;
+                    $("#sign").val(sign);
+                    console.log(sign);
+                    //商户提交订单
+                    $.ajax({
+                        url: origin+'/user/order/orderSubmit',
+                        async:false,
+                        type : "POST",
+                        dataType : "json",
+                        data : $('#orderInfo').serialize(),// 要提交的表单
+                        success: function (ajaxData) {
+                            console.log(ajaxData);
+                            if("1"==ajaxData.status){
+                                var isIntegral=ajaxData.data.isIntegral;//是否积分抵扣完
+                                var orderNumber=ajaxData.data.orderNumber;
+                                var orderAmount=ajaxData.data.orderAmount;//订单总额
+                                var discountAmount=ajaxData.data.discountAmount;//活动折扣金额
+                                var integralAmount=ajaxData.data.integralAmount;//积分抵扣
+                                var payableAmount=ajaxData.data.payableAmount;//应付金额=订单总额-活动折扣金额-积分抵扣
+                                var subject=ajaxData.data.subject;
+                                var body=ajaxData.data.body;
+                                var chargeUrl=ajaxData.data.chargeUrl;
+                                var payChannel=ajaxData.data.payChannel;//支付渠道
+                                var transeq=ajaxData.data.transeq;//交易流水号
+                                var paidAmount=ajaxData.data.paidAmount;//实付金额
+
+                                var pay_success_url=origin+"/common/paydemo/views/demo.html";
+                                var params='{"order_id":"'+orderNumber+'","subject":"'+subject+'","detail":"'+body+'","total_fee":'+payableAmount+',"extra_data":"","charge_url":"'+chargeUrl+'","pay_success_url":"'+pay_success_url+'","is_integral":"'+isIntegral+'"}';
+                                if("Y"==lejiaPay){
+                                    var cardAuthUrl=origin+"/common/paydemo/views/cardAuth.html";
+                                    var index=layer.open({
+                                        type: 2,
+                                        title: '用户绑卡',
+                                        shadeClose: true,
+                                        shade: 0.8,
+                                        area: ['1100px', '500px'],
+                                        content: cardAuthUrl,
+                                        btn: ['关闭'],
+                                        btnAlign:'c',
+                                        end:function rollback(){
+                                            var cardId=$("#cardId").val();
+                                            var token=$("#token").val();
+                                            var merchantId=$("#merchantId").val();
+                                            var payParams="merchantId="+merchantId+"token="+token+"&orderNumber="+orderNumber+"&channel=lejiaPay&cardId="+cardId;
+                                            console.log(payParams);
+                                            $.ajax({
+                                                url: chargeUrl,
+                                                async: false,
+                                                type: "POST",
+                                                dataType: "json",
+                                                data: payParams,// 要提交的表单
+                                                success: function (payData) {
+                                                    console.log(payData);
+                                                    var status=payData.status;
+                                                    if("1"==status){
+                                                        var payStatus=payData.data.payStatus;
+                                                        alert("支付状态："+payStatus);
+                                                        window.location.href=window.location.href;
+                                                    }else{
+                                                        alert(payData.message);
+                                                    }
+                                                }
+                                            });
+                                        },
+                                        cancel: function(index, layero){
+                                            window.location.href=window.location.href;
+                                        },
+                                        yes: function(index, layero){
+                                            //do something
+                                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                                            window.location.href=window.location.href;
+                                        }
+                                    });
+                                }else{
+                                    window.location.href="ljh://pay/callback_name?"+params;
+                                }
+                            }else{
+                                alert(ajaxData.message);
+                                window.location.href=window.location.href;
+                            }
+                            return false;
+                        }
+                    });
+                }
+            });
+            return false;
+        });
+
+       $("#amount").change(function(){
+           $('#orderAmount').val($('#amount').val()*100);
+           //初始化积分
+           getUseIntegralNum($("#token").val(),"R0003", $('#orderAmount').val());
+       });
+
+       $("body").on("click", "#useIntegralFlag", function() {
+           if($(this).prop("checked")){
+               //抵扣积分数
+               $("#integralAmount").val($("#maxAvailableNum").val());
+           }else{
+               //抵扣积分数
+               $("#integralAmount").val("0");
+           }
+       });
+
+
+    });
+
+</script>
+</body>
+</html>

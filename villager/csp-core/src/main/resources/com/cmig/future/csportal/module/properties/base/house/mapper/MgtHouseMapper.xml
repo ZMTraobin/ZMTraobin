@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.base.house.mapper.MgtHouseMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.base.house.dto.MgtHouse">
+        <result column="HOUSE_ID" property="houseId" jdbcType="DECIMAL" />
+        <result column="HOUSE_CODE" property="houseCode" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="HOUSE_NAME" property="houseName" jdbcType="VARCHAR" />
+        <result column="HOUSE_NICK_NAME" property="houseNickName" jdbcType="VARCHAR" />
+        <result column="HOUSE_FULL_NAME" property="houseFullName" jdbcType="VARCHAR" />
+        <result column="USE_TYPE" property="useType" jdbcType="VARCHAR" />
+        <result column="BUILDING_AREA" property="buildingArea" jdbcType="DECIMAL" />
+        <result column="PAYMENT_AREA" property="paymentArea" jdbcType="DECIMAL" />
+        <result column="DECORATION_STATUS" property="decorationStatus" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="SOURCE_HOUSE_CODE" property="sourceHouseCode" jdbcType="VARCHAR" />
+
+        <result column="STRUCTURE_PARENT_FULL_NAME" property="structureParentFullName" jdbcType="VARCHAR" />
+        <result column="PARENT_STRUCTURE_ID" property="parentStructureId" jdbcType="DECIMAL" />
+         
+        <result column="COMMUNITY_NAME" property="communityName" jdbcType="VARCHAR" />
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="communityColumns">
+        a.HOUSE_ID AS houseId,
+        a.HOUSE_CODE AS houseCode,
+        a.COMMUNITY_ID AS communityId,
+        a.HOUSE_NAME AS houseName,
+        a.HOUSE_NICK_NAME AS houseNickName,
+        a.HOUSE_FULL_NAME AS houseFullName,
+        a.USE_TYPE AS useType,
+        a.BUILDING_AREA AS buildingArea,
+        a.PAYMENT_AREA AS paymentArea,
+        a.DECORATION_STATUS AS decorationStatus,
+        a.STATUS AS status,
+        a.SOURCE_HOUSE_CODE AS sourceHouseCode
+    </sql>
+
+    <select id="findByStructureCode" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_mgt_house a
+        WHERE
+        a.HOUSE_CODE = #{houseCode}
+    </select>
+
+    <select id="queryByHouseId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        ,s.STRUCTURE_ID AS parentStructureId,s.STRUCTURE_FULL_NAME AS STRUCTURE_PARENT_FULL_NAME
+        FROM csp_mgt_house a
+        LEFT JOIN csp_structure_building_map m ON a.HOUSE_ID = m.BUILDING_ID
+        LEFT JOIN csp_mgt_structure s ON s.STRUCTURE_ID = m.STRUCTURE_ID
+        WHERE
+        a.HOUSE_ID = #{houseId}
+    </select>
+    
+    <select id="getCountByHouseCode" resultType="java.lang.Integer">
+        select count(*) from 
+        csp_mgt_house a
+        where a.house_code = #{houseCode}
+    </select>
+
+    <select id="findHouseList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_mgt_house a
+        WHERE a.STATUS = #{STATUS_NORMAL}
+        <if test="communityId != null and communityId != '' ">
+          AND a.COMMUNITY_ID = #{communityId}
+        </if>
+        <if test="houseCode != null and houseCode != '' ">
+            AND a.HOUSE_CODE LIKE CONCAT(CONCAT('%',#{houseCode}),'%')
+        </if>
+        <if test="houseFullName != null and houseFullName != '' ">
+            AND a.HOUSE_FULL_NAME LIKE CONCAT(CONCAT('%',#{houseFullName}),'%')
+        </if>
+    </select>
+    
+    <select id="findHouseListLov" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />,
+        bc.COMMUNITY_NAME,
+        bc.COMPANY_NAME
+        FROM csp_mgt_house a
+        left outer join csp_ljh_base_community bc on bc.id = a.COMMUNITY_ID
+        WHERE a.STATUS = #{STATUS_NORMAL}
+        <if test="communityId != null and communityId != '' ">
+          AND a.COMMUNITY_ID = #{communityId}
+        </if>
+        <if test="houseCode != null and houseCode != '' ">
+            AND a.HOUSE_CODE LIKE CONCAT(CONCAT('%',#{houseCode}),'%')
+        </if>
+        <if test="houseFullName != null and houseFullName != '' ">
+            AND a.HOUSE_FULL_NAME LIKE CONCAT(CONCAT('%',#{houseFullName}),'%')
+        </if>
+        <if test="communityName != null and communityName != '' ">
+            AND bc.community_name LIKE CONCAT(CONCAT('%',#{communityName}),'%')
+        </if>
+    </select>
+
+    <select id="findBySourceHouseCodeAndCid" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_mgt_house a
+        WHERE
+        a.COMMUNITY_ID = #{communityId}
+        AND a.SOURCE_HOUSE_CODE = #{sourceHouseCode}
+    </select>
+
+    <select id="findBySourceHouseCodeAndSourceSystem" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" /> ,b.SOURCE_SYSTEM AS sourceSystem
+        FROM csp_mgt_house a
+        LEFT JOIN csp_ljh_base_community b ON a.COMMUNITY_ID=b.ID
+        WHERE
+        a.SOURCE_HOUSE_CODE = #{sourceHouseCode}
+        AND b.SOURCE_SYSTEM=#{sourceSystem}
+    </select>
+    
+    <select id="selectList" resultType="com.cmig.future.csportal.module.properties.base.house.dto.MgtHouse">
+        SELECT
+        <include refid="communityColumns" />,
+        c.COMMUNITY_NAME as "communityName"
+        FROM csp_mgt_house a
+        LEFT OUTER JOIN csp_ljh_base_community c on c.id = a.COMMUNITY_ID
+        WHERE a.STATUS = 'Y'
+        <if test="communityId != null and communityId != '' ">
+          AND a.COMMUNITY_ID = #{communityId}
+        </if>
+        <if test="houseCode != null and houseCode != '' ">
+            AND a.HOUSE_CODE LIKE CONCAT(CONCAT('%',#{houseCode}),'%')
+        </if>
+        <if test="houseName != null and houseName != '' ">
+            AND a.HOUSE_NAME LIKE CONCAT(CONCAT('%',#{houseName}),'%')
+        </if>
+        <if test="houseFullName != null and houseFullName != '' ">
+            AND a.HOUSE_FULL_NAME LIKE CONCAT(CONCAT('%',#{houseFullName}),'%')
+        </if>
+        <if test="useType != null and useType != '' ">
+            AND a.use_type LIKE CONCAT(CONCAT('%',#{useType}),'%')
+        </if>
+    </select>
+</mapper>

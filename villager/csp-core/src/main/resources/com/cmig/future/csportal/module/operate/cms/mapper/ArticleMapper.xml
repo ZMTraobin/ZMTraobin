@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.operate.cms.mapper.ArticleMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.operate.cms.dto.Article">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CATEGORY_ID" property="categoryId" jdbcType="VARCHAR" />
+		<result column="TITLE" property="title" jdbcType="VARCHAR" />
+        <result column="COVER" property="cover" jdbcType="VARCHAR" />
+        <result column="VIDEO" property="video" jdbcType="VARCHAR" />
+		<result column="LINK" property="link" jdbcType="VARCHAR" />
+		<result column="COLOR" property="color" jdbcType="VARCHAR" />
+		<result column="KEYWORDS" property="keywords" jdbcType="VARCHAR" />
+		<result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+		<result column="WEIGHT" property="weight" jdbcType="DECIMAL" />
+		<result column="WEIGHT_DATE" property="weightDate" jdbcType="DATE" />
+		<result column="HITS" property="hits" jdbcType="DECIMAL" />
+		<result column="POSID" property="posid" jdbcType="VARCHAR" />
+		<result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+		<result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+		<result column="INFORMATION_NUMBER" property="informationNumber"
+			jdbcType="DECIMAL" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="CREATION_DATE" property="creationDate"
+			jdbcType="DATE" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate"
+			jdbcType="DATE" />
+		<!-- 非表字段 -->
+		<result column="CATEGORY_NAME" property="categoryName"
+			jdbcType="VARCHAR" />
+		<result column="CONTENT_TYPE" property="contentType" jdbcType="VARCHAR" />
+		<result column="PUBLISHED_BY_NAME" property="publishedByName"
+			jdbcType="VARCHAR" />
+		<result column="STATUS_DESC" property="statusDesc" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="ARTICLE_ID" property="articleId" jdbcType="VARCHAR" />
+		<result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+		<result column="TAG" property="tag" jdbcType="VARCHAR" />
+		<result column="CONTENT_TYPE_DESC" property="contentTypeDesc"
+			jdbcType="VARCHAR" />
+		<result column="PARENT_CATEGORY_NAME" property="parentCategoryName"
+			jdbcType="VARCHAR" />
+		<result column="PARENT_CATEGORY_ID" property="parentCategoryId"
+			jdbcType="VARCHAR" />
+		<result column="PUBLISHED_DATE" property="publishedDate"
+			jdbcType="DATE" />
+	</resultMap>
+
+
+	<select id="getArticleByCategory" resultMap="BaseResultMap"
+		parameterType="com.cmig.future.csportal.module.operate.cms.dto.Article">
+		select
+		ca.id,
+		ca.category_id,
+		c.name as category_name,
+		c.content_type,
+		ca.title,
+        ca.cover,ca.video,
+		ca.status,
+		(select scvb.MEANING from sys_code_b scb,
+		sys_code_value_b scvb
+		where scb.CODE_ID = scvb.CODE_ID
+		and scb.`CODE` =
+		'CSP.CMS.ARTICLE_STATUS'
+		and scvb.value = ca.status) as status_desc,
+		ca.link,
+		ca.color,
+		ca.keywords,
+		ca.description,
+		ca.weight,
+		ca.weight_date,
+		ca.hits,
+		ca.posid,
+		ca.remarks,
+		ca.information_number,
+		ca.published_date as "publishedDate",
+		(select su.USER_NAME
+		from sys_user su where
+		su.USER_ID =
+		ca.LAST_UPDATED_BY) as published_by_name,
+		ca.CREATION_DATE,
+		ca.LAST_UPDATE_DATE as "lastUpdateDate"
+		from csp_ljh_cms_article ca
+		left
+		outer join
+		csp_ljh_cms_category c on
+		c.id = ca.category_id
+		<where>
+			ca.category_id = #{categoryId,jdbcType=VARCHAR}
+			and ca.del_flag =
+			#{DEL_FLAG_NORMAL}
+			<if test="title != null">
+				and ca.title LIKE concat('%',
+				concat(#{title,jdbcType=VARCHAR}, '%'))
+			</if>
+			<if test="status != null">
+				and ca.status = #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getArticleById" resultMap="BaseResultMap">
+		select
+		ca.ID,
+		ca.CATEGORY_ID,
+		c.NAME as category_name,
+		ca.TITLE,
+		ca.COVER,ca.video,
+		cd.CONTENT,
+		ca.LINK,
+		ca.COLOR,
+		ca.KEYWORDS,
+		ca.DESCRIPTION,
+		ca.WEIGHT,
+		ca.WEIGHT_DATE,
+		ca.HITS,
+		ca.POSID,
+		ca.REMARKS,
+		ca.INFORMATION_NUMBER
+		from csp_ljh_cms_article ca
+		left outer join csp_ljh_cms_category c on c.ID = ca.CATEGORY_ID
+		left
+		outer join csp_ljh_cms_article_data cd on cd.id = ca.id
+		where ca.ID =
+		#{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getArticleListByCommunity" resultMap="BaseResultMap">
+		select ca.id as ARTICLE_ID,
+		ca.ID,
+		ca.CATEGORY_ID,
+		cc.NAME as
+		category_name,
+		cc.PARENT_ID as parent_category_id,
+		(select cp.`NAME` from csp_ljh_cms_category cp where cp.id = cc.parent_id) as
+		parent_category_name,
+		cc.CONTENT_TYPE,
+		cc.CONTENT_TYPE,
+		(select cvb.MEANING from sys_code_value_b cvb,
+		sys_code_b cb where
+		cb.CODE_ID = cvb.CODE_ID
+		and cb.`CODE` = 'CSP.CMS.CONTENT_TYPE' and cvb.`VALUE` = cc.CONTENT_TYPE)
+		as CONTENT_TYPE_DESC,
+		ca.TITLE,
+        ca.COVER,ca.video,
+        ca.LINK,
+		ca.COLOR,
+		ca.KEYWORDS,
+		ca.DESCRIPTION,
+		ca.WEIGHT,
+		ca.WEIGHT_DATE,
+		ca.HITS,
+		ca.POSID,
+		ca.INFORMATION_NUMBER,
+		ca.TAG,
+		ca.PUBLISHED_DATE
+		from
+		csp_ljh_cms_article ca
+		inner join csp_ljh_cms_article_data cad on
+		cad.ID = ca.ID
+		inner join
+		csp_ljh_cms_category cc on cc.ID =
+		ca.CATEGORY_ID
+		left outer join csp_ljh_event_community cec on
+		ca.ID = cec.event_id
+		<where>
+			ca.status = 'PUBLISHED'
+			and ca.del_flag = '0'
+			and cc.CONTENT_TYPE in
+			<foreach item="item" index="index" collection="contentTypeList"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			<choose>
+			<when test="communityId != null and communityId != ''">
+				and (cec.community_id=#{communityId,jdbcType=VARCHAR} or cec.community_id is null)
+			</when>
+				<!--小区id为空时，不查小区公告-->
+			<otherwise>
+				and cc.CONTENT_TYPE != 'COMMUNITY_NOTICE'
+			</otherwise>
+			</choose>
+		</where>
+		ORDER BY ca.PUBLISHED_DATE desc
+	</select>
+
+
+	<select id="getArticleAppById" resultMap="BaseResultMap">
+		select ca.id,
+		ca.hits,
+		cad.CONTENT,
+		ca.INFORMATION_NUMBER,
+		ca.TITLE,
+		ca.COVER,ca.video,
+		ca.LINK,
+		ca.PUBLISHED_DATE
+		from csp_ljh_cms_article ca,csp_ljh_cms_article_data cad
+		where ca.id = cad.id
+		and ca.id = #{articleId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getByContentType" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select  cc.NAME as "categoryName" , ca.TITLE,  cad.CONTENT,ca.COVER,ca.video,ca.LINK
+        from
+        csp_ljh_cms_article_data cad
+        inner join csp_ljh_cms_article ca on ca.id=cad.id
+        inner join csp_ljh_cms_category cc on cc.id = ca.CATEGORY_ID
+        AND cc.CONTENT_TYPE = #{contentType,jdbcType=VARCHAR}
+        AND ca.`STATUS` ='PUBLISHED'
+        LIMIT 1
+	</select>
+	<!-- 根据搜索需求查询相应字段  create hebolong -->
+	<select id="getSearchField" resultMap="BaseResultMap">
+	select 
+		cca.ID,
+		cca.TITLE,
+		cca.COVER,ca.video,
+		cca.LINK,
+		cca.DESCRIPTION,
+		cca.PUBLISHED_DATE as "publishedDate",
+		ccag.CONTENT_TYPE
+		from csp_ljh_cms_article cca 
+		LEFT JOIN csp_ljh_cms_category ccag
+		on cca.CATEGORY_ID=ccag.ID
+		
+	</select>
+
+    <!-- 查询绑卡服务协议-->
+    <select id="getCardProtocol" resultMap="BaseResultMap">
+        select  cc.NAME as "categoryName" , ca.TITLE,  cad.CONTENT,ca.COVER,ca.video,ca.LINK
+        from
+        csp_ljh_cms_article_data cad
+        inner join csp_ljh_cms_article ca on ca.id=cad.id
+        inner join csp_ljh_cms_category cc on cc.id = ca.CATEGORY_ID
+        AND cc.CONTENT_TYPE = 'CARD_PROTOCOL'
+        AND ca.`STATUS` ='PUBLISHED'
+    </select>
+
+	<select id="getListInterface" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.operate.cms.dto.Article">
+		SELECT
+		ca.id,
+		ca.TITLE,
+        ca.COVER,ca.video,
+        ca.LINK,
+		cad.CONTENT,
+		ca.STATUS,
+		ca.PUBLISHED_DATE,
+		ca.LAST_UPDATE_DATE
+		FROM csp_ljh_event_community ec
+		LEFT OUTER JOIN csp_ljh_cms_article ca on ec.EVENT_ID = ca.ID
+		LEFT OUTER JOIN csp_ljh_cms_article_data cad on cad.id = ca.id
+		LEFT OUTER JOIN csp_ljh_cms_category cc on ca.CATEGORY_ID = cc.ID
+		<where>
+			ec.COMMUNITY_ID = #{communityId}
+			and ec.EVENT_TYPE = 'ARTICLE'
+			<if test="contentType != null and contentType != '' ">
+				and cc.CONTENT_TYPE = #{contentType}
+			</if>
+			<if test="contentType == null or contentType == '' ">
+				and (cc.CONTENT_TYPE = 'COMMUNITY_NOTICE'
+				or cc.CONTENT_TYPE = 'MGT_COMMUNITY_NOTICE')
+			</if>
+		</where>
+	</select>
+
+    <update id="updateHits">
+        update csp_ljh_cms_article
+        set HITS=HITS+1
+        where id=#{articleId}
+    </update>
+</mapper>

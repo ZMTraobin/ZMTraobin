@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.mgtuser.mapper.MgtUserSynMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.mgtuser.dto.MgtUserSyn">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="MGT_USER_ID" property="userId" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM_ID" property="sourceSystemId" jdbcType="VARCHAR" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE" />
+        <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <sql id="mgtUserSysColums">
+        mgtUserSyn.ID,
+        mgtUserSyn.MGT_USER_ID,
+        mgtUserSyn.SOURCE_SYSTEM,
+        mgtUserSyn.SOURCE_SYSTEM_ID,
+        mgtUserSyn.CREATED_BY,
+        mgtUserSyn.CREATION_DATE,
+        mgtUserSyn.LAST_UPDATED_BY,
+        mgtUserSyn.LAST_UPDATE_DATE,
+        mgtUserSyn.LAST_UPDATE_LOGIN
+    </sql>
+
+    <!--根据系统id和源系统查询MgtUserSyn-->
+    <select id="findList" resultMap="BaseResultMap">
+            SELECT
+            <include refid="mgtUserSysColums"/>
+            FROM csp_ljh_mgt_user_syn mgtUserSyn
+            <where>
+                1=1
+                <if test="sourceSystem!=null and sourceSystem!=''">
+                   and  mgtUserSyn.SOURCE_SYSTEM=#{sourceSystem}
+                </if>
+                <if test="sourceSystemId!=null and sourceSystemId!=''">
+                    and mgtUserSyn.SOURCE_SYSTEM_ID=#{sourceSystemId}
+                </if>
+
+                <if test="userId!=null and userId!=''">
+                    and  mgtUserSyn.MGT_USER_ID=#{userId}
+                </if>
+            </where>
+    </select>
+
+    <!--根据sourceId和sourceSystem查询集合-->
+
+    <select id="checkSourceAndSystemId"  resultMap="BaseResultMap">
+        select
+        <include refid="mgtUserSysColums"/>
+        from
+        csp_ljh_mgt_user_syn mgtUserSyn
+        where mgtUserSyn.SOURCE_SYSTEM=#{sourceSystem}  and mgtUserSyn.SOURCE_SYSTEM_ID=#{sourceSystemId}
+    </select>
+
+    <!--插入映射关系-->
+    <insert id="insertMgtUserSyn" parameterType="com.cmig.future.csportal.module.properties.mgtuser.dto.MgtUserSyn">
+        insert into csp_ljh_mgt_user_syn
+        (ID,MGT_USER_ID,SOURCE_SYSTEM,SOURCE_SYSTEM_ID)
+        VALUES
+        (#{id},#{userId},#{sourceSystem},#{sourceSystemId})
+
+
+    </insert>
+</mapper>

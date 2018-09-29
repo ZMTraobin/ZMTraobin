@@ -1,0 +1,276 @@
+<!-- * description: 通知公告记录 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../include/header.html"/>
+    <style>
+        .caozuo_btn{
+            display: inline-block;
+            min-width: 24px;
+            margin-right: 1px;
+            padding: 0 12px;
+            line-height: 22px;
+            color: #fff;
+            background: #6fb3e0;
+            font-size: 12px;
+            margin-top: 1px;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+        }
+        .disabledBtn{
+            background: #c6cdd1;
+            cursor: default;
+        }
+    </style>
+    <script src="${base.contextPath}/common/code?notifyRecordStatus=CSP.SYS.NOTIFY.RECORD_STATUS" type="text/javascript"></script>
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+        notifyRecordStatus:notifyRecordStatus,
+        queryResource:function(){
+            $('#grid').data('kendoGrid').dataSource.page(1);
+        },
+    });
+
+</script>
+<body>
+<div id="page-content">
+        <div id="baseInfoTab-content">
+            <form id="form1" class="form-horizontal" >
+            <div id="query-form1" class="row" style="margin-bottom: 10px;">
+                <div class="row col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-1 control-label" style="text-align: right;top: 0px;">项目:</label>
+                        <div class="col-xs-3">
+                            <input required id="communityName" name="communityName" type="text" style="width: 100%" data-bind="value:model.communityId,text:model.communityName" class="k-textbox">
+                            <script>
+                                $("#communityName").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "COMMUNITY_LOV")});
+                                $($("input[name='communityName_input']").next()).css("margin-top","0px");
+                                $($("input[name='communityName_input']").next().next().find("span")).css("margin-left","-7px");
+                            </script>
+                        </div>
+                        <label class="col-xs-1 control-label" style="text-align: right;top: 0px;" >人员:</label>
+                        <div class="col-xs-3">
+                            <input required id="userName" name="userName" type="text" style="width: 100%" data-bind="value:model.userName" class="k-textbox">
+                        </div>
+                        <label class="col-xs-1 control-label" style="text-align: right;top: 0px;" >状态:</label>
+                        <div class="col-xs-2">
+                            <select placeholder='推送状态' data-role="combobox" data-value-primitive="true"
+                                    data-text-field="meaning" data-value-field="value"
+                                    data-bind="source: notifyRecordStatus,value:model.status" style="width:150px;margin-right:5px;"></select>
+                        </div>
+                        <div class="col-xs-1">
+                            <span class="btn btn-primary" style="float:left;width:70px;margin-left:10px;" data-bind="click:queryResource" type="submit">
+                                <i class="fa fa-search" style="margin-right:3px;"></i><@spring.message "hap.query"/></span>
+                         </div>
+                    </div>
+                </div>
+            </div>
+                <script>kendo.bind($('#query-form1'), viewModel);</script>
+            <div style="clear:both">
+                <div id="grid" ></div>
+                <div class="row" class="col-sm-12">
+                    <div align="center">
+                        <span class="btn btn-default" id="back" type="button">返回</span>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+</div>
+
+<script type="text/javascript">
+
+    //返回按钮
+    $("#back").click(function(){
+        var articleNotifyDetails =  window.parent.$("#editWin").data("kendoWindow");
+        articleNotifyDetails.close();
+    });
+
+    //枚举数据下拉框
+    /*$("#status").kendoDropDownList({
+        valuePrimitive:true,
+        dataTextField: "meaning",
+        dataValueField: "value",
+        dataSource: notifyRecordStatus
+    });*/
+
+    //重试
+    function repush(id,object){
+        var params = {
+            id: id
+        }
+        $.ajax({
+            url:"${base.contextPath}/ljh/sys/notify/record/repush",
+            type:"post",
+            data:params,
+            success:function(data){
+                console.log(data);
+                if(data.success==false){
+                    kendo.ui.showErrorDialog({
+                        message:data.message
+                    });
+                }
+                else if(data.dto == null){
+                    kendo.ui.showInfoDialog({
+                        title:'提示信息',
+                        message:'推送失败!'
+                    }).done(function(data){
+                        $('#grid').data('kendoGrid').dataSource.page(1);
+                    });
+                }
+                else if(data.dto.status == "SUCCESS"){
+                    kendo.ui.showInfoDialog({
+                        title:'提示信息',
+                        message:'推送成功!'
+                    }).done(function(data){
+                        $('#grid').data('kendoGrid').dataSource.page(1);
+                    });
+                }
+            }
+        });
+    }
+
+        var cmsNotifyId ='${RequestParameters.cmsNotifyId!0}';
+        var url1 = '${base.contextPath}/ljh/sys/notify/record/list?cmsNotifyId='+cmsNotifyId;
+        dataSource1 = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: url1,
+                    type: "POST",
+                    dataType: "json"
+                },
+                parameterMap: function (options, type) {
+                    if (type !== "read" && options.models) {
+                        var datas = Hap.prepareSubmitParameter(options, type)
+                        return kendo.stringify(datas);
+                    } else if (type === "read") {
+                        return Hap.prepareQueryParameter(viewModel.model.toJSON(), options)
+                    }
+                }
+            },
+            batch: true,
+            serverPaging: true,
+            pageSize: 10,
+            schema: {
+                data: 'rows',
+                total: 'total',
+                model: {
+                    id: "id",
+                    fields: {}
+                }
+            }
+        });
+
+        //推送列表
+        $("#grid").kendoGrid({
+            dataSource: dataSource1,
+            height: '80%',
+            resizable: true,
+            scrollable: true,
+            navigatable: false,
+            //selectable: 'multiple, rowbox',
+            pageable: {
+                pageSizes: [5, 10, 20, 50],
+                refresh: true,
+                buttonCount: 5
+            },
+            columns: [
+                {
+                    field: "content",
+                    title: '标题',
+                    width: 120,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+                {
+                    field: "communityName",
+                    title: '项目',
+                    width: 120,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+                {
+                    field: "userName",
+                    title: '人员',
+                    width: 80,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+                {
+                    field: "receiverInfo",
+                    title: '手机号',
+                    width: 100,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    attributes: {style: "text-align:right"},
+                    template: function(dataItem){
+                        var v = dataItem.receiverInfo;
+                        if(v != null && v != ""){
+                            v = v.substring(0,3) + "****" + v.substring(7);
+                        }
+                        return v;
+                    }
+                },
+                {
+                    field: "status",
+                    title: '推送状态',
+                    width: 80,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+                {
+                    field: "remark",
+                    title: '失败原因',
+                    width: 120,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+                {
+                    field: "lastUpdateDate",
+                    title: '推送时间',
+                    width: 120,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    attributes: {style: "text-align:right"},
+                },
+                {
+                    title: '操作',
+                    width: 100,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    attributes: {style: "text-align:center"},
+                    template: function (rowdata) {
+                        //如果是小区公告，则会增加选择小区的功能
+                        if(rowdata.status+'' == 'SUCCESS'){
+                            return "<a class='caozuo_btn disabledBtn' href='#' disabled='true'>重试</a>";
+                        }else{
+                            return "<a class='caozuo_btn' href='#' onclick='repush(\"" + rowdata.id + "\",this)'>重试</a>";
+                        }
+                    },
+                },
+            ],
+            editable: false
+        });
+
+        Hap.autoResizeGrid("#grid");
+    $(document).ready(function() {
+    });
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.integral.mapper.IntegralScoresMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.integral.dto.IntegralScores">
+        <result column="id" property="id" jdbcType="DECIMAL" />
+        <result column="scores_code" property="scoresCode" jdbcType="VARCHAR" />
+        <result column="scores" property="scores" jdbcType="DECIMAL" />
+        <result column="scores_describe" property="scoresDescribe" jdbcType="VARCHAR" />
+        <result column="frequencys" property="frequencys" jdbcType="DECIMAL" />
+        <result column="cycles" property="cycles" jdbcType="VARCHAR" />
+        <result column="isvalid" property="isvalid" jdbcType="VARCHAR" />
+    </resultMap>
+
+	<!-- 根据分值编码查询 -->
+	<select id="selectByCode" resultMap="BaseResultMap">
+		SELECT
+			*
+		FROM
+			xl_integral_scores a
+		WHERE
+			a.scores_code = #{0} and a.isvalid = '0'
+	</select>
+
+</mapper>

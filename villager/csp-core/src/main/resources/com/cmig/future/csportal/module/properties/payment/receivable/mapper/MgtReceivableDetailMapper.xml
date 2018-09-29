@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.payment.receivable.mapper.MgtReceivableDetailMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.payment.receivable.dto.MgtReceivableDetail">
+        <result column="RECEIVABLE_ID" property="receivableId" jdbcType="DECIMAL" />
+        <result column="BUILDING_TYPE" property="buildingType" jdbcType="VARCHAR" />
+        <result column="BUILDING_ID" property="buildingId" jdbcType="DECIMAL" />
+        <result column="EXPENDITURE" property="expenditure" jdbcType="VARCHAR" />
+        <result column="START_DATE" property="startDate" jdbcType="DATE" />
+        <result column="END_DATE" property="endDate" jdbcType="DATE" />
+        <result column="PERIOD_NAME" property="periodName" jdbcType="VARCHAR" />
+        <result column="PRICE_AMOUT" property="priceAmout" jdbcType="DECIMAL" />
+        <result column="AREA" property="area" jdbcType="DECIMAL" />
+        <result column="TOTAL_AMOUNT" property="totalAmount" jdbcType="DECIMAL" />
+        <result column="DISCOUNT_AMOUNT" property="discountAmount" jdbcType="DECIMAL" />
+        <result column="BREAK_CONTRACT_AMOUNT" property="breakContractAmount" jdbcType="DECIMAL" />
+        <result column="RECEIVABLE_AMOUNT" property="receivableAmount" jdbcType="DECIMAL" />
+        <result column="BUILD_TIME" property="buildTime" jdbcType="DATE" />
+        <result column="PAID_TIME" property="paidTime" jdbcType="DATE" />
+        <result column="BACK_URL" property="backUrl" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="NOTIFY_FLAG" property="notifyFlag" jdbcType="VARCHAR" />
+        <result column="CHECK_FLAG" property="checkFlag" jdbcType="VARCHAR" />
+        <result column="PAY_STATUS" property="payStatus" jdbcType="VARCHAR" />
+        <result column="ENABLE_FLAG" property="enableFlag" jdbcType="VARCHAR" />
+        <result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+        <result column="SOURCE_RECEIVABLE_ID" property="sourceReceivableId" jdbcType="VARCHAR" />
+        <!-- 非表字段 -->
+        <result column="HOUSE_CODE" property="houseCode" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_NAME" property="communityName" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+    <select id="findBySourceReceivableIdAndSourceSystem"  resultMap="BaseResultMap">
+      SELECT a.*
+      FROM csp_mgt_receivable_detail a
+      WHERE
+      a.SOURCE_SYSTEM =#{sourceSystem}
+      AND a.SOURCE_RECEIVABLE_ID =#{sourceReceivableId}
+    </select>
+    
+    <select id="queryMgtReceivableDetail" resultMap="BaseResultMap">
+    SELECT a.*,
+    h.house_code as houseCode ,
+    c.community_name as communityName 
+    FROM 
+	csp_mgt_receivable_detail a 
+	INNER JOIN csp_mgt_house h on a.BUILDING_id=h.house_id 
+	INNER JOIN csp_ljh_base_community c on h.COMMUNITY_ID=c.id 
+    where 1=1 
+    <if test="houseCode !=null and houseCode != ''">
+    and h.house_code LIKE CONCAT(CONCAT('%',#{houseCode}),'%')
+    </if>
+    <if test="buildingType != null and buildingType !=''">
+    and a.BUILDING_TYPE =#{buildingType}
+    </if>
+    <if test="expenditure != null and expenditure !=''">
+    and a.EXPENDITURE =#{expenditure}
+    </if>
+    <if test="checkFlag != null and checkFlag !='' ">
+    and a.CHECK_FLAG =#{checkFlag}
+    </if>
+    <if test="payStatus != null and payStatus !=''">
+    and a.PAY_STATUS =#{payStatus}
+    </if>
+    <if test="enableFlag != null and enableFlag != ''">
+    and a.ENABLE_FLAG =#{enableFlag}
+    </if>
+    <if test="communityId != null and communityId != ''">
+    and c.id =#{communityId}
+    </if>
+    </select>
+    
+    <select id="queryBills" >
+       select 
+       from csp_mgt_receivable_detail rd
+       where rd.BUILDING_ID = #{buildingId}
+       <if test="expenditure !=null and expenditure != ''">
+       and rd.EXPENDITURE = #{expenditure}
+      </if>
+    </select>
+    
+    <select id="queryBillsByType" >
+       select distinct rd.EXPENDITURE
+       from csp_mgt_receivable_detail rd
+       where rd.BUILDING_ID = #{buildingId}
+    </select>
+    
+</mapper>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>关联房产</title>
+		<link href="css/mui.picker.min.css" rel="stylesheet" />
+		<link href="css/mui.poppicker.css" rel="stylesheet" />
+		<link href="css/mui.min.css" type="text/css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+		<link rel="stylesheet" type="text/css" href="css/userCreateRepaire.css" />
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.js"></script>
+		<script src="js/mui.poppicker.js"></script>
+		<style type="text/css">
+			.tabItem{ display: inline-block; overflow: hidden; height: 50px; line-height: 50px; text-align: center; vertical-align: middle; white-space: nowrap; text-overflow: ellipsis;}
+			.width50{width: 50%;}
+			
+			/*标题大小*/
+			.mui-title { font-size: 20px; font-weight: 100!important;}
+			
+			/*字体大小*/
+			body { font-size: 14px;}
+			
+			input, select, textarea { font-size: 14px;}
+			
+			.mui-content-padded {margin: 0;}
+			.listTable { border: 0; width: 100%;}
+			/*每个tr有1px下边框*/
+			.listTable tr {border-bottom: 1px solid #ccc;}
+			
+			.listTable td { border: 0;  word-break: break-all; padding: 8px 5px 8px 0!important;}
+			
+			.btn-select{width: 100%; text-align: center; border: none!important;}
+
+			input[type=color], input[type=date], input[type=datetime-local], input[type=datetime], input[type=email], input[type=month], input[type=number], input[type=password], input[type=search], input[type=tel], input[type=text], input[type=time], input[type=url], input[type=week], select, textarea {margin-bottom: 0;  border:none; padding: 10px 0;}
+			
+			.mui-btn-blue, .mui-btn-ppp, input[type=submit] {
+			    /*border: 1px solid #0972da;*/
+			    background-color: #fff;
+			    color: #0972da;
+			}
+			.mui-btn-blue.mui-active:enabled, .mui-btn-blue:enabled:active, .mui-btn-primary.mui-active:enabled, .mui-btn-ppa:enabled:active, input[type=submit].mui-active:enabled, input[type=submit]:enabled:active {
+    color: #8e8e8e;
+    background-color: #fff;
+}
+.mui-btn-blue.mui-active:enabled, .mui-btn-blue:enabled:active, .mui-btn-primary.mui-active:enabled, .mui-btn-ppb:enabled:active, input[type=submit].mui-active:enabled, input[type=submit]:enabled:active {
+    color: #0972da;
+    background-color: #fff;
+}
+		</style>
+	</head>
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<!--<a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>-->
+			<a class="mui-icon mui-pull-left" id="back_a" onclick="myHouseBack()"><img src="img/icon-back.png" style="height: 24px;" /></a>
+			<!--<a class=" mui-icon  mui-pull-left" href="ljh://finish_page"><img src="img/icon-back.png" style="height: 24px;" /></a>-->
+			<h1 class="mui-title">关联房屋</h1>
+		</header>
+		
+		<div class="mui-content">
+			<div class="mui-content-padded" style="background: #fff;margin-top:10px;padding: 15px;" >
+					
+					<table class=" listTable">
+						<!--<tr><td width="100">城市</td>
+							<td><input type="text" value="" id="threeLevel" class=" btn-select mui-input-clear mui-text-right"readonly="readonly"  placeholder="请选择>" /></td>
+						</tr>-->
+						
+						<tr id="house_pick2" class="mui-hidden" ><td colspan="2" style="padding-top: 0!important;"><h6 style="margin-bottom: 15px; ">没有您想要报修的房屋？请您<a href="#">关联新的房屋</a></h6></td></tr>
+						<tr><td width="100">小区</td>
+							<td><input class='datetime mui-text-right' id="property_name" readonly="readonly" class=" btn-select mui-input-clear" data-options='{}' type="text"  style="text-align: center;"/></td>
+						</tr>
+						<tr><td width="100">房屋</td>
+							<td><input type="text" value="" id="showPark" readonly="readonly" class=" mui-text-right"  placeholder="请选择>" onclick="toCheckNodePage()"/></td>
+						</tr>
+						<tr><td width="100">手机号</td>
+							<td>
+								<!-- <span style="padding: 10px 0; display: inline-block; float: right;">可修改</span> -->
+								<input type="text" id="mobile"   readonly="readonly" class="mui-text-right" style="width: 70%; padding-right:10px; float: right;" />
+							</td>
+						</tr>
+						<tr><td width="100">验证码</td>
+							<td id="changeCodeTd">
+								<span class="get_code" codes="codes" style="width: 82px; padding: 10px 0 10px 10px; float: right; border-left: 1px solid #ccc; text-align: center;">获取验证码</span>
+								<input type="text" placeholder="请输入" id="verifi_code" class="mui-text-right" style="width: 70%; margin-left: -30px; padding-right:10px; float: right;"/>
+							</td>
+								
+						</tr>
+					</table>
+			</div>
+			<div style="margin-top: 5px ; padding: 5px 10px; text-align: center; font-size: 12px;">注：您可以输入业主，家属，租户预留在物业服务中心的手机号</div>
+			<div style="margin-top: 5px ; padding: 5px 10px; text-align: center; ">提交认证则视为同意<span style="color: #0972da;" onclick="toUserAgreement()">《中民居家用户协议》</span></div>
+		</div>
+		<nav id="nav" class="mui-bar mui-bar-tab margbotom_1">
+				<span class="mui-tab-item" id="relatedProperty">
+			        <button type="button" class="mui-tab-label mui-btn mui-btn-primary mui-btn-block" style="top: 0; padding: 13px 0; border-radius: 0;border:none;" >提交认证</button>
+			    </span>
+		</nav>
+		
+	</body>
+	<script src="js/jquery.js"></script>
+	<script src="js/public.js"></script>
+	<script>
+		
+		var property_name = null;
+		var project_id = null;
+		var property_number = null;
+		var mobile = null;
+		var currt_mobile = null;
+		var verification_code = null;
+		var codeMessage = null;
+		var codeFlag = true;
+		var flag = null;
+		var isTrue = true;
+		var num = 120, t;
+		
+		var token = null;
+		token = localStorage.token;
+		
+		mui.init();
+		//房屋选择页面获取到的节点信息
+		var checkNode = localStorage.checkNodeCode;
+		var checkNodeName = localStorage.checkNodeName != null && localStorage.checkNodeName != "null" ? localStorage.checkNodeName : "";
+		property_number = checkNode != null && checkNode!='null' ?  checkNode : "";
+		
+		
+		localStorage.checkNodeCode = null;//用完把缓存清空
+		localStorage.checkNodeName = null;
+//		console.log('checkNode:'+checkNode+'///checkNodeName:'+checkNodeName+'///checkNodeName:'+property_number);
+		
+		if(checkNodeName != null || checkNodeName != ''){
+			$("#showPark").val(checkNodeName);
+		}
+		
+		getSelectArea_r();
+		
+//		project_id = 'f2ed18abdcdf4d419bf3f11ffd9edefa';
+//		property_name = '金田雅居';
+//		mobile = '18332556935';
+
+
+		function getMobile() {
+			window.location.href = ' ljh://get_user_mobile_number/getUserMobile';
+		}
+		function getUserMobile (redata) {
+			var data = eval('(' + redata + ')');
+			mobile = data.user_mobile_number;
+			localStorage.mobile = data.user_mobile_number;
+			
+			$("#property_name").val(property_name);
+			$("#mobile").val(mobile);
+			
+			mui("#changeCodeTd").on("tap", ".get_code", getVerificationCode);
+			
+		};
+		
+		//获取用户电话
+		getMobile();
+		
+//		$("#property_name").val(property_name);
+//		$("#mobile").val(mobile);
+//		
+//		mui("#changeCodeTd").on("tap", ".get_code", getVerificationCode);
+
+		//获取验证码，验证验证码
+		function getVerificationCode() {
+			
+			if( $(".get_code").attr('codes') != 'codes' ){
+				return;
+			};
+			
+			if($("#showPark").val() == '' || $("#showPark").val() == null){
+   		 		totast('请选择房屋');
+   		 	  	console.log('请选择房屋');
+   		 	  	return ;
+   			}
+
+			currt_mobile = $("#mobile").val();
+			var phreg=/^1[3|4|5|7|8]\d{9}$/;
+   		 	if(currt_mobile == ''){
+   		 		totast('手机号不能为空');
+   		 	  	console.log('手机号不能为空');
+   		 	  	return ;
+   			} else if(!phreg.test(currt_mobile)){
+   			  	totast('手机号不符合规则');
+		   		console.log('手机号不符合规则');
+		   		return ;
+   		 	}
+
+       		window.location.href = 'ljhext://get_verification_code/getVerificationCb?{"mobile":"'+currt_mobile+'","type":"mgtOwnerAuth"}';
+		};
+		
+		//获取验证码的回调函数
+		function getVerificationCb(redata) {
+			var data = eval('(' + redata + ')');
+
+			if(data.result == 'YES'){ //获取验证码成功
+				isTrue = true; //true时不用重新获取验证码
+				codeFlag = true; //true时不用提示“操作太频繁”
+				$(".get_code").attr('codes','');
+				$(".get_code").css('color','#0972da');
+				times();
+			}else{ //获取验证码失败
+				codeMessage = data.message;
+				codeFlag = false; 
+//				return;
+			}
+		}
+		
+		//倒计时
+		function times(){
+			$(".get_code").text(num+'s');
+			num--;
+			t = setTimeout('times()', 1000);
+			if ( num < 0 ){
+				num = 120;
+				clearTimeout(t);
+				$(".get_code").text('获取验证码');
+				$(".get_code").css('color','');
+				$(".get_code").attr('codes','codes');
+				isTrue = false;
+				totast('请重新获取验证码');
+			};
+		};
+		
+		//点击关联
+//		var related_property = 
+		function related_property() {
+			
+			if(isTrue != true){ 
+				totast('请重新获取验证码');
+				return;
+			};
+			
+			verification_code = $("#verifi_code").val();
+			if($("#showPark").val() == '' || $("#showPark").val() == null){
+   		 		totast('请选择房屋');
+   		 	  	console.log('请选择房屋');
+   		 	  	return ;
+   			}
+			
+			//验证电话
+			currt_mobile = $("#mobile").val();
+			var phreg=/^1[3|4|5|7|8]\d{9}$/;
+   		 	if(currt_mobile == ''){
+   		 		totast('手机号不能为空');
+   		 	  	console.log('手机号不能为空');
+   		 	  	return ;
+   			} else if(!phreg.test(currt_mobile)){
+   			  	totast('手机号不符合规则');
+		   		console.log('手机号不符合规则');
+		   		return ;
+   		 	}
+// 			console.log('267'+verification_code);
+   			if(verification_code == '' || verification_code == null){
+   		 		totast('请输入验证码');
+   		 	  	return ;
+   			} 
+			
+			//去验证验证码并认证房屋
+			goRelated_property(); 
+			
+		}
+		
+		function goRelated_property(){
+//			console.log(+'>>'+project_id+'>>'+property_number+'>>'+currt_mobile);
+			mui.ajax(localStorage.http_service1 + 'user/st/house/identify', {
+				data: {
+						token: token,
+						buildingId: property_number,
+						mobile: currt_mobile,
+						verifyCode: verification_code
+					},
+				dataType: 'json', 
+				type: 'post', 
+				timeout: 10000,
+//				headers: getHeaders(),
+				success: function(data) {
+					console.log(JSON.stringify(data));
+					closePpage(data.status)
+					
+					$(".get_code").text('获取验证码');
+					$(".get_code").css('color','');
+					$(".get_code").attr('codes','codes');
+					clearTimeout(t);
+					//标示初始化（倒计时）
+					isTrue = true;
+					
+//					console.log('339'+'>>>'+data.status+'>>>'+data.status+'>>>>'+localStorage.flag);
+					if(data.status == '1'){
+						
+						mui.toast(data.message);
+						console.log(data.msg);
+						
+						//提示关联成功，  调取原生生成积分
+						window.location.href = ' ljhext://integral_create?{"type":"A0001","purchase_amount":"","out_trade_no":"","integralDescription":"","attach":""}';
+						//此处提示关联成功，  然后写跳转回原来想去的功能页面
+						setTimeout(function() {
+							if(localStorage.flag == 'wdfw'){
+								openNewWindows("myhouse.html","myhouse");
+							}else if(localStorage.flag == 'jf'){
+								openNewWindows("userPropertyPaymentList.html","userPropertyPaymentList");
+							};
+							
+						}, 1000);
+						
+					}else if(data.status == '0'){
+						mui.toast(data.message);
+					};
+
+				},
+				error: function(xhr, type, errorThrown) {
+					console.log(type);
+				}
+			});
+		}
+		
+		mui("#relatedProperty").on("tap", "button", related_property);
+		
+		//选择房屋节点页面
+		function toCheckNodePage(){
+			localStorage.communityId = project_id;
+//			localStorage.communityId = '002Q00014OkA2qJBZtbPjk';
+			mui.openWindow({
+			    url: 'checkNodeNew.html', 
+			    id:'checkNode',
+			    show:{
+			      autoShow:false,
+			      aniShow:'slide-in-right',
+			      duration:200
+			    }
+			  });
+		}
+		
+		//		返回我的房屋
+		function myHouseBack(){
+			
+			if (localStorage.trueflag == 'wdfwTrue') {
+				localStorage.trueflag = '';
+				//跳转到页面
+				mui.openWindow({
+				    url: 'myhouse.html',
+				    id:'myhouse',
+				    show:{
+				      autoShow:false,
+				      aniShow:'slide-in-right', //slide-in-right//页面显示动画，默认为”slide-in-right“；
+				      duration:200
+				    }
+				});
+			} else{
+				$("#back_a").attr('href','ljh://finish_page');
+			}
+		}
+		
+		//去用户协议页
+		function toUserAgreement(){
+			//跳转到页面
+			mui.openWindow({
+			    url: 'userAgreement.html',
+			    id:'userAgreement',
+			    show:{
+			      autoShow:false,
+			      aniShow:'slide-in-right',
+			      duration:200
+			    }
+			});
+		};
+		
+		
+		function getSelectArea_r() {
+//			window.location.href = "ljhext://current_community_id/getSelectAreaCb"
+			var prop_ = prompt("ljhext://current_community_id/getSelectAreaCb");
+			getSelectAreaCb(prop_);
+		}
+
+		function getSelectAreaCb(redata) {
+			var data = eval('(' + redata + ')');
+			project_id = data.community_id; //调用native接口，必须在app应用环境下调用才能有数据
+			property_name = data.community_name;
+		}
+		
+		function openNewWindows(url,id) {
+			mui.openWindow({
+				url: url+'?csportalurl='+localStorage.csportalurl,
+				id: id,
+				show: {
+					autoShow: false,
+					aniShow: 'slide-in-right',
+					duration: 200
+				}
+			});
+		}
+	</script>
+</html>

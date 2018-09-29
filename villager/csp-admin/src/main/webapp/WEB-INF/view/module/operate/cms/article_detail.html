@@ -1,0 +1,234 @@
+<#--
+        * description: cms文章详情界面
+        *author:chao.wang@hand-china.com
+        * version: 1.0
+        *
+-->
+<#include "../../../include/header.html">
+<body>
+<script type="text/javascript" src="${base.contextPath}/lib/ckeditor/ckeditor.js"></script>
+<script>
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    var categoryName,content;
+    newViewModel = kendo.observable({
+        model: {}
+    });
+    if (isedit) {
+        $.ajax({
+            url    : '${base.contextPath}/cms/article/queryById?id=${RequestParameters.id!0}',
+            async: false,
+            success: function (args) {
+                var a0 = args.rows[0] || {};
+                for (var k in a0) {
+                    newViewModel.model.set(k, a0[k]);
+                }
+            }
+        });
+    }else{
+        $.ajax({
+            url    : '${base.contextPath}/cms/category/queryById?id=${RequestParameters.categoryId}',
+            async: false,
+            success: function (args) {
+	                newViewModel.model.set('categoryName',args.rows[0].name);
+	                newViewModel.model.set('categoryId','${RequestParameters.categoryId}');
+            }
+        });
+    }
+
+</script>
+    <div id="page-content" >
+        <form class="form-horizontal" >
+            <div class="row" >
+                <div class="col-sm-6" style="height:80px;">
+                        <div class="form-group">
+                            <label class="col-sm-2  control-label" style="text-align: right">归属栏目</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="categoryName" readonly="true" class="k-textbox" style="width:100%;" data-bind="value:model.categoryName">
+                                <input type="hidden" id="categoryId">
+                                <script>
+                                    kendo.bind($('#categoryName'), newViewModel);
+                                </script>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" style="text-align: right">标题</label>
+                            <div class="col-sm-10">
+                                <input id="title" data-bind="value:model.title" class="k-textbox" style="width: 100%;">
+                                <script>kendo.bind($('#title'), newViewModel);</script>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="col-sm-6" style="height:80px;">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" style="text-align: right">链接</label>
+                        <div class="col-sm-10">
+                            <input id="link" type="text" data-bind="value:model.link" class="k-textbox" style="width: 100%;">
+                            <script>kendo.bind($('#link'), newViewModel);</script>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row" >
+                <div class="col-sm-6" >
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" style="text-align: right">封面</label>
+                        <div class="col-sm-10">
+                            <input  id="cover" type="hidden" name="cover" data-bind="value:model.cover">
+                            <script>kendo.bind($('#cover'), newViewModel);</script>
+                            <div id="coverDiv"
+                                 class="cmig_img_upload_div"
+                                 data-id="cover"
+                                 data-readonly=false
+                                 data-minWidth=78
+                                 data-minHeight=70
+                                 data-showWidth=78
+                                 data-showHeight=70
+                                 data-maxNum=1
+                                 data-checkImageWidthHeightFlag=false
+                                 data-maxSize=2
+                                 data-required=false
+                                 data-callBakFun="modelBindFunctionImg"
+                            ><input type="hidden" id="fastdfsImageServer" name="fastdfsImageServer" data-bind="value:model.fastdfsImageServer">
+                                <script>kendo.bind($('#fastdfsImageServer'), newViewModel);</script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6" >
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" style="text-align: right">视频</label>
+                        <div class="col-sm-10">
+                            <input  id="video" type="hidden" name="video" data-bind="value:model.video">
+                            <script>kendo.bind($('#video'), newViewModel);</script>
+                            <div id="videoDiv"
+                                 class="cmig_img_upload_div"
+                                 data-id="video"
+                                 data-readonly=false
+                                 data-minWidth=78
+                                 data-minHeight=70
+                                 data-showWidth=78
+                                 data-showHeight=70
+                                 data-maxNum=1
+                                 data-checkImageWidthHeightFlag=false
+                                 data-maxSize=2
+                                 data-required=false
+                                 data-medioType="video"
+                                 data-callBakFun="modelBindFunctionImg"
+                            >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                    <label class="col-sm-1 control-label" style="text-align: right">正文</label>
+                        <div class="col-sm-9">
+                            <textarea id="editor" data-bind="value:model.content" ></textarea>
+                        </div>
+                        <div class="col-sm-2">
+                            <span data-for="content" class=".k-invalid-msg"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-right" style="bottom: 20px;position: fixed; right: 85px; float: left; background: #fff;">
+    	      <span class="btn btn-success" id="saveGrid" type="submit"><@spring.message "hap.save"/></span>
+    	      <span class="btn btn-success" id="closeWin" type="button"><@spring.message "hap.cancel"/></span>
+	        </div>
+        </form>
+    </div>
+<div id="categoryWin">
+<div id="categoryTree"></div>
+</div>
+<script>
+ $(document).ready(function() {
+             content = CKEDITOR.replace('editor',{
+	         removeButtons : 'Underline,Subscript,Superscript,Source,About',
+	         height : '280px',
+	         width : '900px',
+	         language:'zh-cn'
+             }); 
+             content.setData(newViewModel.model.content); 
+	 /* $("#editor").kendoEditor({ resizable: {
+	    //content: true,
+	    tools: [
+                "fontName",
+                "fontSize",
+                "formatting",
+                "bold",
+                "italic",
+                "underline",
+                "strikethrough",
+                "justifyLeft",
+                "justifyCenter",
+                "justifyRight",
+                "justifyFull",
+                "insertUnorderedList",
+                "insertOrderedList",
+                "indent",
+                "outdent",
+                "insertImage",
+                "subscript",
+                "superscript",
+                "foreColor",
+                "backColor",
+            ],
+	}});
+	
+	//设置description
+	$("#editor").data("kendoEditor").value(newViewModel.model.content);  */
+});
+
+$("#saveGrid").click(function () {
+	newViewModel.model.set('content',content.getData());
+	newViewModel.model.set('status','PUBLISHED');
+	console.info(newViewModel.model);
+    if(newViewModel.model.title==''||newViewModel.model.title==null){
+        kendo.ui.showInfoDialog({
+            message:'标题不能为空'
+        })
+    }else {
+        newViewModel.model.__status = isedit ? 'update' : 'add';
+        Hap.submitForm({
+            url: '${base.contextPath}/cms/article/saveOrUpdate',
+            formModel: newViewModel.model,
+            success: function (data) {
+            	if(data.success==false){
+            		kendo.ui.showErrorDialog({
+                        message:data.message
+                    });
+            	}	
+            	else{
+            	    window.parent.$("#article_grid").data("kendoGrid").dataSource.read();
+            		window.parent.$("#articleDetails").data("kendoWindow").close();
+                }
+            }
+        });
+    }
+});
+
+$("#closeWin").click(function(){
+	if (isedit) {
+        window.parent.$("#articleDetails").data("kendoWindow").close();
+    } else {
+        window.parent.$("#articleDetails").data("kendoWindow").close();
+    }
+});
+
+ function modelBindFunctionImg(){
+     newViewModel.model.set('cover',$("#cover").val());
+     newViewModel.model.set('video',$("#video").val());
+ }
+</script>
+</body>
+</html>

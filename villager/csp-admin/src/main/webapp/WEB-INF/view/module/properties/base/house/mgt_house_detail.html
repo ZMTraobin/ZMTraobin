@@ -1,0 +1,304 @@
+<!-- * description: 房屋详情 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../../include/header.html"/>
+<style>
+    .tabstrip{
+        border-top: 1.5px solid silver;
+        font-size: 13px;
+        color: black;
+        font-family: '微软雅黑';
+        padding-top: 10px;
+    }
+</style>
+<script src="${base.contextPath}/common/code?mgtHouseUserType=MGT.HOUSE_USE_TYPE" type="text/javascript"></script>
+<body>
+<div id="content-container">
+    <div id="page-content">
+        <div id="content" class="col-sm-12">
+            <div id="tabstrip">
+                <ul>
+                    <li id="baseInfoTab">房屋信息</li>
+                    <li id="ownerTab">业主信息</li>
+                </ul>
+                <div id="baseInfoTab-content" class="row tabstrip" style="">
+                    <div class="panel" id="baseInfo" style="padding: 0px;border:none;box-shadow: none;">
+                        <form class="form-horizontal" id="myForm" enctype="application/json;charset=UTF-8">
+                            <div class="row" id="div_parent">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="col-xs-2  control-label" style="text-align: right">父结构：</label>
+                                        <div class="col-xs-3">
+                                            <input required type="text" style="width: 100%" id="parentStructureId" name="parentStructureId" data-bind="value:model.parentStructureId,text:model.structureParentFullName" class="k-textbox" />
+                                            <script>
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="col-xs-2  control-label" style="text-align: right">房屋编码：</label>
+                                        <div class="col-xs-3">
+                                            <input required type="text" style="width: 100%" id="houseCode" name="houseCode" data-bind="value:model.houseCode" class="k-textbox" maxlength="50"/>
+                                        </div>
+                                        <label class="col-xs-2  control-label" style="text-align: right">节点名称：</label>
+                                        <div class="col-xs-3">
+                                            <input required type="text" style="width: 100%" id="houseName" name="houseName" data-bind="value:model.houseName" class="k-textbox" maxlength="50"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="col-xs-2  control-label" style="text-align: right">建筑实体：</label>
+                                        <div class="col-xs-3">
+                                            <input required type="text" style="width: 100%" id="houseFullName" name="houseFullName" data-bind="value:model.houseFullName" class="k-textbox" maxlength="50"/>
+                                        </div>
+                                        <label class="col-xs-2  control-label" style="text-align: right">用途：</label>
+                                        <div class="col-xs-3">
+                                            <input type="text" style="width: 100%" id="useType" name="useType" data-bind="value:model.useType" class="k-textbox"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="col-xs-2  control-label" style="text-align: right">建筑面积(㎡)：</label>
+                                        <div class="col-xs-3">
+                                            <input required type="text" style="width: 100%" id="buildingArea" name="buildingArea" data-bind="value:model.buildingArea" class="k-textbox" min="0" onkeyup='clearNoNum(this)' maxlength="50"/>
+                                        </div>
+                                        <label class="col-xs-2  control-label" style="text-align: right">收费面积(㎡)：</label>
+                                        <div class="col-xs-3">
+                                            <input required type="text" style="width: 100%" id="paymentArea" name="paymentArea" data-bind="value:model.paymentArea" class="k-textbox" min="0" onkeyup='clearNoNum(this)' maxlength="50"/>
+                                            <script>
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <label class="col-xs-2  control-label" style="text-align: right">装修情况：</label>
+                                        <div class="col-xs-3">
+                                            <input type="text" style="width: 100%" id="decorationStatus" name="decorationStatus" data-bind="value:model.decorationStatus" class="k-textbox" maxlength="50"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <div class="col-sm-12 text-center">
+                                        <span id="back" class="btn btn-primary" style="" onclick="back()">返回</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="ownerTab-content" class="row tabstrip" style="">
+                    <div class="panel" id="ownerInfo" style="padding: 0px;border:none;box-shadow: none;">
+                        <form class="form-horizontal" id="myForm2" enctype="application/json;charset=UTF-8">
+                            <div class="panel-body">
+                                <div style="clear:both">
+                                    <div id="Grid"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    var showParent = '${RequestParameters.showParent!0}';
+    if(showParent == '0'){//不展示父节点
+        $("#div_parent").css({"display":"none"});
+    }else if(showParent == '1'){//展示父节点
+        $("#div_parent").css({"display":""});
+    }
+    //console.log("${RequestParameters.id!0}");
+    var baseInfo = kendo.observable({
+        model: {},
+        mgtHouseUserType:mgtHouseUserType,
+        queryResource: function (e) {
+            $('#Grid').data('kendoGrid').dataSource.page(1);
+        },
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin").data("kendoWindow").close();
+        }
+    });
+
+    var ownerInfo = kendo.observable({
+        model: {},
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin").data("kendoWindow").close();
+        }
+    });
+
+
+    //查看:加载房屋数据
+    $.ajax({
+        url    : '${base.contextPath}/csp/mgt/house/queryByHouseId?houseId=${RequestParameters.id!0}',
+        async: false,
+        success: function (args) {
+            //console.log(args);
+            var a0 = args.dto || {};
+            for (var k in a0) {
+                baseInfo.model.set(k, a0[k]);
+            }
+        }
+    });
+
+    var BaseUrl = _basePath;
+    dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: BaseUrl + "/csp/bp/owner/findGeneralByBuildingId?buildingId=${RequestParameters.id!0}",
+                type: "POST",
+                dataType: "json"
+            },
+            parameterMap: function (options, type) {
+                if (type !== "read" && options.models) {
+                    var datas = Hap.prepareSubmitParameter(options, type)
+                    return kendo.stringify(datas);
+                } else if (type === "read") {
+                    return Hap.prepareQueryParameter(ownerInfo.model.toJSON(), options)
+                }
+            }
+        },
+        batch: true,
+        serverPaging: true,
+        pageSize: 10,
+        schema: {
+            data: 'rows',
+            total: 'total',
+            model: {
+                id: "houseId",
+                fields: {}
+            }
+        }
+    });
+
+    $("#Grid").kendoGrid({
+        dataSource: dataSource,
+        height: '100%',
+        resizable: true,
+        scrollable: true,
+        navigatable: false,
+        //selectable: 'multiple, rowbox',
+        pageable: {
+            pageSizes: [5, 10, 20, 50],
+            refresh: true,
+            buttonCount: 5
+        },
+        columns: [
+            {
+                field: "bpName",
+                title: '业主名称',
+                width: 120
+            },
+            {
+                field: "gender",
+                title: '性别',
+                width: 120
+            },
+            {
+                field: "bpNickName",
+                title: '别名',
+                width: 120
+            },
+            {
+                field: "mobile",
+                title: '手机号',
+                width: 120
+            },
+            {
+                field: "email",
+                title: '邮箱',
+                width: 120
+            },
+            {
+                field: "birthday",
+                title: '出生日期',
+                width: 120,
+                template : function (rowdata) {
+                    var birthday = rowdata.birthday;
+                    if(birthday != null && birthday != ""){
+                        return birthday.substring(0,birthday.indexOf(" "));
+                    }else{
+                        return "";
+                    }
+                }
+            },
+
+        ],
+        editable: false
+    });
+
+    //Hap.autoResizeGrid("#Grid");
+
+    $("input").addClass("k-state-disabled");
+    $("input").attr("readOnly",true);
+    $("#save").css({"display":"none"});
+    $("#parentStructureId").attr("data-bind","value:model.structureParentFullName");
+
+    kendo.bind($('#baseInfo'), baseInfo);
+    kendo.bind($('#ownerInfo'), ownerInfo);
+
+    //枚举数据下拉框
+    $("#useType").kendoDropDownList({
+        valuePrimitive:true,
+        dataTextField: "meaning",
+        dataValueField: "value",
+        dataSource: mgtHouseUserType
+    });
+
+    //绑定初始化
+    var container = $("#mainform");
+    kendo.init(container);
+
+    $(document).ready(function(){
+
+    });
+
+    function back(){
+        var details =  window.parent.$("#editWin").data("kendoWindow");
+        details.close();
+    }
+
+    var tabToActivate = $("#baseInfoTab");
+    var tabstrip =  $("#tabstrip").kendoTabStrip({
+                animation: {
+                    close: {
+                        duration: 200,
+                        effects: "fadeOut"
+                    },
+                    open: {
+                        duration: 200,
+                        effects: "fadeIn"
+                    }
+                },
+                show:function(e){
+                    if(e.item.id == "baseInfoTab"){
+
+                    }else if(e.item.id=="ownerTab"){
+                        Hap.autoResizeGrid("#Grid");
+                        var grid = $("#Grid").data("kendoGrid");
+                    }
+                }
+            }
+    ).data("kendoTabStrip");
+    tabstrip.activateTab(tabToActivate);
+</script>
+</body>
+</html>

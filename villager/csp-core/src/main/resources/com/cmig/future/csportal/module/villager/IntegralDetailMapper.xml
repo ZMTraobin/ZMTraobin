@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.integral.mapper.IntegralDetailMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.integral.dto.IntegralDetail">
+        <result column="id" property="id" jdbcType="DECIMAL" />
+        <result column="total_scores" property="totalScores" jdbcType="DECIMAL" />
+        <result column="change_scores" property="changeScores" jdbcType="DECIMAL" />
+        <result column="change_describe" property="changeDescribe" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="change_date" property="changeDate" jdbcType="DATE" />
+        <result column="scores_code" property="scoresCode" jdbcType="VARCHAR" />
+    </resultMap>
+
+	<!-- 根据用户id、月份查询 -->
+	<select id="queryDetail" resultMap="BaseResultMap">
+		SELECT
+			a.total_scores,a.change_scores,a.change_describe,a.change_date
+		FROM
+			xl_integral_detail a
+		WHERE
+			a.user_id = #{0} and a.change_date like #{1}
+		ORDER BY a.change_date DESC
+	</select>
+	
+	<!-- 根据用户id、月份查询 -->
+	<select id="queryLastDetail" resultMap="BaseResultMap">
+		SELECT
+			a.total_scores,a.change_scores,a.change_describe,a.change_date
+		FROM
+			xl_integral_detail a
+		WHERE
+			a.user_id = #{0}
+		ORDER BY a.change_date DESC
+		LIMIT 1
+	</select>
+	
+	<!-- 根据分值编码,日期查询 -->
+	<select id="selectByCode" resultType="Integer">
+		SELECT
+			COUNT(*)
+		FROM
+			xl_integral_detail a
+		WHERE
+			a.scores_code = #{0} and a.change_date like #{1}
+	</select>
+	<!-- 根据分值编码,日期查询 -->
+	<select id="selectByCycle" resultType="Integer">
+		SELECT
+			COUNT(*)
+		FROM
+			xl_integral_detail a
+		WHERE
+			a.scores_code = #{0} and a.change_date BETWEEN #{1} and #{2}
+	</select>
+
+</mapper>

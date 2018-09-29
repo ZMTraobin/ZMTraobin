@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.operate.neighbor.mapper.NhTopicCommentViewMapper">
+       <sql id="nhTopicCommentViewColumns">
+		a.id AS "id",
+		a.topic_id AS "topicId",
+		a.user_id AS "userId",
+		a.user_name AS "userName",
+		a.user_icon AS "userIcon",
+		a.create_time AS "createTime",
+		a.reply_id AS "replyId",
+		a.replyer AS "replyer",
+		a.content AS "content"
+	</sql>
+	<select id="findList" resultType="com.cmig.future.csportal.module.operate.neighbor.dto.NhTopicCommentView">
+		SELECT 
+			<include refid="nhTopicCommentViewColumns"/>
+		FROM NEIGHBORHOOD_TOPIC_COMMENT_VIEW a
+		<where>
+			1=1
+			<if test="topicId != null  and topicId != ''">
+				AND a.topic_id= #{topicId}
+			</if>
+		</where>
+		ORDER BY a.create_time DESC
+		<!-- <choose> 
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_time DESC
+			</otherwise>
+		</choose> -->
+	</select>
+
+</mapper>

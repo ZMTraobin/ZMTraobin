@@ -1,0 +1,20 @@
+{
+    "status": "1",
+    "message": "查询成功!",
+    "totall": null,
+    "data": {
+        "orderId": 3,
+        "chargeId": "ch_W5yjbT1GSSC4WHenP8u5OOC4",
+        "orderNumber": "14930031486743mtutmi",
+        "appUserId": "a6587c0490434ecdb8339a0b75e78b37",
+        "payChannel": "alipay",
+        "orderAmount": 1,
+        "discountAmount": 0,
+        "integralAmount": 0,
+        "payableAmount": 1,
+        "timePaid": "2017-07-19 17:41:28",
+        "timeSettle": "2017-06-26 17:41:33",
+        "payChannelName": "支付宝",
+        "receiveSide": "乐家慧"
+    }
+}

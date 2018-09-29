@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.base.view.mapper.MgtViewStructureMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.base.view.dto.MgtViewStructure">
+        <result column="VIEW_ID" property="viewId" jdbcType="DECIMAL" />
+        <result column="PARENT_VIEW_ID" property="parentViewId" jdbcType="DECIMAL" />
+        <result column="VERSION_ID" property="versionId" jdbcType="DECIMAL" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="VERSION_NO" property="versionNo" jdbcType="VARCHAR" />
+        <result column="VERSION_NAME" property="versionName" jdbcType="VARCHAR" />
+        <result column="IS_DEFAULT" property="isDefault" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_CODE" property="communityCode" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_NAME" property="communityName" jdbcType="VARCHAR" />
+        <result column="COMPANY_ID" property="companyId" jdbcType="VARCHAR" />
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_ID" property="structureId" jdbcType="DECIMAL" />
+        <result column="PARENT_STRUCTURE_ID" property="parentStructureId" jdbcType="DECIMAL" />
+        <result column="STRUCTURE_CODE" property="structureCode" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_NAME" property="structureName" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_NICK_NAME" property="structureNickName" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_FULL_NAME" property="structureFullName" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_TYPE" property="structureType" jdbcType="VARCHAR" />
+        <result column="HOUSE_ID" property="houseId" jdbcType="DECIMAL" />
+        <result column="HOUSE_CODE" property="houseCode" jdbcType="VARCHAR" />
+        <result column="HOUSE_NAME" property="houseName" jdbcType="VARCHAR" />
+        <result column="HOUSE_NICK_NAME" property="houseNickName" jdbcType="VARCHAR" />
+        <result column="HOUSE_FULL_NAME" property="houseFullName" jdbcType="VARCHAR" />
+        <result column="USE_TYPE" property="useType" jdbcType="VARCHAR" />
+        <result column="BUILDING_AREA" property="buildingArea" jdbcType="VARCHAR" />
+        <result column="PAYMENT_AREA" property="paymentArea" jdbcType="VARCHAR" />
+        <result column="DECORATION_STATUS" property="decorationStatus" jdbcType="VARCHAR" />
+        <result column="SOURCE_HOUSE_CODE" property="sourceHouseCode" jdbcType="VARCHAR" />
+
+    </resultMap>
+    <sql id="structureColumns">
+        a.VIEW_ID as "viewId",
+        a.PARENT_VIEW_ID as "parentViewId",
+        a.VERSION_ID as "versionId",
+        a.COMMUNITY_ID as "communityId",
+        a.VERSION_NO as "versionNo",
+        a.VERSION_NAME as "versionName",
+        a.IS_DEFAULT as "isDefault",
+        a.COMMUNITY_CODE as "communityCode",
+        a.COMMUNITY_NAME as "communityName",
+        a.COMPANY_ID as "companyId",
+        a.COMPANY_NAME as "companyName",
+        a.STRUCTURE_ID as "structureId",
+        a.PARENT_STRUCTURE_ID as "parentStructureId",
+        a.STRUCTURE_CODE as "structureCode",
+        a.STRUCTURE_NAME as "structureName",
+        a.STRUCTURE_NICK_NAME as "structureNickName",
+        a.STRUCTURE_FULL_NAME as "structureFullName",
+        a.STRUCTURE_TYPE as "structureType",
+        a.HOUSE_ID as "houseId",
+        a.HOUSE_CODE as "houseCode",
+        a.HOUSE_NAME as "houseName",
+        a.HOUSE_NICK_NAME as "houseNickName",
+        a.HOUSE_FULL_NAME as "houseFullName",
+        a.USE_TYPE as "useType",
+        a.BUILDING_AREA as "buildingArea",
+        a.PAYMENT_AREA as "paymentArea",
+        a.DECORATION_STATUS as "decorationStatus",
+        a.SOURCE_HOUSE_CODE as "sourceHouseCode"
+    </sql>
+
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="structureColumns" />
+        from csp_v_structure a
+        WHERE a.VIEW_ID IS NOT NULL
+
+        <if test="communityId != null and communityId != '' ">
+            AND a.COMMUNITY_ID =#{communityId}
+        </if>
+
+        <if test="versionId != null ">
+            AND a.VERSION_ID =#{versionId}
+        </if>
+        <if test="isDefault != null and isDefault != '' ">
+            AND a.IS_DEFAULT =#{isDefault}
+        </if>
+        <if test="structureId != null  ">
+            AND a.STRUCTURE_ID =#{structureId}
+        </if>
+        <if test="parentViewId != null and parentStructureId != '' ">
+            AND concat(a.PARENT_VIEW_ID,'') =#{parentViewId}
+        </if>
+        <if test="parentStructureId != null  ">
+            AND a.PARENT_STRUCTURE_ID =#{parentStructureId}
+        </if>
+
+        <if test="viewId != null and viewId != '' ">
+            AND a.VIEW_ID =#{viewId}
+        </if>
+
+    </select>
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.order.mapper.VillagerVoiceOrderMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.order.dto.VillagerVoiceOrder">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="APP_USER_ID" property="appUserId" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="ORDER_NUMBER" property="orderNumber" jdbcType="VARCHAR" />
+        <result column="ORDER_AMOUNT" property="orderAmount" jdbcType="DECIMAL" />
+        <result column="DISCOUNT_AMOUNT" property="discountAmount" jdbcType="DECIMAL" />
+        <result column="INTEGRAL_AMOUNT" property="integralAmount" jdbcType="DECIMAL" />
+        <result column="PAYABLE_AMOUNT" property="payableAmount" jdbcType="DECIMAL" />
+        <result column="PAID_AMOUNT" property="paidAmount" jdbcType="DECIMAL" />
+        <result column="TIME_EXPIRE" property="timeExpire" jdbcType="DATE" />
+        <result column="TIME_PAID" property="timePaid" jdbcType="DATE" />
+        <result column="TIME_SEND" property="timeSend" jdbcType="DATE" />
+        <result column="TIME_SETTLE" property="timeSettle" jdbcType="DATE" />
+        <result column="MGT_USER_ID" property="mgtUserId" jdbcType="VARCHAR" />
+        <result column="TIME_RECEIVED" property="timeReceived" jdbcType="DATE" />
+        <result column="TIME_RECEIVED_GOOD" property="timeReceivedGood" jdbcType="DATE" />
+        <result column="GOOD_ID" property="goodId" jdbcType="VARCHAR" />
+        <result column="GOOD_NAME" property="goodName" jdbcType="VARCHAR" />
+        <result column="GOOD_NUM" property="goodNum" jdbcType="DECIMAL" />
+        <result column="CLIENT_IP" property="clientIp" jdbcType="VARCHAR" />
+        <result column="PAY_STATUS" property="payStatus" jdbcType="VARCHAR" />
+        <result column="ORDER_STATUS" property="orderStatus" jdbcType="VARCHAR" />
+        <result column="ORDER_TYPE" property="orderType" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="VOICE_URL" property="voiceUrl" jdbcType="VARCHAR" />
+        <result column="VOICE_CONTENT" property="voiceContent" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="orderColumns">
+        a.ID	 AS 	"id",
+        a.APP_USER_ID	 AS 	"appUserId",
+        a.COMMUNITY_ID	 AS 	"communityId",
+        a.ORDER_NUMBER	 AS 	"orderNumber",
+        a.ORDER_AMOUNT	 AS 	"orderAmount",
+        a.DISCOUNT_AMOUNT	 AS 	"discountAmount",
+        a.INTEGRAL_AMOUNT	 AS 	"integralAmount",
+        a.PAYABLE_AMOUNT	 AS 	"payableAmount",
+        a.PAID_AMOUNT	 AS 	"paidAmount",
+        a.TIME_EXPIRE	 AS 	"timeExpire",
+        a.TIME_PAID	 AS 	"timePaid",
+        a.TIME_SEND	 AS 	"timeSend",
+        a.TIME_SETTLE	 AS 	"timeSettle",
+        a.MGT_USER_ID	 AS 	"mgtUserId",
+        a.TIME_RECEIVED	 AS 	"timeReceived",
+        a.TIME_RECEIVED_GOOD	 AS 	"timeReceivedGood",
+        a.CLIENT_IP	 AS 	"clientIp",
+        a.GOOD_ID AS 	"goodId",
+        A.GOOD_NUM  AS 	"goodNum",
+        a.PAY_STATUS	 AS 	"payStatus",
+        a.ORDER_STATUS	 AS 	"orderStatus",
+        a.ORDER_TYPE	 AS 	"orderType",
+        a.DESCRIPTION	 AS 	"description",
+        a.CREATED_BY as "createdBy",
+		a.CREATION_DATE as "creationDate",
+		a.LAST_UPDATED_BY as "lastUpdatedBy",
+		a.LAST_UPDATE_DATE as "lastUpdateDate",
+		a.VOICE_URL as "voiceUrl",
+		a.VOICE_CONTENT as "voiceContent"
+    </sql>
+
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.villager.order.dto.VillagerOrder">
+        select
+        g.GOOD_CATEGORY as "good.goodCategory",
+        g.GOOD_SKU as "good.goodSku",
+        g.GOOD_NAME as "good.goodName",
+        g.PRICE as "good.price",
+        g.UNIT as "good.unit",
+        u.mobile,
+        u.user_name as "userName",
+        m.name as "receiverName",
+        bc.community_name as "communityName",
+        <include refid="orderColumns"/>
+        from csp_villager_voice_order a
+        left join csp_villager_good g on a.GOOD_ID=g.ID
+        left join csp_ljh_app_user u on a.app_user_id=u.id
+        left join csp_ljh_mgt_user m on a.MGT_USER_ID=m.id
+        left join csp_ljh_base_community bc on a.COMMUNITY_ID=bc.id
+        where 1=1
+        <if test="appUserId !=null and appUserId !='' ">
+            and a.APP_USER_ID=#{appUserId}
+        </if>
+        <if test="orderStatus !=null and orderStatus !='' ">
+            and a.ORDER_STATUS=#{orderStatus}
+        </if>
+        order by a.CREATION_DATE desc
+    </select>
+
+    <select id="findAdminList" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.villager.order.dto.VillagerOrder">
+        select
+        g.GOOD_CATEGORY as "good.goodCategory",
+        g.GOOD_SKU as "good.goodSku",
+        g.GOOD_NAME as "good.goodName",
+        g.PRICE as "good.price",
+        g.UNIT as "good.unit",
+        u.mobile,
+        u.user_name as "userName",
+        m.name as "receiverName",
+        bc.community_name as "communityName",
+        <include refid="orderColumns"/>
+        from csp_villager_voice_order a
+        left join csp_villager_good g on a.GOOD_ID=g.ID
+        left join csp_ljh_app_user u on a.app_user_id=u.id
+        left join csp_ljh_mgt_user m on a.MGT_USER_ID=m.id
+        left join csp_ljh_base_community bc on a.COMMUNITY_ID=bc.id
+        where 1=1
+        <if test="appUserId !=null and appUserId !='' ">
+            and a.APP_USER_ID=#{appUserId}
+        </if>
+        <if test="mgtUserId !=null and mgtUserId !='' ">
+            and a.COMMUNITY_ID in ( select COMMUNITY_ID from csp_ljh_mgt_user_community where  MGT_USER_ID=#{mgtUserId} and DEL_FLAG='0'  )
+        </if>
+        order by a.CREATION_DATE desc
+    </select>
+
+    <!-- 管理员接单 -->
+    <update id="received">
+        update csp_villager_voice_order set ORDER_STATUS='RECEIVED',MGT_USER_ID=#{mgtUserId},TIME_RECEIVED=NOW() where id=#{id}
+    </update>
+
+    <!-- 确认收货 -->
+    <update id="confirmReceipt">
+        update csp_villager_voice_order set ORDER_STATUS='RECEIVED_GOOD',TIME_RECEIVED_GOOD=NOW() where APP_USER_ID=#{appUserId} and id=#{id}
+    </update>
+</mapper>

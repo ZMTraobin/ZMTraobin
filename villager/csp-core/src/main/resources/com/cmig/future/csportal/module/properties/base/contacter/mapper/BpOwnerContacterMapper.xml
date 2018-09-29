@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.base.contacter.mapper.BpOwnerContacterMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.base.contacter.dto.BpOwnerContacter">
+        <result column="OWNER_CONTACTER_ID" property="ownerContacterId" jdbcType="DECIMAL" />
+        <result column="TYPE" property="type" jdbcType="VARCHAR" />
+        <result column="BP_OWNER_ID" property="bpOwnerId" jdbcType="DECIMAL" />
+        <result column="CONTACTER_NAME" property="contacterName" jdbcType="VARCHAR" />
+        <result column="CONTACTER_NICK_NAME" property="contacterNickName" jdbcType="VARCHAR" />
+        <result column="ID_TYPE" property="idType" jdbcType="VARCHAR" />
+        <result column="ID_NO" property="idNo" jdbcType="VARCHAR" />
+        <result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+        <result column="PHOTO" property="photo" jdbcType="VARCHAR" />
+        <collection property="ownerHouse"
+                    ofType="com.cmig.future.csportal.module.properties.base.customer.dto.BpHouseMap">
+            <result property="buildingId" column="BUILDING_ID" />
+            <result property="isBind" column="IS_BIND" />
+            <result property="houseFullName" column="HOUSE_FULL_NAME" />
+            <result property="effectiveStartDate" column="EFFECTIVE_START_DATE" />
+            <result property="effectiveEndDate" column="EFFECTIVE_END_DATE" />
+        </collection>
+    </resultMap>
+
+    <select id="getContacterList" resultMap="BaseResultMap">
+SELECT
+	t.OWNER_CONTACTER_ID,
+	t.CONTACTER_NAME,
+	t.type,
+	t.mobile,
+	t.id_no,
+	t1.BUILDING_ID,
+  t1.HOUSE_FULL_NAME
+FROM
+	csp_v_app_user_contacter t
+LEFT JOIN (
+	SELECT
+		hm.BP_EXT_ID,
+		hm.building_id,
+		h.house_full_name
+	FROM
+		csp_bp_house_map hm,
+		csp_mgt_house h
+	WHERE
+		hm.building_id = h.house_id
+	AND hm.BP_TYPE = 'CONTACTER'
+	AND hm. STATUS = 'Y'
+	AND (
+		now() BETWEEN hm.EFFECTIVE_START_DATE
+		AND hm.EFFECTIVE_END_DATE
+	)
+	AND h.community_id = #{communityId}
+) t1 ON t1.BP_EXT_ID = t.OWNER_CONTACTER_ID
+WHERE
+	t.APP_USER_ID = #{userId}
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select t.OWNER_CONTACTER_ID,
+t.CONTACTER_NAME,
+t.type,
+t.mobile,
+t.id_no,
+t1.BUILDING_ID,
+(case when t1.OWNER_CONTACTER_ID is null then 'N' ELSE 'Y' end) as is_bind,
+t1.HOUSE_FULL_NAME,
+t1.EFFECTIVE_START_DATE,
+t1.EFFECTIVE_END_DATE
+FROM
+	csp_v_app_user_contacter t
+	left join (
+		SELECT
+			o.*, c.OWNER_CONTACTER_ID
+		FROM
+			(
+				SELECT
+					hm.BP_TYPE,
+					hm.BP_EXT_ID,
+					hm.BUILDING_TYPE,
+					hm.BUILDING_ID,
+					hm.APP_USER_ID,
+					hm.EFFECTIVE_START_DATE,
+                    hm.EFFECTIVE_END_DATE,
+                    h.HOUSE_FULL_NAME
+				FROM
+					csp_v_bp_house_map hm,
+					csp_mgt_house h
+				WHERE
+					hm.APP_USER_ID = #{userId}
+				AND hm.BP_TYPE = 'OWNER'
+				AND hm.AUTHENTICATE_STATUS = 'Y'
+				AND hm.BUILDING_ID = h.HOUSE_ID
+                AND h.COMMUNITY_ID = #{communityId}
+				AND hm. STATUS = 'Y'
+				AND ( now() BETWEEN hm.EFFECTIVE_START_DATE AND hm.EFFECTIVE_END_DATE)
+			) o
+		LEFT JOIN (
+			SELECT
+				oc.OWNER_CONTACTER_ID,
+				oc.BP_OWNER_ID,
+				hm.BP_TYPE,
+				hm.BUILDING_TYPE,
+				hm.BUILDING_ID
+			FROM
+				csp_v_bp_house_map hm,
+				csp_bp_owner_contacter oc
+			WHERE
+				hm.BP_TYPE = 'CONTACTER'
+			AND hm. STATUS = 'Y'
+			AND ( now() BETWEEN hm.EFFECTIVE_START_DATE AND hm.EFFECTIVE_END_DATE)
+			AND hm.BP_EXT_ID = oc.OWNER_CONTACTER_ID
+			AND oc.OWNER_CONTACTER_ID = #{ownerContacterId}
+		) c ON o.BP_EXT_ID = c.BP_OWNER_ID
+		AND o.BUILDING_TYPE = c.BUILDING_TYPE
+		AND o.BUILDING_ID = c.BUILDING_ID
+	) t1 on t.app_user_id = t1.app_user_id
+        where t.OWNER_CONTACTER_ID = #{ownerContacterId}
+    </select>
+
+	<select id="checkUnique" resultType="java.lang.Integer">
+		SELECT count(*) from csp_bp_owner_contacter t
+		where t.bp_owner_id = #{ownerId}
+		and t.mobile = #{mobile}
+	</select>
+
+
+</mapper>

@@ -1,0 +1,459 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的缴费</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.picker.min.css" rel="stylesheet" />
+		<link href="css/mui.poppicker.css" rel="stylesheet" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+		<link rel="stylesheet" type="text/css" href="css/userCreateRepairDetail.css" />
+		<link rel="stylesheet" type="text/css" href="css/payment.css" />
+		
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.js"></script>
+		<script src="js/mui.poppicker.js"></script>
+		<script src="js/mui.dtpicker.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			/*.mui-bar-tab .mui-tab-item.mui-active {
+				color: #524946;
+			}*/
+			
+			/*结算支 付按钮触发时颜色*/
+.mui-btn-blue.mui-active:enabled, .mui-btn-blue:enabled:active, .mui-btn-primary.mui-active:enabled, .mui-btn-primary:enabled:active, input[type=submit].mui-active:enabled, input[type=submit]:enabled:active {
+			    color: #fff;
+			    /*border: 1px solid #e34600;
+			    background-color: #e34600;*/
+			    border: 1px solid #0563c1;
+			    background-color: #0563c1;
+			}
+			
+			.mui-bar-tab .mui-tab-item {
+				color: #524946;
+			}
+			/*复选框点击后的颜色*/
+			
+			/*.list-checkbox:checked:before {
+				color: #fa555c;
+			}*/
+			
+			.color_fa555c {
+				color: #fa555c!important;
+			}
+			
+			.font-14 {
+				font-size: 14px;
+			}
+			/*位置图标大小*/
+			
+			.mui-icon {
+				font-size: 20px;
+			}
+			/*右上角未交费按钮样式*/
+			
+			.mui-btn-danger,
+			.mui-btn-negative,
+			.mui-btn-red {
+				border: none;
+			}
+			
+			.mui-btn-danger.mui-active:enabled,
+			.mui-btn-danger:enabled:active,
+			.mui-btn-negative.mui-active:enabled,
+			.mui-btn-negative:enabled:active,
+			.mui-btn-red.mui-active:enabled,
+			.mui-btn-red:enabled:active {
+				border: none;
+				background-color: #fff;
+			}
+			
+			.feixiang{border-bottom	:1px solid #a3a5b3; color: #a3a5b3;}
+			#Cost_wrap{width: 93%; display: inline-block; overflow: hidden; height: 39px;}
+			#Cost_item_arrow{float: right; margin-top: 10px; }
+			.Cost_item{display: inline-block; width: 30%; padding:5px 0 ; margin: 0 8px 10px 0; border: 1px solid #a3a5b3; text-align: center; color: #a3a5b3; border-radius: 5px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;}
+			.Cost_item:nth-of-type(3){margin-right: 0;}
+			.Cost_item:nth-of-type(6){margin-right: 0;}
+			.Cost_item:nth-of-type(9){margin-right: 0;}
+			.Cost_item_wrap_height{height: 39px;}
+			#timestart1,#timestart2{width: 30%; height: initial;  text-align: center; padding:0; margin: 10px 0 0 0;}
+			
+			.list-checkbox:before { font-size: 24px;}
+			
+			.listTable .td-fee {padding-right: 24px!important;}
+			.iconForward{position: absolute;right:15px;top: 50%;margin-top:-12px;font-size: 36px;color: #ccc;}
+			.fee_active{color: #ff5307; border-color: #ff5307 ;}
+			
+			.mui-content-padded{ background: #efeff4; margin-top:0;}
+			.listTable tr{ display:block; margin-top:10px; overflow: hidden; min-height: 20px;}
+			.listTable td {  padding: 0!important;}
+			.imgss{ display: inline-block; height:43px; margin-right:10px;}
+			.pamentList tr{background: #fff; position: relative;padding: 10px!important; font-size: 16px;}
+			.pamentList .marginR{margin-right:-10px;}
+			.listTable tr:nth-child(1){margin-top:0;}
+			.mui-scroll-wrapper{top: 117px;}
+			#refreshContainer{margin-top: 10px;}
+			
+			/*选择器样式修改*/
+			.mui-poppicker-body { border-top: none;}
+			
+			/*弹窗样式*/
+			#poput1{z-index: 10; position: fixed; top: 0; opacity: .4; width: 100%; height:100%; background: #000;}
+			
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<!--<a class="mui-icon mui-icon-left-nav mui-pull-left " href="ljh://finish_page"></a>-->
+			<a class=" mui-icon  mui-pull-left" href="ljh://finish_page"><img src="img/icon-back.png" style="height: 24px;" /></a>
+			<h1 class="mui-title">我的缴费</h1>
+			<!--<span class="mui-btn mui-btn-outlined " style="float: right;color: #545454; top: 10px; border: none;" id="toPaymentList" onclick="toPaymentList()">去缴费</span>-->
+		</header>
+		
+		<div class="mui-content" id="mui-content">
+			<div class="mui-content-padded" id="housePicker" style="position: relative; background: #fbfbfb; padding: 10px !important;">
+				<span id='showUserPicker' class="font-14" style="display: block; margin-bottom: 5px;"></span>
+				业主：<span id='showCustomerName' class="font-14"></span>
+				<span class="mui-icon mui-icon mui-icon-forward" style="position: absolute; right: 3px; top: 50%; margin-top: -10px;"></span>
+			</div>
+			<!--<div id="fee_list">-->
+				<!--<div class="mui-content-padded marginTop pamentList">
+					<table id="xxxxnumber" border="" cellspacing="" cellpadding="" class="listTable">
+						<tr>
+							<td><img src="img/icon-end.png" class="imgss"></td>
+							<td width="400"><div>物业缴费</div><div style="color:#8e8e8e">2017-5-3 11:30</div></td>
+							<td width="150" class="mui-text-right">￥430</td>
+							<td><span class="mui-icon mui-icon-forward marginR"></span></td>
+						</tr>
+					</table>
+				</div>-->
+			<!--</div>-->
+			<!--下拉刷新容器-->
+			<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+			  <div class="mui-scroll" id="fee_list">
+			    
+			  </div>
+			</div>
+			
+			<div id="poput1" class="mui-hidden"></div>
+			<div id="poput2" class="mui-hidden">
+				<nav id="nav_false" class="mui-bar mui-bar-tab " style="width: 100%;  margin: 0 auto; bottom: inherit; position: fixed; bottom: 0; background: #fff;  font-size: 14px; z-index: 11;-webkit-box-shadow: none; box-shadow: none;">
+					<span id="close" style="display: block; text-align: right; padding: 15px 20px; height: 35px; color: #0972da;">关闭</span>
+				   	<div class="mui-content-padded" style="background: #fff; position: relative;padding: 10px 15px !important;">
+						<table border="" cellspacing="" cellpadding="" class="listTable">
+							<tr>
+								<td width="50%" class="mui-pull-left">收费项目</td>
+								<td width="50%" class="mui-text-right mui-pull-right" id="feeName"></td>
+							</tr>
+							<tr>
+								<td width="50%" class="mui-pull-left">计费期间</td>
+								<td width="50%" class="mui-text-right mui-pull-right" id="feeDate"></td>
+							</tr>
+							<tr>
+								<td width="50%" class="mui-pull-left">面积/数量</td>
+								<td width="50%" class="mui-text-right mui-pull-right" id="quantity"></td>
+							</tr>
+							<tr class="mui-hidden">
+								<td width="50%" class="mui-pull-left">单价</td>
+								<td width="50%" class="mui-text-right mui-pull-right" id="price"></td>
+							</tr>
+							<tr>
+								<td width="50%" class="mui-pull-left">应缴金额</td>
+								<td width="50%" class="mui-text-right mui-pull-right" id="total_amount"></td>
+							</tr>
+							<tr>
+								<td width="50%" class="mui-pull-left">折扣</td>
+								<td width="50%" class="mui-text-right mui-pull-right" id="adjust_amount"></td>
+							</tr>
+							<tr>
+								<td width="50%" class="mui-pull-left">违约金</td>
+								<td width="50%" class="mui-text-right mui-pull-right" id="breakContractAmount"></td>
+							</tr>
+							<tr>
+								<td width="50%" class="mui-pull-left">应收总额</td>
+								<td width="50%" class="mui-text-right mui-pull-right" id="receivableAmount"></td>
+							</tr>
+						</table>
+					</div>
+				</nav>
+			</div>
+			
+		</div>
+		
+		<!--<nav id="nav" class="mui-bar mui-bar-tab">
+				<span class="mui-tab-item" id="toPaymentList">
+			        <button type="button" class="mui-tab-label mui-btn mui-btn-primary mui-btn-block" style="top: 0; padding: 13px 0; border-radius: 0;border:none;" >去缴费</button>
+			    </span>
+		</nav>-->
+		
+		<script src="js/jquery.js"></script>
+		<script src="js/public.js"></script>
+		<script type="text/javascript">
+			var property_number = null; //房间编号
+			var open_id = null; 
+			var project_id = null;
+			var fee_name = null;
+			var year = null;
+			var period = null;
+			var fee_id = null;
+			
+			var pageNum = 0; //初始页
+//			var pageSize = 0; //初始页
+			var Html = "";
+			
+			//先获取用户token
+			getToken();
+			//先获取当前环境
+			getUrl();
+			//获取小区id
+			getSelectArea();
+			
+			(function($, doc) {
+				//下拉刷新
+				$.init({
+					pullRefresh: {
+						container: '#refreshContainer',
+						down: {
+//							auto:false,
+							callback: pulldownRefresh
+						}
+					}
+				});
+				function pulldownRefresh() {
+					pageNum = 0;
+					Html = "";
+					charge_bill();
+					$('#refreshContainer').pullRefresh().endPulldownToRefresh();  //注意，加载完新数据后，必须执行如下代码，注意：若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
+				}
+
+				$('.mui-scroll-wrapper').scroll({
+					indicators: true //是否显示滚动条
+				});
+//				$.ready(function() {
+					//获取用户房屋列表方法
+					var showCustomer_house = function() {
+						mui.ajax(localStorage.http_service1 + 'user/st/pay/myHouse', {
+//						mui.ajax('js/relation_house.json', {
+							data: {
+								token: token,
+								communityId: community_id
+							},
+							dataType: 'json', 
+							type: 'post',
+							timeout: 10000, 
+//							headers: getHeaders(),
+							success: function(data) {
+								console.log(JSON.stringify(data));
+								closePpage(data.status)
+								//服务器返回响应，根据响应结果，分析是否登录成功；
+								if(data.status == "1" && data.data != null && data.data.length > 0) {
+									for(var i = 0; i < data.data.length; i++) {
+										data.data[i].value = data.data[i].buildingId;
+										data.data[i].text = data.data[i].houseFullName;
+									//	data.data[i].txt = data.data[i].ownerName.split(',')[0];
+										data.data[i].txt = data.data[i].ownerName;
+									}
+									//TODO 测试数据
+									setOwnerRoom(data.data);  //填充数据
+									//设置第一项为选中值并查询
+//										console.log(data.data.length)
+									if(data.data.length > 0) {
+										
+										//*号替换姓名中一个字符
+										//var a = data.result.customer.split("");
+										//var b = a.splice(1,1,"*");
+										//默认显示第一间房屋
+										document.getElementById("showUserPicker").innerText = data.data[0].text;
+										//*号替换姓名中一个字符
+										var customer_name = data.data[0].txt.split("");
+										var b = customer_name.splice(1,1,"*");
+										document.getElementById("showCustomerName").innerText = customer_name.join('');
+										
+										property_number = data.data[0].value; //赋值房间编号
+										property_name = data.data[0].text; //填写建筑
+										charge_bill(); //默认显示第一套房子的缴费记录
+									}
+
+								}
+							},
+							error: function(xhr, type, errorThrown) {
+								//异常处理；
+								console.log(type);
+							}
+						});
+					}
+					
+					//获取用户房屋列表
+					showCustomer_house();
+					
+					//设置房屋选择框
+					function setOwnerRoom(data) {
+						//普通示例
+						var userPicker = new $.PopPicker();
+						userPicker.setData(data);
+						var showUserPickerButton = doc.getElementById('housePicker');
+						var showUserPicker = doc.getElementById("showUserPicker");
+						var showCustomerName = doc.getElementById("showCustomerName");
+						var userResult = doc.getElementById('userResult');
+						showUserPickerButton.addEventListener('tap', function(event) {
+							userPicker.show(function(items) {
+								//userResult.innerText = JSON.stringify(items[0]);
+								showUserPicker.innerText = items[0].text;
+								
+								//*号替换姓名中一个字符
+								var customer_name = items[0].txt.split("");
+								var b = customer_name.splice(1,1,"*");
+								showCustomerName.innerText = customer_name.join('');
+								//返回 false 可以阻止选择框的关闭
+								//return false;
+								property_number = items[0].value; //房间编号
+								property_name = items[0].text; //建筑
+								pageNum = 0;
+								Html = "";//切换房屋清空
+								charge_bill(); //切换房屋查询房屋缴费单
+							});
+						}, false);
+					}
+					
+					
+					//根据房屋编号查询房屋缴费记录
+					function charge_bill() {
+//						console.log(property_number+'>>>'+fee_ids+'>>>'+min_period+'>>>'+max_period);
+						mui.ajax(localStorage.http_service1 + 'user/st/pay/myBill', {
+//						mui.ajax('js/myPayment.json', {
+							data: {
+								token: token,
+								buildingId: property_number,
+								page: pageNum,
+								pageSize: '20'
+							},
+							dataType: 'json', 
+							type: 'post', 
+							timeout: 10000, 
+//							headers: getHeaders(),
+							success: function(data) {
+								console.log(JSON.stringify(data));
+		
+								//TODO 测试数据
+//								
+								closePpage(data.status)
+								//服务器返回响应，根据响应结果，分析是否登录成功；
+								if(data.status == "1") {
+//									var Html = "";
+									if(data.data.length > 0 && data.data.length <= 20 ) {
+										
+										Html += '<div class="mui-content-padded pamentList">';
+										Html += '	<table id="fee_ID" border=""  cellspacing="" cellpadding="" class="listTable">';
+										localStorage.detailList = JSON.stringify(data.data);
+										for(var i = 0; i < data.data.length; i++) {
+											var feelistItem = data.data[i];
+											Html += '		<tr id="' + i + '" fee_id="' + feelistItem.fee_id + '"><td><img src="img/icon-end.png" class="imgss"></td>';
+											Html += '		<td width="240"><div style="color:#8e8e8e;font-size:14px ;">' + feelistItem.periodName + '</div><div>' + feelistItem.expenditureDesc + '</div></td>';
+											Html += '		<td width="150" class="mui-text-right">￥' + feelistItem.receivableAmount*0.01 + '</td></tr>';
+										}
+										Html += '	</table>';
+										Html += '</div>';		
+										document.getElementById("fee_list").innerHTML = Html;
+									} else if(data.data.length > 20){
+										Html += '<div class="mui-content-padded pamentList">';
+										Html += '	<table id="fee_ID" border=""  cellspacing="" cellpadding="" class="listTable">';
+										localStorage.detailList = JSON.stringify(data.data);
+										for(var i = 0; i < data.data.length; i++) {
+											var feelistItem = data.data[i];
+											Html += '		<tr name="fee_tr" id="' + i + '" fee_id="' + feelistItem.fee_id + '"><td><img src="img/icon-end.png" class="imgss"></td>';
+											Html += '		<td width="240"><div>' + feelistItem.expenditureDesc + '</div><div style="color:#8e8e8e;font-size:14px ;">' + feelistItem.periodName + '</div></td>';
+											Html += '		<td width="150" class="mui-text-right">￥' + feelistItem.receivableAmount*0.01  + '</td></tr>';
+										}
+										Html += '	</table>';
+										Html += '</div>';
+										document.getElementById("fee_list").innerHTML = Html +'<div id="addMore"  class="mui-content-padded " style=" background: #fff; position: relative; text-align:center; padding: 10px !important; "><span>加载更多...</sapn></div>';
+										
+									}else{
+										//显示空图标
+										document.getElementById("fee_list").innerHTML = '<div class="" style="margin-top: 150px;display: block; overflow: hidden; text-align: center;"><img src="img/userPaymentListEmpty.png" style="width: 40%;"/><p style="font-size: 20px;color: #AAAAAA;margin-top: 10px;">无记录</p></div>';
+									}
+//									addItemClick();
+									addMore();
+								};
+							},
+							error: function(xhr, type, errorThrown) {
+								//异常处理；
+								console.log(type);
+							}
+						});
+					}
+					
+					//监听加载更多事件
+					function addMore() {
+						mui("#refreshContainer").on("tap", "#addMore", function(){
+							pageNum++;
+							charge_bill();
+						});
+					};
+					
+//				});
+
+				//点击关闭详情弹框
+				mui("#mui-content").on("tap", "#close", toClose);
+				
+			})(mui, document);
+			
+			//点击表单绑定事件,查看详情
+			mui("#mui-content").on("tap", "#fee_ID tr", function(e) {
+				if(e.target.name == "checkItem") {
+					return;
+				} else {
+					//非物管云缴费时,不用查看详情
+					openuserPayment(this.getAttribute("id"));
+				}
+			});
+			
+			//点击关闭详情弹框
+			function toClose() {
+				$('#poput1').addClass('mui-hidden');
+				$('#poput2').addClass('mui-hidden');
+			}
+			
+			//跳转到详情
+//			function openuserPayment(property_number,fee_id, period) {
+			function openuserPayment(i) {
+				var detailList ;
+				detailList = JSON.parse(localStorage.detailList);
+
+
+				jQuery('#feeName').html(detailList[i].expenditureDesc);
+				jQuery('#feeDate').html(detailList[i].periodName);
+				jQuery('#quantity').html(detailList[i].area);
+				jQuery('#price').html('￥'+detailList[i].priceAmout);
+				jQuery('#total_amount').html('￥'+detailList[i].totalAmount*0.01);
+				jQuery('#adjust_amount').html('￥'+detailList[i].discountAmount*0.01);
+				jQuery('#breakContractAmount').html('￥'+detailList[i].breakContractAmount*0.01);
+				jQuery('#receivableAmount').html('￥'+detailList[i].receivableAmount*0.01);
+				
+				if(detailList.length != 0){
+					//打开详情弹窗
+					$('#poput1').removeClass('mui-hidden');
+					$('#poput2').removeClass('mui-hidden');
+				}
+				
+				
+			}
+			
+	      	function toPaymentList(){
+				
+	      		mui.openWindow({
+					url: 'userPropertyPaymentList.html',
+					id: 'userPropertyPaymentList',
+					show: {
+						aniShow: 'slide-in-right', 
+						duration: 200
+					}
+				});
+	      	}
+			
+		</script>
+	</body>
+
+</html>

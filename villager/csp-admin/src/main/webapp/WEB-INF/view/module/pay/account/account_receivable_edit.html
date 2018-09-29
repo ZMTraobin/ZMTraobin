@@ -1,0 +1,215 @@
+<#-- * description: 配置维护界面 * version: 1.0 *
+author:qingliang.zeng@hand-china.com * * -->
+    <#include "../../../include/header.html">
+<body style="padding: 10px;">
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="${base.contextPath}/common/code?yesOrNo=SYS.YES_NO" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?accountExpenditure=CSP.PAY.ACCOUNT_EXPENDITURE" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?merchantNumber=CSP.PAY.MERCHANT_NUMBER" type="text/javascript"></script>
+	<div id="content-container">
+		<div id="page-content">
+				<form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                    <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">费项类型</label>
+                            <div class="col-xs-6">
+                                <input required type="text" style="width: 100%" id="expenditure" name="expenditure" data-bind="value:model.expenditure" class="k-textbox">
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row" id="companyId_div" style="display: none">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">物业公司</label>
+                            <div class="col-xs-6">
+                                <input  type="text" style="width: 100%" id="companyName" name="companyName" data-bind="value:model.companyId,text:model.companyName" >
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row" id="communityId_div" style="display: none">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">项目</label>
+                            <div class="col-xs-6">
+                                <input  type="text" style="width: 100%" id="communityName" name="communityName" data-bind="value:model.communityId,text:model.communityName" >
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">商户号</label>
+                            <div class="col-xs-6">
+                                <input required type="text" id="merchantNumber" style="width: 100%" name="merchantNumber" data-bind="value:model.merchantNumber"  class="k-textbox">
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">是否启用</label>
+                                <div class="col-xs-6">
+                                    <input required type="text" style="width: 100%" id="enableFlag" name="enableFlag" data-bind="value:model.enableFlag" class="k-textbox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <div class="col-sm-12 text-center">
+                                <span class="btn btn-success" data-bind="click:save" type="submit"><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                            </div>
+                        </div>
+                    </div>
+
+				</form>
+		</div>
+		</div>
+<script type="text/javascript">
+var isedit = '${RequestParameters.isedit!0}' == '1';
+window.viewModel = kendo.observable({
+    model: {},
+    save:function(e){
+        var url ;
+        if (isedit)
+            url = '${base.contextPath}/csp/account/receivable/submit';
+        else
+            url = '${base.contextPath}/csp/account/receivable/add';
+        var validator = $("#mainform").data("kendoValidator");
+        if (validator.validate()) {
+            Hap.submitForm({
+                url           : url,
+                formModel     : viewModel.model,
+                asArray       : false,
+                success       : function (data) {
+                    kendo.ui.showInfoDialog({
+                        title:'提示信息',
+                        message:'保存成功!'
+                    }).done(function(e){
+                        window.parent.$("#editWin").data("kendoWindow").close();
+                        window.parent.$('#grid').data('kendoGrid').dataSource.page(1);
+                    });
+                }
+            });
+        }
+    },
+    closeWin :function(e){
+        //关闭该window
+        window.parent.$("#editWin").data("kendoWindow").close();
+    }
+});
+
+var container = $("#mainform");
+kendo.init(container);
+container.kendoValidator({
+    messages: {
+        required: "必填项"
+    },
+});
+kendo.bind($('#page-content'), viewModel);
+
+//下拉框
+$("#expenditure").kendoDropDownList({
+    valuePrimitive:true,
+    dataTextField: "meaning",
+    dataValueField: "value",
+    dataSource: accountExpenditure
+});
+
+$("#merchantNumber").kendoDropDownList({
+    valuePrimitive:true,
+    dataTextField: "meaning",
+    dataValueField: "value",
+    dataSource: merchantNumber
+});
+
+$("#enableFlag").kendoDropDownList({
+    valuePrimitive:true,
+    dataTextField: "meaning",
+    dataValueField: "value",
+    dataSource: yesOrNo
+});
+
+$("#companyName").kendoLov($.extend(
+    ${lovProvider.getLov(base.contextPath, base.locale, "MGT_COMPANY_LOV")},
+        {
+            textField:'companyName',
+            valueField:'companyId',
+            model:viewModel
+        },
+    {
+        query: function (e) {
+
+        },
+        select: function(e){
+            viewModel.set('model.companyId',e.item.companyId);
+            viewModel.set('model.companyName',e.item.companyName);
+
+            viewModel.set('model.communityId','');
+            viewModel.set('model.communityName','');
+        }
+}));
+
+$("#communityName").kendoLov($.extend(
+    ${lovProvider.getLov(base.contextPath, base.locale, "COMMUNITY_LOV")},
+        {
+            textField:'communityName',
+            valueField:'id',
+            model:viewModel
+        },
+    {
+        query: function (e) {
+            e.param['companyId'] = viewModel.get("model.companyId");
+        },
+        select: function(e){
+            viewModel.set('model.communityId',e.item.id);
+            viewModel.set('model.communityName',e.item.communityName);
+        }
+}));
+
+
+
+//初始化form表单
+$.ajax({
+    url: '${base.contextPath}/csp/account/receivable/get',
+    type : "GET",
+    dataType : "json",
+    contentType : "application/json",
+    data : {id:'${RequestParameters.id!0}'},
+    success: function (args) {
+        var profile = args.dto||{};
+        for(var i in profile){
+            viewModel.set("model."+i,profile[i]);
+        }
+        if($("#expenditure").val()=="PROPERTY_FEE"){
+            $("#companyId_div").show();
+            $("#communityId_div").show();
+        }else{
+            $("#companyId_div").hide();
+            $("#communityId_div").hide();
+        }
+    }
+});
+
+$(document).ready(function(){
+    $("#expenditure").change(function(){
+        if($(this).val()=="PROPERTY_FEE"){
+            $("#companyId_div").show();
+            $("#communityId_div").show();
+        }else{
+            $("#companyId_div").hide();
+            $("#communityId_div").hide();
+        }
+    });
+});
+</script>
+
+</body>
+</html>

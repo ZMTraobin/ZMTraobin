@@ -1,0 +1,366 @@
+<!-- * description: 配置维护界面 * version: 1.0 *
+        author:qingliang.zeng@hand-china.com * * -->
+    <#include "../../../include/header.html"/>
+        <head>
+            <style>
+                .photo {
+                    -moz-box-sizing: border-box;
+                    -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
+                    width: 63px;
+                    height: 63px;
+                    border-radius: 22px;
+                    -moz-border-radius: 22px;
+                    -webkit-border-radius: 22px;
+                    border: 2px solid #38a9ac;
+                    background-size: 100% 100% !important;
+                    background-position: center center;
+                }
+            </style>
+        </head>
+
+        <body style="padding: 10px;">
+        <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+        <script src="${base.contextPath}/common/code?hrEmployeeGender=HR.EMPLOYEE_GENDER" type="text/javascript"></script>
+        <script src="${base.contextPath}/common/code?openAppStatus=OPEN.APP_STATUS" type="text/javascript"></script>
+        <script src="${base.contextPath}/common/code?identityTypeData=CSP.MGT.IDENTITY_TYPE" type="text/javascript"></script>
+        <div id="content-container">
+            <div id="page-content">
+                <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                    <div class="row" align="center">
+                        <div class="col-xs-12" >
+                            <div class="form-group" >
+                                <div id="photoDiv" class="photo" class="col-xs-12" style="background: url('${base.contextPath}/resources/images/user_default.jpg')"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">姓名：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="name" name="name"
+                                           data-bind="value:model.name" class="k-textbox"/>
+                                </div>
+                                <label class="col-xs-2  control-label">性别：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="sex" name="sex"
+                                           data-bind="value:model.sex" class="k-textbox"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">账号状态：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="loginFlag" name="loginFlag"
+                                           data-bind="value:model.loginFlag" class="k-textbox"/>
+                                </div>
+                                <label class="col-xs-2  control-label">邮箱：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="email" name="email"
+                                           data-bind="value:model.email" class="k-textbox"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">手机：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="mobile" name="mobile"
+                                           data-bind="value:model.mobile" class="k-textbox"/>
+                                </div>
+                                <label class="col-xs-2  control-label">出生日期：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="birthTime" name="birthTime"
+                                           data-bind="value:model.birthTime" class=" k-textbox datepicker"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">证件类型：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="identityType" name="identityType"
+                                           data-bind="value:model.identityType" class="k-textbox"/>
+                                </div>
+                                <label class="col-xs-2  control-label">身份证号：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="idcard" name="idcard"
+                                           data-bind="value:model.idcard" class="k-textbox"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">密码：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="password" id="passwords" name="passwords"
+                                           data-bind="" class="k-textbox" placeholder="若不修改密码，请留空。" />
+                                </div>
+                                <label class="col-xs-2  control-label">确认密码：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="password" id="rePwd"
+                                           name="rePwd" data-bind=""  class="k-textbox" placeholder="若不修改密码，请留空。" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">年龄：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="age" name="age"
+                                           data-bind="value:model.age" class="k-textbox"/>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--<div class="row">-->
+                        <!--<div class="col-xs-12">-->
+                            <!--<div class="form-group">-->
+                                <!--<label class="col-xs-2  control-label">密码：</label>-->
+                                <!--<div class="col-xs-3">-->
+                                    <!--<input style="width: 100%" required type="password" id="passwords" name="passwords"-->
+                                           <!--data-bind="" class="k-textbox"/>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="row">-->
+                        <!--<div class="col-xs-12">-->
+                            <!--<div class="form-group">-->
+                                <!--<label class="col-xs-2  control-label">确认密码：</label>-->
+                                <!--<div class="col-xs-3">-->
+                                    <!--<input style="width: 100%" required type="password" id="rePwd"-->
+                                           <!--name="rePwd" data-bind=""  class="k-textbox"/>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--图片修改-->
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label" style="text-align: right">头像图标:</label>
+                                <div class="col-xs-8">
+                                    <input  id="photo" type="hidden" name="photo" data-bind="value:model.photo">
+                                    <div class="cmig_img_upload_div"
+                                         data-id="photo"
+                                         data-readonly=false
+                                         data-minWidth=66
+                                         data-minHeight=66
+                                         data-showWidth=66
+                                         data-showHeight=66
+                                         data-maxNum=1
+                                         data-checkImageWidthHeightFlag=true
+                                         data-maxSize=2
+                                         data-required=true
+                                         data-callBakFun="modelBindphoto"
+                                    ><input type="hidden" name="fastdfsImageServer" data-bind="value:model.fastdfsImageServer">
+                                    </div>
+                                </div>
+                                <div class="col-xs-2" >
+                                    <span data-for="notifyUrl" class="k-invalid-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row" align="center">
+                        <div class="col-xs-12" align="center">
+                            <div class="form-group" >
+                                <span class="btn btn-success" data-bind="click:save" type="submit">
+                                    <i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="text/javascript">
+        //标记是否添加
+            var isedit = '${RequestParameters.isedit!0}' == '1';
+
+            //验证标识符
+            var isOK = true;
+            function checkPwd(){
+                var pwd1 = $("#passwords").val();
+                var pwd2 = $("#rePwd").val();
+                var regex = /(^[0-9]{6,20}$|^[A-Za-z]{6,20}$|^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$)/
+                //1.密码不能为空2.6-20位，3.两次要一致
+                if((pwd1 == null || pwd1 == "") && (pwd2 == null || pwd2 == "")){
+                    isOK=true;
+                }else{
+                    if(pwd1 != pwd2){
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: '密码不一致!'
+                        });
+                        isOK = false;
+                    }else if(regex.test(pwd1) == false || regex.test(pwd2) == false){
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: '密码必须是6到20位数字或字母'
+                        });
+                        isOK=false;
+                    }else{
+                        isOK = true;
+                        viewModel.set("model.password", pwd1);
+                    }
+                }
+            }
+
+            function check(){
+                var idcard = $("#idcard").val();
+                var age = $("#age").val();
+                var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+
+                if(idcard==null || idcard==""){
+                    kendo.ui.showInfoDialog({
+                        title: '提示信息',
+                        message: '证件号不能为空!'
+                    });
+                    isOK=false;
+                }
+                /*
+                else if(reg.test(idcard)===false){
+                    kendo.ui.showInfoDialog({
+                        title: '提示信息',
+                        message: '您输入的身份证不合法!'
+                    });
+                    isOK=false;
+                }*/
+                if(isNaN(age)){
+                    kendo.ui.showInfoDialog({
+                        title: '提示信息',
+                        message: '年龄必须是数字!'
+                    });
+                    isOK=false;
+                }else if(parseInt(age)<0||parseInt(age)>120){
+                    kendo.ui.showInfoDialog({
+                        title: '提示信息',
+                        message: '年龄必须0~120之间!'
+                    });
+                    isOK=false;
+                }
+
+
+            }
+            
+            window.viewModel = kendo.observable({
+                model: {},
+                save: function (e) {
+                    var url;
+                    if (isedit){
+                        url = '${base.contextPath}/ljh/mgt/user/update';
+                    }else{
+                        url = '${base.contextPath}/ljh/mgt/user/add';
+                    }
+
+                    checkPwd();
+                    check();
+                    if(!isOK){
+                        return;
+                    }
+                    //触发form表单的提交
+                    Hap.submitForm({
+                        url: url,
+                        formModel: viewModel.model,
+                        asArray: false,
+                        success: function (data) {
+                            kendo.ui.showInfoDialog({
+                                title: '提示信息',
+                                message: '保存成功!'
+                            }).done(function (e) {
+                                window.parent.$("#edit").data("kendoWindow").close();
+                                window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+                            });
+                        }
+                    });
+                },
+                closeWin: function (e) {
+                    //关闭该window事件
+                    window.parent.$("#edit").data("kendoWindow").close();
+                }
+            });
+            console.log(viewModel.model)
+            //在kendoui内部初始化form表单
+            var container = $("#mainform");
+            kendo.init(container);
+            //container.kendoValidator({
+            //    messages: {
+            //        required: "必填项"
+            //    },
+            //});
+            kendo.bind($('#page-content'), viewModel);
+
+            //日期
+            $(".datepicker").kendoDatePicker({
+                animation: false
+            });
+
+
+            $("#sex").kendoDropDownList({
+                valuePrimitive: true,
+                dataTextField: "meaning",
+                dataValueField: "value",
+                dataSource: hrEmployeeGender
+            });
+
+            $("#identityType").kendoDropDownList({
+                valuePrimitive: true,
+                dataTextField: "meaning",
+                dataValueField: "value",
+                dataSource: identityTypeData
+            });
+
+            $("#loginFlag").kendoDropDownList({
+                valuePrimitive: true,
+                dataTextField: "meaning",
+                dataValueField: "value",
+                dataSource: openAppStatus
+            });
+            //初始化form表单
+            $.ajax({
+                url: '${base.contextPath}/ljh/mgt/user/detail',
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                data: {id: '${RequestParameters.id!0}'},
+                success: function (args) {
+                    var profile = args.dto || {};
+                    for (var i in profile) {
+                        console.log(i+"||"+ profile[i]);
+                        if("password"!=i){
+                            viewModel.set("model." + i, profile[i]);
+                        }
+                    }
+                    if(null!=viewModel.get("model.photo")&&""!=viewModel.get("model.photo")){
+                        $("#photoDiv").css("background-image","url("+profile["fastdfsImageServer"]+viewModel.get("model.photo")+")");
+                    }
+                }
+            });
+
+            function modelBindphoto(){
+                viewModel.set("model.photo",$("#photo").val());
+            }
+        </script>
+
+        </body>
+        </html>

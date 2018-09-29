@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.kpi.mapper.LjhKpiEventGroupMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.kpi.dto.LjhKpiEventGroup">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="APP_KEY" property="appKey" jdbcType="VARCHAR" />
+        <result column="KPI_DATE" property="kpiDate" jdbcType="DATE" />
+        <result column="GROUP_ID" property="groupId" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="DISPLAY_NAME" property="displayName" jdbcType="VARCHAR" />
+        <result column="NUM" property="num" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <select id="selectReport" resultMap="BaseResultMap">
+        select a.GROUP_NAME,a.DISPLAY_NAME, sum(a.NUM) as NUM
+        from umeng_kpi_event_group_v a
+        where  a.NUM>0 and a.kpi_Date BETWEEN #{startDate} and #{endDate}
+        group by a.GROUP_NAME,a.DISPLAY_NAME
+        order by num desc limit #{topNum}
+    </select>
+
+    <select id="selectReportForDate" resultMap="BaseResultMap">
+        select a.* from umeng_kpi_event_group_v a
+         where a.NUM>0 and a.kpi_Date BETWEEN #{startDate} and #{endDate} order by a.kpi_Date desc
+    </select>
+
+    <select id="getHaveDataDates" resultMap="BaseResultMap">
+        select a.GROUP_NAME ,a.KPI_DATE
+        from umeng_kpi_event_group_v a
+        where a.NUM>0 group by a.GROUP_NAME ,a.KPI_DATE
+        order by a.KPI_DATE  desc limit #{days}
+    </select>
+
+</mapper>

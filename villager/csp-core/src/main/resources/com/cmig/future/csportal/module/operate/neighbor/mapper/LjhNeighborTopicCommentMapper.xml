@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.operate.neighbor.mapper.LjhNeighborTopicCommentMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicComment">
+        <result column="ID" property="id" jdbcType="CHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="CHAR" />
+        <result column="TOPIC_ID" property="topicId" jdbcType="CHAR" />
+        <result column="USER_ID" property="userId" jdbcType="CHAR" />
+        <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+        <result column="REPLY_ID" property="replyId" jdbcType="CHAR" />
+    </resultMap>
+      
+      <select id="hasComments" resultType="java.lang.Integer">
+        select COUNT(*) from  csp_ljh_neighbor_topic_comment tc
+        where tc.topic_id=#{topicId}
+      </select>
+</mapper>

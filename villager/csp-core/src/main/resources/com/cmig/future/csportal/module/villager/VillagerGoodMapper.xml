@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.good.mapper.VillagerGoodMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.good.dto.VillagerGood">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="GOOD_CATEGORY" property="goodCategory" jdbcType="VARCHAR" />
+        <result column="GOOD_SKU" property="goodSku" jdbcType="VARCHAR" />
+        <result column="GOOD_NAME" property="goodName" jdbcType="VARCHAR" />
+        <result column="GOOD_IMAGE" property="goodImage" jdbcType="VARCHAR" />
+        <result column="GOOD_SUBJECT" property="goodSubject" jdbcType="VARCHAR" />
+        <result column="GOOD_BODY" property="goodBody" jdbcType="VARCHAR" />
+        <result column="PRICE" property="price" jdbcType="DECIMAL" />
+        <result column="UNIT" property="unit" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+    <select id="findList" resultMap="BaseResultMap">
+        select * from csp_villager_good a
+        where a.STATUS='on'
+        <if test="goodCategory!=null and goodCategory!=''">
+            and a.GOOD_CATEGORY=#{goodCategory}
+        </if>
+
+        <if test="goodSku!=null and goodSku!=''">
+            and a.GOOD_SKU=#{goodSku}
+        </if>
+
+        <if test="keyword!=null and keyword!=''">
+            and (
+              a.GOOD_NAME like concat('%',#{keyword},'%')
+              or a.GOOD_SUBJECT like concat('%',#{keyword},'%')
+            )
+        </if>
+
+
+    </select>
+
+</mapper>

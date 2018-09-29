@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.operate.cms.mapper.CategoryMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.operate.cms.dto.Category">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="CONTENT_TYPE" property="contentType" jdbcType="VARCHAR" />
+		<result column="IMAGE_URL" property="imageUrl" jdbcType="VARCHAR" />
+		<result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+		<result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+		<!-- 非表字段 -->
+		<result column="PARENT_NAME" property="parentName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getAllCategories" resultMap="BaseResultMap">
+		select
+		c.ID,
+		c.PARENT_ID,
+		(select cc.`NAME` from csp_ljh_cms_category cc where cc.ID = c.PARENT_ID) as
+		parent_name,
+		c.NAME,
+		c.CONTENT_TYPE,
+		c.IMAGE_URL,
+		c.DESCRIPTION
+		from csp_ljh_cms_category c
+		where
+		c.DEL_FLAG = '0'
+	</select>
+
+	<select id="getCategoryById" resultMap="BaseResultMap">
+		select
+		c.ID,
+		c.PARENT_ID,
+		(select cc.`NAME` from csp_ljh_cms_category cc where cc.ID = c.PARENT_ID) as
+		parent_name,
+		c.NAME,
+		c.CONTENT_TYPE,
+		c.IMAGE_URL,
+		c.DESCRIPTION
+		from csp_ljh_cms_category c
+		where
+		c.id = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getCategoryByParentId" resultMap="BaseResultMap">
+		select
+		c.ID,
+		c.PARENT_ID,
+		(select cc.`NAME` from csp_ljh_cms_category cc where cc.ID = c.PARENT_ID) as
+		parent_name,
+		c.NAME,
+		c.CONTENT_TYPE,
+		c.IMAGE_URL,
+		c.DESCRIPTION
+		from csp_ljh_cms_category c
+		where
+		c.parent_id = #{parentId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getCategoryIdByType" resultType="java.lang.String">
+		SELECT t.id FROM csp_ljh_cms_category t
+		where t.CONTENT_TYPE = #{contentType}
+		and t.del_flag = '0'
+	</select>
+
+</mapper>

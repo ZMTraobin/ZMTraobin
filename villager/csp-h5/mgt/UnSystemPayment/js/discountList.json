@@ -1,0 +1,10 @@
+{
+    "status": "1",
+    "message": "计算成功！",
+    "totall": null,
+    "data": {
+        "maxAvailableNum": 99,
+        "deductionBalance": "100",
+        "maxAvailableAmount": 0.99
+    }
+}

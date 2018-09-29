@@ -1,0 +1,123 @@
+<#--
+        * description: 快速编码界面
+        *author:jialong.zuo@hand-china.com
+        * version: 1.0
+        *
+        -->
+<#include "../../../include/header.html">
+<body>
+<div class="col-sm-12" style="margin-top: 10px;">
+<div id="treeList"></div>
+<div id="dialog"></div>
+<div class="text-right" style="bottom: 20px;position: fixed; right: 85px; float: left; background: #fff;">
+<span class="btn btn-success" id="saveGrid" onclick="saveCategory()" type="submit"><@spring.message "hap.save"/></span>
+<span class="btn btn-success" id="closeWin" onclick="cancel()" type="button"><@spring.message "hap.cancel"/></span>
+</div>
+<script>
+                var treeDataSource = new kendo.data.TreeListDataSource({
+                    transport: {
+                        read: {
+                            url: "${base.contextPath}/cms/category/query",
+                            type: "POST",
+                            dataType: "json"
+                        }
+                    },
+                    schema: {
+                        model: {
+                            expanded: true
+                        },
+                        parse: function (response) {
+                            var categorys = [];
+                            for (var i = 0; i < response.total; i++) {
+                                if (response.rows[i]) {
+                                    var category = {
+                                        id: response.rows[i].id,
+                                        parentId: response.rows[i].parentId,
+                                        name: response.rows[i].name,
+                                    };
+                                    categorys.push(category);
+                                }
+                            }
+                            return categorys;
+                        } 
+                    },
+                    change: function propagate(e) {
+    					var node = e.items && e.items[0];
+    					var propagatedField = "ischecked";
+
+    					if (!node || e.field != propagatedField) {
+    					    return;
+    					}
+    					this.unbind("change", propagate);
+                        /* function update(dataSource, nodes, field, state) {
+    						for (var i = 0; i < nodes.length; i++) {
+    						     nodes[i].set(field, state);
+                                 update(dataSource, dataSource.childNodes(nodes[i]), field, state);
+    					    }
+    					} */
+    					update(this, this.childNodes(node), propagatedField, node[propagatedField]);
+    					this.bind("change", propagate);
+    				}
+                });
+
+                var treeList = $("#treeList").kendoTreeList({
+                    dataSource: treeDataSource,
+                    navigatable: false,
+                    height: "100%",
+                    resizable: false,
+                    scrollable: false,
+                    editable: false,
+                    columns: [
+                              {
+                            	template: "<input type='checkbox' id='checkbox' data-bind='checked: ischecked' />",
+                      		    width: 32,
+                      		    attributes: {
+                      		        "class": "table-header-cell",
+                      			    style: "text-align: center;"
+                      			}
+                              },
+                        {field: "name", title: "<@spring.message "hrorgunit.name"/>"},
+                    ],
+                    dataBound: function() { 
+					        var view = this.dataSource.view();
+					        this.items().each(function(index, row) {
+					        kendo.bind(row, view[index]);
+				          });
+			          }
+                }).data("kendoTreeList");
+            
+            function saveCategory(){
+		        var checkedList = treeList.dataSource.data();
+		        if (checkedList.length > 0) {
+		        	var flag = 0;
+		        	var datas = [];
+		        	for (var i = 0; i < checkedList.length; i++) {
+		                if (checkedList[i].ischecked) {
+		                	flag++;
+		                	datas.push(i);
+		                }
+		            }
+		        	if(flag != 1){
+		        		kendo.ui.showErrorDialog({
+		        		 message: '必须选择一行记录'
+		        		 });
+			            return;
+		        	}else{
+		        		var i = datas[0];
+		        		window.parent.$("#parentId").attr('value',checkedList[i].id);
+		        		window.parent.$("#parentName").attr('value',checkedList[i].name);
+		        		//window.parent.document.getElementById("parentId").value = 
+		        		window.parent.$("#categoryWin").data("kendoWindow").close();
+		        	}
+		        } 
+            }
+            
+            function cancel(){
+            	window.parent.$("#categoryWin").data("kendoWindow").close();
+            }
+            
+            </script>
+ </div>
+</div>
+</body>
+</html>

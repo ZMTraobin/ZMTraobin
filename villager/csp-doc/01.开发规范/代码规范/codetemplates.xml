@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="false" context="gettercomment_context" deleted="false" description="Comment for getter method" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.gettercomment" name="gettercomment">
+	/**
+	 * ${bare_field_name}
+	 *
+	 * @return  the ${bare_field_name}
+	 * @since   CodingExample Ver(编码范例查看) 1.0
+	*/
+	</template><template autoinsert="false" context="filecomment_context" deleted="false" description="Comment for created Java files" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.filecomment" name="filecomment">/**
+* 文件描述的是：${file_name}
+* @author:zhangtao107@126.com
+* @version：1.0
+* ${date} 
+*/
+	</template><template autoinsert="false" context="constructorcomment_context" deleted="false" description="Comment for created constructors" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.constructorcomment" name="constructorcomment">
+	/**
+	 * 创建一个新的实例 ${enclosing_type}.
+	 *
+	 * ${tags}
+	 */
+	</template><template autoinsert="false" context="fieldcomment_context" deleted="false" description="Comment for fields" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.fieldcomment" name="fieldcomment">/**
+* ${field}:${todo}（用一句话描述这个变量表示什么）
+*/</template><template autoinsert="false" context="overridecomment_context" deleted="false" description="Comment for overriding methods" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.overridecomment" name="overridecomment">/**
+ * ${tags}
+ * ${see_to_overridden}
+*/</template><template autoinsert="true" context="settercomment_context" deleted="false" description="Comment for setter method" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.settercomment" name="settercomment">
+	/**
+	 * @param ${param} the ${bare_field_name} to set
+	 */
+	</template><template autoinsert="false" context="delegatecomment_context" deleted="false" description="Comment for delegate methods" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.delegatecomment" name="delegatecomment">/**
+ * ${tags}
+ * ${see_to_target}
+*/
+	</template><template autoinsert="false" context="methodcomment_context" deleted="false" description="Comment for non-overriding methods" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.methodcomment" name="methodcomment">/**
+* 此方法描述的是：${enclosing_method}
+* @author:zhangtao107@126.com
+* ${tags} ${return_type}
+*/
+	</template><template autoinsert="false" context="typecomment_context" deleted="false" description="Comment for created types" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.typecomment" name="typecomment">/**
+* 此类描述的是：${file_name}
+* @author:zhangtao107@126.com
+* @version: ${date} ${time} 
+*/
+	</template></templates>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.kpi.mapper.LjhKpiDurationMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.kpi.dto.LjhKpiDuration">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="APP_KEY" property="appKey" jdbcType="VARCHAR" />
+        <result column="KPI_DATE" property="kpiDate" jdbcType="DATE" />
+        <result column="PERIOD_TYPE" property="periodType" jdbcType="VARCHAR" />
+        <result column="DIMENSION" property="dimension" jdbcType="VARCHAR" />
+        <result column="NUM" property="num" jdbcType="DECIMAL" />
+        <result column="PERCENT" property="percent" jdbcType="DECIMAL" />
+        <result column="AVERAGE" property="average" jdbcType="DECIMAL" />
+
+    </resultMap>
+
+    
+    <select id="selectReportForDate" resultMap="BaseResultMap">
+        select
+          b.GROUP_NAME as GROUP_NAME,
+          a.KPI_DATE as KPI_DATE,
+          a.PERIOD_TYPE as PERIOD_TYPE,
+          a.AVERAGE as AVERAGE,
+          sum(a.NUM) as NUM
+          FROM csp_ljh_kpi_duration a ,csp_umeng_app b
+          where a.APP_KEY=b.APP_KEY
+          <if test=" kpiDate!=null">
+            and a.KPI_DATE=#{kpiDate}
+          </if>
+
+          <if test=" periodType!=null and periodType!='' ">
+              and a.PERIOD_TYPE=#{periodType}
+          </if>
+          group by b.GROUP_NAME,a.KPI_DATE,a.PERIOD_TYPE,a.AVERAGE
+    </select>
+
+</mapper>

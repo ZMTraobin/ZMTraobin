@@ -1,0 +1,47 @@
+.bgDefault{background-color:#fff;margin-bottom:16px;}
+.item-ul{background: #fff;padding:0 16px;list-style: none;border:1px solid #E0E0E0;border-radius:4px;margin-bottom:16px;}
+.mui-scroll{padding:0 0;}
+.item-ul>li>div:not(:last-child){border-bottom:1px solid #f5f5f5;}
+.lineHeight3em{line-height:50px;}
+.repairLocation{padding: 10px 0;line-height:21px;}
+.dealing,.finished{margin-top:11px;padding:3px 8px;line-height:20px;}
+.dealing{border-color:#eaeaea;color:#646464;}
+.finished{background-color:#FF553D;color:#fff;border-color:#FF553D;}
+.mui-icon-back{color:#353535;}
+.mui-segmented-control .mui-control-item{line-height:30px;}
+.barTab{font-size:14px;}
+
+
+
+
+
+/*每页标题字号,不加粗*/
+/*.mui-title { font-size: 20px; font-weight: 100!important; }*/
+/*原生统一样式*/
+.mui-bar { height: 50px;}
+.mui-bar .mui-icon {padding-top: 13px; padding-bottom: 13px;}
+.mui-title {line-height: 50px; font-weight: 500!important; font-size: 18px;}
+.mui-bar-nav~.mui-content { padding-top: 50px;}
+
+/*--------------------------*/
+/*内容部分左右边距为零*/
+.mui-content-padded { margin-left: 0;  margin-right: 0; border:none!important; border-radius: 0; }
+/*.mui-content-padded { margin-top: 0;}*/
+.listTable { border: 0;width: 100%;}
+.listTable tr {border-bottom: none;}
+/*.listTable td {border: 0;  word-break: break-all; padding: 8px 5px 8px 0!important;}*/
+.padL{border: 0;  word-break: break-all; padding: 8px 5px 8px 15px!important;}
+.padR{border: 0;  word-break: break-all; padding: 8px 15px 8px 0!important;}
+.padL1{border: 0;  word-break: break-all; padding: 8px 5px 24px 15px!important;}
+.padR1{border: 0;  word-break: break-all; padding: 8px 15px 24px 0!important;}
+.pad_tr{border: 0;  word-break: break-all; padding: 15px 0 0 0!important;}
+
+/*选项卡激活颜色*/
+.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+    color: #0972da;
+    border-bottom: 2px solid #0972da;
+    background: 0 0;
+}
+.mui-segmented-control.mui-segmented-control-inverted~.mui-slider-progress-bar {
+    background-color: #0972da;
+}

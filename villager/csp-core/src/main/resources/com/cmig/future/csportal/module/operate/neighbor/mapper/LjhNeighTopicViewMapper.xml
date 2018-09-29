@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.operate.neighbor.mapper.LjhNeighTopicViewMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighTopicView">
+		<id property="id" column="id" />
+		<result property="topicContent" column="topicContent" />
+		<result property="publishTime" column="publishTime" />
+		<result property="showTime" column="showTime" />
+        <result property="topicType" column="topicType" />
+		<result property="publishId" column="publishId" />
+		<result property="publisher" column="publisher" />
+		<result property="topicAddress" column="topicAddress" />
+		<result property="longitude" column="longitude" />
+		<result property="latitude" column="latitude" />
+		<result property="communityId" column="communityId" />
+		<result property="communityName" column="communityName" />
+		<result property="companyId" column="companyId" />
+		<result property="companyName" column="companyName" />
+		<result property="typeId" column="typeId" />
+		<result property="typeName" column="typeName" />
+		<result property="commentNum" column="commentNum" />
+		<result property="praiseNum" column="praiseNum" />
+		<result property="userIcon" column="userIcon" />
+		<collection property="medias" ofType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicImage">
+			<id property="id" column="medias.id" />
+			<result property="topicId" column="medias.topicId" />
+			<result property="url" column="medias.url" />
+		</collection>
+		<!-- <collection property="comments"
+			ofType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicComment">
+			<id property="id" column="comment.id" />
+			<result property="userId" column="comment.userId" />
+			<result property="content" column="comment.content" />
+		</collection> -->
+	</resultMap>
+    
+	
+	<select id="queryById" resultMap="BaseResultMap"
+		parameterType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighTopicView">
+		select
+		nt.ID,
+        nt.PUBLISHER as publisher,
+        nt.COMMUNITY_NAME as communityName,
+        nt.COMPANY_NAME as companyName,
+        nt.TYPE_NAME as typeName,
+        nt.TOPIC_TYPE as topicType,
+		nt.TOPIC_CONTENT as topicContent,
+		nt.PUBLISH_TIME as publishTime, 
+		nt.comment_num as commentNum,
+		nt.praise_num as praiseNum,
+		nti.id as "medias.id",
+		nti.URL as "medias.url"
+		from neighborhood_topic_view nt
+		left outer join csp_ljh_neighbor_topic_praise ntp on ntp.TOPIC_ID=nt.id
+		left outer join csp_ljh_neighbor_topic_image nti on nti.TOPIC_ID = nt.id
+		where nt.id =
+		#{id,jdbcType=VARCHAR} 
+	</select> 
+	
+	
+	<select id="queryCommentsByTopicId" parameterType="java.lang.String" resultType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicComment">
+	select 
+	tc.ID as id,
+	tc.CONTENT as content,
+	tc.CREATION_DATE as creationDate,
+	au.USER_NAME as userName,
+	tc.USER_ID as userId,
+	au.USER_ICON as userIcon
+	from csp_ljh_neighbor_topic_comment tc
+	left outer join csp_ljh_app_user au on au.ID = tc.USER_ID
+	where tc.TOPIC_ID = #{topicId,jdbcType=VARCHAR}  
+	order by tc.CREATION_DATE
+    </select>
+</mapper>

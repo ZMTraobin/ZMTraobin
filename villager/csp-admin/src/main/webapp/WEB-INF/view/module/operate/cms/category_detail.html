@@ -1,0 +1,222 @@
+<#--
+        * description: 快速编码界面
+        *author:jialong.zuo@hand-china.com
+        * version: 1.0
+        *
+-->
+        <#include "../../../include/header.html">
+        <body>
+        <script type="text/javascript" src="${base.contextPath}/lib/ckeditor/ckeditor.js"></script>
+        <script src="${base.contextPath}/common/code?contentTypeData=CSP.CMS.CONTENT_TYPE" type="text/javascript"></script>
+        <script>
+            var isedit = '${RequestParameters.isedit!0}' == '1';
+            var parentId, parentName, categoryId, imageUrl,description,contentType;
+            newViewModel = kendo.observable({
+                model: {}
+            });
+            if (isedit) {
+                $.ajax({
+                    url: '${base.contextPath}/cms/category/queryById?id=${RequestParameters.id!0}',
+                    async: false,
+                    success: function (args) {
+                        var a0 = args.rows[0] || {};
+                        for (var k in a0) {
+                            newViewModel.model.set(k, a0[k]);
+                        }
+                        parentName = newViewModel.model.parentName;
+                        parentId = newViewModel.model.parentId;
+                    }
+                });
+            } else {
+                parentId = '${RequestParameters.parentId}';
+                contentType = '${RequestParameters.contentType}';
+                parentName = "${parentName}";
+                categoryId = "${categoryId}";
+                newViewModel = kendo.observable({
+                    model: {
+                        'id': categoryId,
+                        'parentId': parentId,
+                        'contentType':contentType,
+                        'description': ''
+                    }
+                });
+                //parentId = '';
+                //parentName = "";
+                //categoryId = "";
+            }
+
+        </script>
+        <div id="page-content">
+            <form class="form-horizontal">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">上级栏目</label>
+                        <div class="col-xs-5">
+                            <input type="text" id="parentName" style="width:100%;" data-bind="value:model.parentId,text:model.parentName">
+                            <input type="hidden" id="parentId">
+                            <script>
+                                $("#parentName").attr('value', parentName);
+                                $("#parentId").attr('value', parentId);
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 control-label" style="text-align: right">栏目名称</label>
+                        <div class="col-xs-5">
+                            <input id="name" type="text" data-bind="value:model.name" class="k-textbox" style="width: 100%;">
+                            <script>kendo.bind($('#name'), newViewModel);</script>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xs-12">
+                   <div class="form-group">
+			            <label class="col-sm-2 control-label">内容类型</label>
+			            <div class="col-sm-2">
+			                <input required style="width:100%" name="contentType" id="contentType" data-bind="value:model.contentType" >
+			                <script>kendo.bind($('#contentType'), newViewModel);</script>
+			            </div>
+			            <div class="col-sm-5" >  
+			                 <span data-for="contentType" class=".k-invalid-msg"></span>
+			            </div>
+			        </div>
+			    </div>
+			    
+                <div class="col-xs-12">
+                    <div class="form-group">
+			            <label class="col-sm-2 control-label">栏目图片</label>
+			            <div class="col-xs-6">
+                                    <input  id="imageUrl" type="hidden" name="imageUrl" data-bind="value:model.imageUrl">
+                                    <div class="cmig_img_upload_div"
+                                         data-id="imageUrl"
+                                         data-selectMultiple=false
+                                         data-readonly=false
+                                         data-minWidth=66
+                                         data-minHeight=66
+                                         data-showWidth=66
+                                         data-showHeight=66
+                                         data-maxNum=1
+                                         data-checkImageWidthHeightFlag=true
+                                         data-maxSize=1
+                                         data-required=true
+                                         data-callBakFun="modelBindFunctionImg"
+                                    ><input type="hidden" name="fastdfsImageServer" data-bind="value:model.fastdfsImageServer">
+                                    </div>
+                            </div>
+                            <div class="col-xs-3" >
+                                <span data-for="notifyUrl" class=".k-invalid-msg"></span>
+                            </div>
+			        </div>
+			    </div>
+			    
+			    <div class="col-sm-12">
+                    <div class="form-group">
+                    <label class="col-xs-2 control-label" style="text-align: right">描述</label>
+                        <div class="col-sm-8">
+                            <textarea id="texteditor" data-bind="value:model.content" ></textarea>
+                        </div>
+                        <div class="col-sm-2">
+                            <span data-for="content" class=".k-invalid-msg"></span>
+                        </div>
+                    </div>
+                </div>
+         </form>
+        <div class="text-right" style="bottom: 20px;position: fixed; right: 85px; float: left; background: #fff;">
+            <span class="btn btn-success" id="saveGrid" type="submit"><@spring.message "hap.save"/></span>
+            <span class="btn btn-success" id="closeWin" type="button"><@spring.message "hap.cancel"/></span>
+        </div>
+        
+        </div>
+        <div id="categoryWin">
+            <div id="categoryTree"></div>
+        </div>
+        
+        <script>
+            //kendo.bind($('#page-content'), newViewModel);
+            $(document).ready(function() {
+                 description = CKEDITOR.replace('texteditor',{
+                 removeButtons : 'Underline,Subscript,Superscript,Source,About',
+                 height : '180px',
+                 language:'zh-cn'
+                 });
+                 description.setData(newViewModel.model.description);
+             });
+
+             if('${RequestParameters.parentId}'!= '1'){
+               // document.getElementById('contentType').setAttribute('disabled',true);
+             }
+
+            $('#parentName').click(function () {
+                $('#categoryWin').kendoWindow({
+                    title: '选择栏目',
+                    height: '70%',
+                    width: '40%',
+                    actions: ["Close"],
+                    visible: false,
+                    content: "${base.contextPath}/module/operate/cms/category_tree.html",
+                    iframe: true
+                });
+                var win = $("#categoryWin").data("kendoWindow");
+                win.center().open();
+            }); 
+
+            $("#saveGrid").click(function () {
+                newViewModel.model.set('parentId', $('#parentId').attr('value'));//获取parentId,放进model
+                newViewModel.model.set('description', description.getData());
+                newViewModel.model.set('imageUrl', imageUrl);
+                console.info(newViewModel.model);
+                if (newViewModel.model.parentId == '' || newViewModel.model.parentId == null) {
+                    kendo.ui.showInfoDialog({
+                        message: '上级栏目不能为空'
+                    })
+                } else if (newViewModel.model.name == '' || newViewModel.model.name == null) {
+                    kendo.ui.showInfoDialog({
+                        message: '栏目名称不能为空'
+                    }) 
+                } else {
+                    newViewModel.model.__status = isedit ? 'update' : 'add';
+                    Hap.submitForm({
+                        url: '${base.contextPath}/cms/category/update',
+                        formModel: newViewModel.model,
+                        success: function (data) {
+                            if (data.success == false) {
+                                kendo.ui.showErrorDialog({
+                                    message: data.message
+                                });
+                            }
+                            else {
+                                window.parent.querydata();
+                                window.parent.$("#categoryDetails").data("kendoWindow").close();
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("#closeWin").click(function () {
+                if (isedit) {
+                    window.parent.$("#categoryDetails").data("kendoWindow").close();
+                } else {
+                    window.parent.$("#categoryDetails").data("kendoWindow").close();
+                }
+            });
+            
+            
+            //状态栏下拉框
+	$("#contentType").kendoDropDownList({
+		  dataSource:contentTypeData,
+		  valuePrimitive: true,
+		  dataTextField: "meaning",
+          dataValueField: "value"
+	});
+	
+	function modelBindFunctionImg(){
+        newViewModel.set("model.imageUrl",$("#imageUrl").val());
+    }
+	
+        </script>
+        </body>
+        </html>

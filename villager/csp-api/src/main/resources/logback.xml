@@ -1,0 +1,65 @@
+
+<!--
+scan：当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。
+scanPeriod：设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒当scan为true时，此属性生效。默认的时间间隔为1分钟。
+debug：当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+-->
+<configuration scan="true" scanPeriod="3 seconds">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{userId}] [%X{requestId}] %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+      <appender name="csp-api-http" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{accountId}] [%X{requestId}] %logger -  %msg%n</pattern>
+            </encoder>
+            <file>${catalina.base}/logs/csp-api-http.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${catalina.base}/logs/csp-api-http-%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- 日志文件保留天数 -->
+                <MaxHistory>30</MaxHistory>
+            </rollingPolicy>
+      </appender>
+
+    <appender name="csp-api-mgtpassword" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{accountId}] [%X{requestId}] %logger -  %msg%n</pattern>
+        </encoder>
+        <file>${catalina.base}/logs/csp-api-mgtpassword.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/csp-api-mgtpassword-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 日志文件保留天数 -->
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{accountId}] [%X{requestId}] %logger -  %msg%n</pattern>
+        </encoder>
+        <destination>elk-hap:4560</destination>
+    </appender> -->
+
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+    <logger name="com.cmig.future.csportal" level="DEBUG" />
+
+    <logger name="com.cmig.future.csportal.common.utils.JedisUtils" level="INFO" />
+
+    <logger name="com.cmig.future.csportal.common.utils.HttpUtil" level="DEBUG" additivity="false" >
+        <appender-ref ref="csp-api-http" />
+        <appender-ref ref="csp-api-mgtpassword" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="com.cmig.future.csportal.module.properties.mgtuser.service.impl.MgtUserServiceImpl" level="DEBUG" additivity="false" >
+        <appender-ref ref="csp-api-mgtpassword" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="org.springframework" level="ERROR" />
+</configuration>

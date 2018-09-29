@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.operate.classifyTag.mapper.LjhClassifyTagMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.operate.classifyTag.dto.LjhClassifyTag">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="MODEL" property="model" jdbcType="VARCHAR" />
+	</resultMap>
+
+
+	<select id="select"
+		parameterType="com.cmig.future.csportal.module.operate.classifyTag.dto.LjhClassifyTag"
+		resultMap="BaseResultMap">
+		select ct.id,
+		ct.name,
+		ct.model from
+		csp_ljh_classify_tag ct
+		<where>
+			<if test="model != null and model != ''">
+				ct.model =#{model,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

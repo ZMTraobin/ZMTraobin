@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.wealth.mapper.PlantCostMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.wealth.dto.PlantCost">
+        <result column="id" property="id" jdbcType="DECIMAL" />
+        <result column="type_code" property="typeCode" jdbcType="VARCHAR" />
+        <result column="mu_code" property="muCode" jdbcType="VARCHAR" />
+        <result column="mu_area" property="muArea" jdbcType="VARCHAR" />
+        <result column="fertilizer_cost" property="fertilizerCost" jdbcType="DECIMAL" />
+        <result column="pesticide_cost" property="pesticideCost" jdbcType="DECIMAL" />
+        <result column="seedlings_cost" property="seedlingsCost" jdbcType="DECIMAL" />
+        <result column="bake_cost" property="bakeCost" jdbcType="DECIMAL" />
+        <result column="machine_cost" property="machineCost" jdbcType="DECIMAL" />
+        <result column="land_cost" property="landCost" jdbcType="DECIMAL" />
+        <result column="total_yield" property="totalYield" jdbcType="DECIMAL" />
+        <result column="total_income" property="totalIncome" jdbcType="DECIMAL" />
+    </resultMap>
+
+
+</mapper>

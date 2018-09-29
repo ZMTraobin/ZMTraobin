@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.company.mapper.LjhBaseCompanyMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.company.dto.LjhBaseCompany">
+        <result column="COMPANY_ID" property="companyId" jdbcType="VARCHAR"/>
+        <result column="COMPANY_CODE" property="companyCode" jdbcType="VARCHAR"/>
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR"/>
+        <result column="CORP_ID" property="corpId" jdbcType="VARCHAR"/>
+        <result column="ADDRESS_SECRET" property="addressSecret" jdbcType="VARCHAR"/>
+        <result column="SOURCE_SYSTEM_ID" property="sourceSystemId" jdbcType="VARCHAR"/>
+        <result column="OPEN_APP_ID" property="openAppId" jdbcType="VARCHAR"/>
+        <result column="SERVER_URL" property="serverUrl" jdbcType="VARCHAR"/>
+        <result column="WORK_WX_FLAG" property="workWxFlag" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <select id="findCorpList" resultMap="BaseResultMap">
+        SELECT
+        a.*
+        FROM csp_ljh_base_company a
+        WHERE a.CORP_ID is not null and a.WORK_WX_FLAG='Y'
+    </select>
+
+    <select id="getBySourceSystemId" resultMap="BaseResultMap"
+            parameterType="com.cmig.future.csportal.module.properties.company.dto.LjhBaseCompany">
+        SELECT
+        a.*
+        FROM csp_ljh_base_company a
+        WHERE a.OPEN_APP_ID=#{openAppId}
+              and a.SOURCE_SYSTEM_ID=#{sourceSystemId}
+              limit 1
+    </select>
+
+    <select id="selectByCondition" resultMap="BaseResultMap"
+            parameterType="com.cmig.future.csportal.module.properties.company.dto.LjhBaseCompany">
+        SELECT
+        a.*
+        FROM csp_ljh_base_company a
+        <where>
+            <if test="companyId != null and companyId != ''">
+                AND a.company_id = #{companyId}
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                AND a.company_code like concat('%',concat(#{companyCode,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="companyName != null and companyName != ''">
+                AND a.company_name like concat('%',concat(#{companyName,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+    </select>
+</mapper>

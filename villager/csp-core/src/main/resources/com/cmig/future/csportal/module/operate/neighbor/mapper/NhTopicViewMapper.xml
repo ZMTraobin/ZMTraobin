@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.operate.neighbor.mapper.NhTopicViewMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.operate.neighbor.dto.NhTopicView">
+		<id property="id" column="id" />
+		<result property="topicContent" column="topicContent" />
+		<result property="publishTime" column="publishTime" />
+		<result property="showTime" column="showTime" />
+		<result property="publishId" column="publishId" />
+		<result property="publisher" column="publisher" />
+		<result property="topicAddress" column="topicAddress" />
+		<result property="longitude" column="longitude" />
+		<result property="latitude" column="latitude" />
+		<result property="communityId" column="communityId" />
+		<result property="communityName" column="communityName" />
+		<result property="companyId" column="companyId" />
+		<result property="companyName" column="companyName" />
+		<result property="typeId" column="typeId" />
+		<result property="typeName" column="typeName" />
+		<result property="commentNum" column="commentNum" />
+		<result property="praiseNum" column="praiseNum" />
+		<result property="userIcon" column="userIcon" />
+		<result property="topicType" column="topicType" />
+		<collection property="medias" ofType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicImage">
+			<id property="id" column="medias.id" />
+			<result property="topicId" column="medias.topicId" />
+			<result property="url" column="medias.url" />
+		</collection>
+		<collection property="comments"
+			ofType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicComment">
+			<id property="id" column="comment.id" />
+			<result property="userId" column="comment.userId" />
+			<result property="content" column="comment.content" />
+		</collection>
+	</resultMap>
+    
+    <sql id="nhTopicViewColumn">
+		a.id AS "id",
+		a.topic_content AS "topicContent",
+		a.publish_time AS "publishTime",
+		a.show_time AS "showTime",
+		a.topic_type AS "topicType",
+		a.publish_id AS "publishId",
+		a.publisher AS "publisher",
+		a.topic_address AS "topicAddress",
+		a.longitude AS "longitude",
+		a.latitude AS "latitude",
+		a.community_id AS "communityId",
+		a.community_name AS "communityName",
+		a.company_id AS "companyId",
+		a.company_name AS "companyName",
+		a.type_id AS "typeId",
+		a.type_name AS "typeName",
+		a.comment_num AS "commentNum",
+		a.praise_num AS "praiseNum",
+		a.user_icon AS "userIcon",
+		i.ID AS "medias.id",
+		i.TOPIC_ID AS "medias.topicId",
+		i.URL AS "medias.url"
+	</sql>
+	<sql id="nhTopicViewColumnB">
+		b.id AS "id",
+		b.topic_content AS "topicContent",
+		b.publish_time AS "publishTime",
+		b.show_time AS "showTime",
+		b.topic_type AS "topicType",
+		b.publish_id AS "publishId",
+		b.publisher AS "publisher",
+		b.topic_address AS "topicAddress",
+		b.longitude AS "longitude",
+		b.latitude AS "latitude",
+		b.community_id AS "communityId",
+		b.community_name AS "communityName",
+		b.company_id AS "companyId",
+		b.company_name AS "companyName",
+		b.type_id AS "typeId",
+		b.type_name AS "typeName",
+		b.comment_num AS "commentNum",
+		b.praise_num AS "praiseNum",
+		b.user_icon AS "userIcon"
+	</sql>
+		<sql id="nhTopicViewColumnC">
+		c.id AS "id",
+		c.topic_content AS "topicContent",
+		c.publish_time AS "publishTime",
+		c.show_time AS "showTime",
+		c.topic_type AS "topicType",
+		c.publish_id AS "publishId",
+		c.publisher AS "publisher",
+		c.topic_address AS "topicAddress",
+		c.longitude AS "longitude",
+		c.latitude AS "latitude",
+		c.community_id AS "communityId",
+		c.community_name AS "communityName",
+		c.company_id AS "companyId",
+		c.company_name AS "companyName",
+		c.type_id AS "typeId",
+		c.type_name AS "typeName",
+		c.comment_num AS "commentNum",
+		c.praise_num AS "praiseNum",
+		c.user_icon AS "userIcon"
+	</sql>
+	<sql id="nhTopicViewColumns">
+		a.id AS "id",
+		a.topic_content AS "topicContent",
+		a.publish_time AS "publishTime",
+		a.show_time AS "showTime",
+		a.topic_type AS "topicType",
+		a.publish_id AS "publishId",
+		a.publisher AS "publisher",
+		a.topic_address AS "topicAddress",
+		a.longitude AS "longitude",
+		a.latitude AS "latitude",
+		a.community_id AS "communityId",
+		a.community_name AS "communityName",
+		a.company_id AS "companyId",
+		a.company_name AS "companyName",
+		a.type_id AS "typeId",
+		a.type_name AS "typeName",
+		a.comment_num AS "commentNum",
+		a.praise_num AS "praiseNum",
+		a.user_icon AS "userIcon"
+	</sql>
+	
+	<sql id="nhTopicViewJoin">
+		LEFT JOIN csp_ljh_neighbor_topic_image i ON i.TOPIC_ID = a.ID
+	</sql>
+    <sql id="nhTopicViewJoins">
+	</sql>
+	<select id="get" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="nhTopicViewColumn"/>
+		FROM NEIGHBORHOOD_TOPIC_VIEW a
+		<include refid="nhTopicViewJoin"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.operate.neighbor.dto.NhTopicView">
+		SELECT  
+			<include refid="nhTopicViewColumns"/>
+		FROM NEIGHBORHOOD_TOPIC_VIEW a
+		<include refid="nhTopicViewJoins"/>
+		<where>
+			a.publish_id is not null
+			<if test="startTime != null and startTime != ''">
+				AND a.publish_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null  and endTime != ''">
+				AND a.publish_time &lt;= #{endTime}
+			</if>
+			<if test="companyId != null  and companyId != ''">
+				AND a.company_id= #{companyId}
+			</if>
+			<if test="communityId != null  and communityId != ''">
+				AND a.community_id= #{communityId}
+			</if>
+			<if test="topicContent != null  and topicContent != ''">
+				AND a.topic_content LIKE 
+					<if test="dbName == 'oracle'">'%'||#{topicContent}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{topicContent}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{topicContent},'%')</if>
+			</if>
+			<if test="typeId != null  and typeId != ''">
+				AND a.type_id= #{typeId}
+			</if>
+            <if test="topicType != null  and topicType != ''">
+                AND a.topic_type= #{topicType}
+            </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			ORDER BY a.publish_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListMyTopic" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.operate.neighbor.dto.NhTopicView">
+		SELECT 
+			<include refid="nhTopicViewColumns"/>
+		FROM NEIGHBORHOOD_TOPIC_VIEW a
+		<include refid="nhTopicViewJoins"/>
+		<where>
+			a.publish_id is not null
+			<if test="publishId != null  and publishId != ''">
+				AND a.publish_id= #{publishId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			ORDER BY a.publish_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListApp" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.operate.neighbor.dto.NhTopicView">
+        SELECT * FROM (
+        SELECT
+        '3' as order_Type,
+        <include refid="nhTopicViewColumnC"/>
+        FROM NEIGHBORHOOD_TOPIC_VIEW c
+        <include refid="nhTopicViewJoins"/>
+        <where>
+            c.publish_id is not null
+            <if test="ids != null and ids != ''">
+                AND c.community_id not in
+                <foreach collection="ids" index="index" item="cid" open="(" separator="," close=")">
+                    #{cid}
+                </foreach>
+            </if>
+			<if test="typeIds != null and typeIds != ''">
+				AND c.type_id in
+				<foreach item="item" index="index" collection="typeList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+        </where>
+
+        <if test="ids != null and ids != ''">
+            UNION
+            SELECT
+            '2' as order_Type,
+            <include refid="nhTopicViewColumnB"/>
+            FROM
+            NEIGHBORHOOD_TOPIC_VIEW b
+            <include refid="nhTopicViewJoins"/>
+            <where>
+                b.publish_id is not null
+                AND b.community_id in
+                <foreach collection="ids" index="index" item="cid" open="(" separator="," close=")">
+                    #{cid}
+                </foreach>
+				<if test="typeIds != null and typeIds != ''">
+					AND b.type_id in
+					<foreach item="item" index="index" collection="typeList" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+            </where>
+        </if>
+        )aa ORDER BY aa.order_Type ASC, aa.publishTime DESC
+	</select>
+	
+	<select id="findAllList" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="nhTopicViewColumns"/>
+		FROM NEIGHBORHOOD_TOPIC_VIEW a
+		<include refid="nhTopicViewJoins"/>
+		<where>
+			a.publish_id is not null
+		</where>		
+		<choose> 
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			ORDER BY a.publish_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="queryByCondition" resultType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighTopicView"
+		parameterType="com.cmig.future.csportal.module.operate.neighbor.dto.NhTopicView">
+		select 
+         v.id, 
+         v.publisher as publisher,
+         v.COMMUNITY_ID as communityId,
+         v.COMMUNITY_NAME as communityName,
+         v.COMPANY_ID as companyNd,
+         v.COMPANY_NAME as companyName,
+         v.TYPE_ID as typeId,
+         v.TYPE_NAME as typeName,
+         v.TOPIC_CONTENT as topicContent,
+         v.COMMENT_NUM as commentNum,
+         v.PRAISE_NUM as praiseNum,
+         v.PUBLISH_TIME as publishTime,
+         v.TOPIC_TYPE as topicType,
+		 u.mobile as mobile
+         from neighborhood_topic_view v
+		 left outer join csp_ljh_app_user u on u.id = v.publish_id
+		<where>
+			<if test="companyId !=null">
+				AND v.company_id = #{companyId,jdbcType=VARCHAR}
+			</if>
+			<if test="communityId !=null">
+				AND v.community_id = #{communityId,jdbcType=VARCHAR}
+			</if>
+			<if test="topicContent !=null">
+				AND upper(v.TOPIC_CONTENT) LIKE concat('%',
+				concat(upper(#{topicContent,jdbcType=VARCHAR}), '%'))
+			</if>
+			<if test="mobile !=null">
+				AND upper(u.mobile) LIKE concat('%',
+				concat(upper(#{mobile,jdbcType=VARCHAR}), '%'))
+			</if>
+			<if test="typeId !=null">
+				AND v.type_id = #{typeId,jdbcType=VARCHAR}
+			</if>
+			<if test="startTime!=null">
+				AND v.publish_time &gt;= #{startTime}
+				AND v.publish_time
+				is not null
+			</if>
+			<if test="endTime!=null">
+				AND v.publish_time &lt;= #{endTime}
+				AND v.publish_time
+				is not null
+			</if>
+            <if test="topicType != null  and topicType != ''">
+                AND v.topic_type= #{topicType}
+            </if>
+		</where>
+	</select>
+</mapper>

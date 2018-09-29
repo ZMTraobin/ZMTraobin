@@ -1,0 +1,346 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>物业缴费</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.picker.min.css" rel="stylesheet" />
+		<link href="css/mui.poppicker.css" rel="stylesheet" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+		<link rel="stylesheet" type="text/css" href="css/userCreateRepairDetail.css" />
+		<link rel="stylesheet" type="text/css" href="css/payment.css" />
+		
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.picker.js"></script>
+		<script src="js/mui.poppicker.js"></script>
+		<script src="js/mui.dtpicker.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			/*结算支 付按钮触发时颜色*/
+.mui-btn-blue.mui-active:enabled, .mui-btn-blue:enabled:active, .mui-btn-primary.mui-active:enabled, .mui-btn-primary:enabled:active, input[type=submit].mui-active:enabled, input[type=submit]:enabled:active {
+			    color: #fff;
+			    border: 1px solid #e34600;
+			    background-color: #e34600;
+			}
+			
+			.mui-bar-tab .mui-tab-item {
+				color: #524946;
+			}
+			/*复选框点击后的颜色*/
+			
+			/*.list-checkbox:checked:before {
+				color: #fa555c;
+			}*/
+			
+			.color_fa555c {
+				color: #fa555c!important;
+			}
+			
+			.font-14 {
+				font-size: 14px;
+			}
+			/*位置图标大小*/
+			
+			.mui-icon {
+				font-size: 20px;
+			}
+			/*右上角未交费按钮样式*/
+			
+			.mui-btn-danger,
+			.mui-btn-negative,
+			.mui-btn-red {
+				border: none;
+			}
+			
+			.mui-btn-danger.mui-active:enabled,
+			.mui-btn-danger:enabled:active,
+			.mui-btn-negative.mui-active:enabled,
+			.mui-btn-negative:enabled:active,
+			.mui-btn-red.mui-active:enabled,
+			.mui-btn-red:enabled:active {
+				border: none;
+				background-color: #fff;
+			}
+			
+			.feixiang{border-bottom	:1px solid #a3a5b3; color: #a3a5b3;}
+			#Cost_wrap{width: 93%; display: inline-block; overflow: hidden; height: 39px;}
+			#Cost_item_arrow{float: right; margin-top: 10px; }
+			.Cost_item{display: inline-block; width: 30%; padding:5px 0 ; margin: 0 8px 10px 0; border: 1px solid #a3a5b3; text-align: center; color: #a3a5b3; border-radius: 5px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;}
+			.Cost_item:nth-of-type(3){margin-right: 0;}
+			.Cost_item:nth-of-type(6){margin-right: 0;}
+			.Cost_item:nth-of-type(9){margin-right: 0;}
+			.Cost_item_wrap_height{height: 39px;}
+			#timestart1,#timestart2{width: 55%; height: initial; padding-left:3px;}
+			
+			.list-checkbox:before { font-size: 24px;}
+			
+			.listTable .td-fee {padding-right: 24px!important;}
+			.iconForward{position: absolute;right:15px;top: 50%;margin-top:-12px;font-size: 36px;color: #ccc;}
+			.fee_active{color: #ff5307; border-color: #ff5307 ;}
+			
+			.listTable tr{ display:block; overflow: hidden; min-height: 20px;}
+			.mui-content-padded{ background: #efeff4; margin-top:0;}
+			.marginTop {margin-top:10px;}
+			.marginTop tr{margin-top:1px;}
+			.marginTop tr:nth-child(1){margin-top:0;}
+			.listTTable tr {display:block; background: #fff; margin-top:1px; 
+			/*padding: 10px 15px !important;*/
+			}
+			.lisTable td { padding: 0 15px 0 0!important; display: block; }
+			.list-checkbox { z-index: 5; width: 110px; height: 45px; line-height: 45px; padding-left: 15px!important;}
+			.listTTable tr label{margin-left: -66px;}
+			
+			.mui-btn-blue.mui-active:enabled, .mui-btn-blue:enabled:active, .mui-btn-primary.mui-active:enabled, .mui-btn-ppa:enabled:active, input[type=submit].mui-active:enabled, input[type=submit]:enabled:active {
+			    color: #8e8e8e;
+			    background-color: #fff;
+			}
+			.mui-btn-blue.mui-active:enabled, .mui-btn-blue:enabled:active, .mui-btn-primary.mui-active:enabled, .mui-btn-ppb:enabled:active, input[type=submit].mui-active:enabled, input[type=submit]:enabled:active {
+			    color: #0972da;
+			    background-color: #fff;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"><img src="img/icon-back.png" style="height: 24px;" /></a>
+			<h1 class="mui-title">确认订单</h1>
+		</header>
+		
+		<div class="mui-content" id="mui-content">
+			<div style=" background: #fff; margin-top: 1px; padding: 20px 15px;">
+				<p style="height: 40px; line-height: 40px; font-size: 18px; margin-bottom: 0; color: #545454; ">合计金额：<span style="color: #fd851a;">￥</span><span id="count_fee" style="color: #fd851a;">0.00</span></p>
+				<p style="height: 40px; line-height: 40px; font-size: 18px; margin-bottom: 0; color: #545454; ">优惠金额：<span style="color: #fd851a;">￥</span><span id="youhui_fee" style="color: #fd851a;">0.00</span></p>
+			</div>
+			
+			<div id="fee_list">
+				<!--<div class="mui-content-padded marginTop" style="margin-bottom:100px;">
+					<table id="" border=""  cellspacing="" cellpadding="" class="listTable listTTable lisTable">
+						
+						<tr id="feelistItem.period"><td ><span id="check">
+									<input class="list-checkbox" period_total=" feelistItem.period_total" name="checkItem" value=" feelistItem.period" type="checkbox">
+									<label>活动优惠</label>
+								</span><span style="float:right; margin:12px 0;">￥ feelistItem.pe</span></td></tr>
+						<tr id="feelistItem.period"><td ><span id="check">
+									<input class="list-checkbox" period_total=" feelistItem.period_total" name="checkItem" value=" feelistItem.period" type="checkbox">
+									<label>活动优惠</label>
+								</span><span style="float:right; margin:12px 0;">￥ feelistItem.pe</span></td></tr>
+						
+					</table>
+				</div>-->
+				
+			</div>
+			
+			
+			<nav class="mui-bar mui-bar-tab" id="nav">
+				<span class="mui-tab-item " style="text-align: left; padding-left: 12px; display: inline-block; width: 60%;">
+			        <div style="display: block; line-height:50px; color: #333;">实际支付：<span style="color: #ff5307;">￥</span><span id="real_fee" style="color: #ff5307;">0.00</span></div>
+				</span>
+				<span class="mui-tab-item" id="toPay" style="display: inline-block; width: 40%;">
+			        <button type="button" class="mui-tab-label mui-btn mui-btn-primary mui-btn-block" style="top: 0; padding: 13px 0; border-radius: 0; background-color: #0972da; border: 1px solid #0972da; color: #fff;">去支付</button>
+			    </span>
+			</nav>
+		</div>
+		
+		<script src="js/jquery.js"></script>
+		<script src="js/public.js"></script>
+		<script type="text/javascript">
+			
+			var property_number = null;
+			var fee_id;
+			var receivableDetailList =new Array();
+			
+			var order_id = null;
+			var useIntegralNum = 0;
+			var params = {};
+			
+			var count_fee = 0; //合计金额
+			var period_total = 0; //合计
+			var discount_total = 0; //合计
+			var total_fee = 0; //实际
+			var propertyurl = null;
+			
+			
+			var is_integral = null;
+			var token = null;
+			token = localStorage.token;
+			
+			//转化为json对象格式
+			params = JSON.parse(localStorage.params) ;
+			
+			property_number = params.property_number;
+			fee_id = params.fee_id;
+			
+			function getPropertyurl() {
+				var url = window.location.href;
+				propertyurl = 'http://'+url.split('/')[2]+'/'
+				if(propertyurl.indexOf("hshop.zmsq.net ")<0){
+					propertyurl=propertyurl+"wap/";
+				}
+			}
+			getPropertyurl();
+			function receivable(receivableId){
+				this.receivableId=receivableId;
+			}
+			
+			for (var i=0; i<fee_id.length; i++) {
+				var a=new receivable(fee_id[i]);
+				receivableDetailList[i]=a;
+			}
+			
+			document.getElementById("count_fee").innerHTML = params.period_total.toFixed(2);
+			
+			(function($, doc) {
+				$.init();
+				$.ready(function() {
+					//获取折扣类型
+					var showDiscountList = function() {
+							mui.ajax(localStorage.http_service1 + 'user/st/integral/integralrule/findIntegralByType', {
+//							mui.ajax('js/discountList.json', {
+								data: {
+									token: token,
+									type: 'R0003',
+									orderAmount: parseInt(params.period_total.toFixed(2)*100)
+								},
+								dataType: 'json', 
+								type: 'post', 
+								timeout: 10000, 
+//								headers: getHeaders(),
+								success: function(data) {
+									console.log(JSON.stringify(data));
+
+									closePpage(data.status)
+									//服务器返回响应，根据响应结果，分析是否登录成功；
+									if(data.status == "1" && data.data != null) {
+										
+										var Html = "";
+										Html += '<div class="mui-content-padded marginTop" style="margin-bottom:100px;">';
+										Html += '	<table id="" border=""  cellspacing="" cellpadding="" class="listTable listTTable lisTable">';
+
+										Html += '	<tr><td><span id="check"><input class="list-checkbox" period_total="' + data.data.maxAvailableAmount + '"  useIntegralNum="' + data.data.maxAvailableNum + '" name="checkItem" value="" type="checkbox"><label>可用' + data.data.maxAvailableNum + '积分抵</label></span><span style="color: #fd851a;">￥' + data.data.maxAvailableAmount + '</span></td></tr>';
+										Html += '	</table>';
+										Html += '</div>';
+
+										document.getElementById("fee_list").innerHTML = Html;
+										
+										document.getElementById("real_fee").innerHTML = document.getElementById("count_fee").innerHTML - document.getElementById("youhui_fee").innerHTML-discount_total;
+										addItemFee(); //勾选复选框累加价钱
+										//TODO 测试数据
+										
+										
+									}else if (data.status == "1" && data.data == null){
+										document.getElementById("fee_list").innerHTML = '<div class="mui-content-padded marginTop" style="margin-bottom:100px;"><table id="" border=""  cellspacing="" cellpadding="" class="listTable listTTable lisTable"><tr><td >暂无积分折扣信息</td></tr></table></div>';
+									}
+									
+								},
+								error: function(xhr, type, errorThrown) {
+									//异常处理；
+									console.log(type);
+								}
+							});
+						}
+					
+					//获取折扣类型
+					showDiscountList();
+					
+				});
+				
+				//点击支付
+				mui("#toPay").on("tap", "button", toPay);
+				
+			})(mui, document);
+			
+			//勾选复选框累加价钱
+			function addItemFee(){
+				$("input[name='checkItem']").each(function () { 
+					$(this).change(function(){
+						useIntegralNum = 0;
+						//复选框状态改变，累加选中的单子
+						var arr = $("input[name='checkItem']:checked");
+						period_total=0;
+						for(var i = 0; i < arr.length; i++) {
+							period_total += Number(arr[i].getAttribute('period_total'));
+							useIntegralNum += Number(arr[i].getAttribute('useIntegralNum'));
+						}
+						
+						discount_total = period_total.toFixed(2); //保留两位有效数字
+//						document.getElementById("count_fee").innerHTML = period_total.toFixed(2); //保留两位有效数字
+						document.getElementById("real_fee").innerHTML = (document.getElementById("count_fee").innerHTML - document.getElementById("youhui_fee").innerHTML-discount_total).toFixed(2);
+						total_fee = document.getElementById("real_fee").innerHTML*100;
+					})
+			    });
+			}
+			
+			
+			//拼接勾选的折扣类型
+			function addPeriods(){
+				var arr = $('input:checkbox[name=checkItem]:checked');
+				var discount_type=[];
+				for(var i = 0; i < arr.length; i++) {
+					discount_type[i]=arr[i].value;
+				}
+				discountType = discount_type.join(",");
+				console.log(discountType)
+			}
+			
+			//点击支付
+			function toPay() {
+//				addPeriods(); //拼接勾选的单子的日期
+				//生成订单编号
+				getNoticeNumber();
+			}
+			 
+			//取缴费单编号
+			var getNoticeNumber = function() {
+				console.log('291'+':::'+'fee_id:'+fee_id+'>>>'+useIntegralNum);
+				mui.ajax(localStorage.http_service1 + 'user/st/mgt/payment/submit?token='+token, {
+					data:JSON.stringify({token:token,receivableDetailList:receivableDetailList,useIntegralNum:useIntegralNum}),
+					dataType: 'json', //服务器返回json格式数据
+					contentType: "application/json; charset=utf-8",
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；
+//					headers: getHeaders(),
+					success: function(data) {
+						console.log(JSON.stringify(data));
+						closePpage(data.status)
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if( data.status == "1" && data != null)  {
+							order_id = data.data.orderNumber; //生成订单编号
+							
+							//与原生调取收银台
+							window.location.href = 'ljh://pay?{"is_integral":"'+data.data.isIntegral+'","scene_code":"A0003","order_id":"'+order_id+'","subject":"'+data.data.subject+'","detail":"'+data.data.body
+
++'","total_fee":"'+data.data.payableAmount+'","extra_data":"","charge_url":"'+data.data.chargeUrl+'","pay_success_url":"'+propertyurl+'mgt/UnSystemPayment/userTransactionRecord.html","pay_canle_url":""}';
+							
+						}else{
+							totast('生成缴费单出错')
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//异常处理；
+						console.log(type);
+					}
+				});
+			    
+			    
+				
+			};
+			
+			//跳转交易记录
+			function toFinished() {
+				mui.openWindow({
+					url: 'userTransactionRecord.html',
+					id: 'userTransactionRecord',
+					show: {
+						aniShow: 'slide-in-right', 
+						duration: 200
+					}
+				});
+			}
+
+		</script>
+	</body>
+
+</html>

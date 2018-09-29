@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.kpi.mapper.LjhKpiResultMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.kpi.dto.LjhKpiResult">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
+        <result column="KPI_DATE" property="kpiDate" jdbcType="DATE" />
+        <result column="PAGE_VIEW" property="pageView" jdbcType="DECIMAL" />
+        <result column="UNIQUE_VISITOR" property="uniqueVisitor" jdbcType="DECIMAL" />
+        <result column="INTERNET_PROTOCOL_NUM" property="internetProtocolNum" jdbcType="DECIMAL" />
+        <result column="OUT_PERCENT" property="outPercent" jdbcType="DECIMAL" />
+        <result column="ACCESS_SECONDS_AVERAGE" property="accessSecondsAverage" jdbcType="DECIMAL" />
+        <result column="PAGE_VIEW_AVERAGE" property="pageViewAverage" jdbcType="DECIMAL" />
+        <result column="NEW_VISITOR_PERCENT" property="newVisitorPercent" jdbcType="DECIMAL" />
+        <result column="OLD_VISITOR_PERCENT" property="oldVisitorPercent" jdbcType="DECIMAL" />
+        <result column="NEW_VISITOR_PAGE_VIEW" property="newVisitorPageView" jdbcType="DECIMAL" />
+        <result column="OLD_VISITOR_PAGE_VIEW" property="oldVisitorPageView" jdbcType="DECIMAL" />
+        <result column="NEW_VISITOR" property="newVisitor" jdbcType="DECIMAL" />
+        <result column="OLD_VISITOR" property="oldVisitor" jdbcType="DECIMAL" />
+        <result column="NEW_VISITOR_OUT_PERCENT" property="newVisitorOutPercent" jdbcType="DECIMAL" />
+        <result column="OLD_VISITOR_OUT_PERCENT" property="oldVisitorOutPercent" jdbcType="DECIMAL" />
+        <result column="NEW_VISITOR_ACCESS_SECONDS_AVERAGE" property="newVisitorAccessSecondsAverage" jdbcType="DECIMAL" />
+        <result column="OLD_VISITOR_ACCESS_SECONDS_AVERAGE" property="oldVisitorAccessSecondsAverage" jdbcType="DECIMAL" />
+        <result column="NEW_VISITOR_PAGE_VIEW_AVERAGE" property="newVisitorPageViewAverage" jdbcType="DECIMAL" />
+        <result column="OLD_VISITOR_PAGE_VIEW_AVERAGE" property="oldVisitorPageViewAverage" jdbcType="DECIMAL" />
+
+        <result column="CREATION_DATE" property="creationDate"  />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" />
+    </resultMap>
+
+    <select id="getReportForDate" resultMap="BaseResultMap">
+        select * from csp_ljh_kpi_result a where 1=1
+
+        <if test="appName !=null and appName!='' ">
+            and a.APP_NAME LIKE CONCAT(CONCAT('%',#{appName}),'%')
+        </if>
+
+        <if test="startDate !=null ">
+            and a.kpi_date &gt;= #{startDate}
+        </if>
+        <if test="endDate !=null ">
+            and a.kpi_date &lt;= #{endDate}
+        </if>
+        order by a.KPI_DATE desc
+    </select>
+
+</mapper>

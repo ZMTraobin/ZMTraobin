@@ -1,0 +1,242 @@
+<!-- * description: 配置维护界面 * version: 1.0 *
+        author:qingliang.zeng@hand-china.com * * -->
+    <#include "../../../include/header.html"/>
+        <head>
+            <style>
+                .photo {
+                    -moz-box-sizing: border-box;
+                    -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
+                    width: 63px;
+                    height: 63px;
+                    border-radius: 22px;
+                    -moz-border-radius: 22px;
+                    -webkit-border-radius: 22px;
+                    border: 2px solid #38a9ac;
+                    background-size: 100% 100% !important;
+                    background-position: center center;
+                }
+            </style>
+        </head>
+
+        <body style="padding: 10px;">
+        <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+        <script src="${base.contextPath}/common/code?openAppStatus=OPEN.APP_STATUS" type="text/javascript"></script>
+        <script src="${base.contextPath}/common/code?integralRule=CSP.INTEGRALTIME" type="text/javascript"></script>
+         <!--触发事件-->
+        <script src="${base.contextPath}/common/code?integralRuleTriggerEvent=CSP_INTEGRAL_TRIGGER_EVENT" type="text/javascript"></script>
+        <!--规则类型-->
+        <script src="${base.contextPath}/common/code?ruleType=CSP_RULE_TYPE" type="text/javascript"></script>
+        <!--积分规则状态-->
+        <script src="${base.contextPath}/common/code?integralRuleStatus=CSP_INTEGRAL_RULE_STATUS" type="text/javascript"></script>
+        <div id="content-container">
+            <div id="page-content">
+                <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">规则编号：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%;" required type="text" id="ruleCode" name="ruleCode"
+                                           data-bind="value:model.ruleCode" class="k-textbox" disabled="disabled"/>
+                                </div>
+                                <label class="col-xs-2  control-label">规则类型：</label>
+                                <div class="col-xs-3">
+                                    <select data-role="combobox" data-value-primitive="true" placeholder='规则类型' style="width:150px;"
+                                            data-text-field="meaning" data-value-field="value"
+                                            data-bind="source: ruleType, value: model.actionType" >
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">触发事件：</label>
+                                <div class="col-xs-3">
+                                    <select data-role="combobox" data-value-primitive="true" placeholder='触发事件' style="width:150px;"
+                                            data-text-field="meaning" data-value-field="value"
+                                            data-bind="source: integralRuleTriggerEvent, value: model.eventCode" >
+                                    </select>
+                                </div>
+                                <label class="col-xs-2  control-label">积分数：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="num" name="num"
+                                           data-bind="value:model.num" class="k-textbox"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">次数：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 20%" required type="text" id="cappingTimes" name="cappingTimes"
+                                           data-bind="value:model.cappingTimes" class=" k-textbox datepicker"/>
+                                  <!--
+                                        <label>因子：</label>-->
+                                    <select data-role="combobox" data-value-primitive="true" placeholder='因子' style="width:85px;"
+                                            data-text-field="meaning" data-value-field="value"
+                                            data-bind="source: integralRule,value: model.cappingFactor" >
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">结算周期：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="billingCycle" name="billingCycle"
+                                           data-bind="value:model.billingCycle" class="k-textbox"/>
+                                </div>
+                                <label class="col-xs-2  control-label">状态：</label>
+                                <div class="col-xs-3">
+                                    <select data-role="combobox" data-value-primitive="true" placeholder='状态' style="width:150px;"
+                                            data-text-field="meaning" data-value-field="value"
+                                            data-bind="source: integralRuleStatus, value: model.status" >
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">开始时间：</label>
+                                <div class="col-xs-8">
+                                    <input style="width: 100%" required type="effectiveStartDate" id="effectiveStartDate" name="effectiveStartDate"
+                                           data-bind="value: model.effectiveStartDate" class="k-datetimepicker"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">结束时间：</label>
+                                <div class="col-xs-8">
+                                    <input style="width: 100%" required type="effectiveEndDate" id="effectiveEndDate"
+                                           name="effectiveEndDate" data-bind="value: model.effectiveEndDate"  class="k-datetimepicker"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row" align="center">
+                        <div class="col-xs-12" align="center">
+                            <div class="form-group" >
+                                <span class="btn btn-success" data-bind="click:save" type="submit">
+                                    <i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var isedit = '${RequestParameters.isedit!0}' == '1';
+
+            //验证标识符
+            var isOK = true;
+      /*      function checkPwd(){
+                var pwd1 = $("#passwords").val().trim();
+                var pwd2 = $("#rePwd").val().trim();
+                if(pwd1 == pwd2){
+                    isOK = true;
+                    if(pwd1!=""&&pwd1!=null){
+                        viewModel.set("model.password", pwd1);
+                    }
+                }else{
+                    kendo.ui.showInfoDialog({
+                        title: '提示信息',
+                        message: '密码不一致!'
+                    });
+                    isOK = false;
+                }
+            }*/
+
+            <!--日期-->
+            $(".k-datetimepicker").kendoDatePicker({
+                animation: false
+            });
+            window.viewModel = kendo.observable({
+                model: {},
+                integralRuleTriggerEvent:integralRuleTriggerEvent,
+                integralRule:integralRule,
+                ruleType:ruleType,
+                integralRuleStatus:integralRuleStatus,
+                save: function (e) {
+                 console.log(viewModel.model);
+                    var url;
+                   // if (isedit)
+                        url = '${base.contextPath}/csp/ljh/integral/rule/update';
+                   /* checkPwd();
+                    check();*/
+             /*       if(!isOK){
+                        return;
+                    }*/
+//        else
+//            url = '${base.contextPath}/ljh/open/app/info/add';
+                    //  var validator = $("#mainform").data("kendoValidator");
+                    //    if (validator.validate()) {
+                    Hap.submitForm({
+                        url: url,
+                        formModel: viewModel.model,
+                        asArray: false,
+                        success: function (data) {
+                            kendo.ui.showInfoDialog({
+                                title: '提示信息',
+                                message: '更新成功!'
+                            }).done(function (e) {
+                                window.parent.$("#edit").data("kendoWindow").close();
+                                window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+                            });
+                        }
+                    });
+                    //  }
+                },
+                closeWin: function (e) {
+                    //关闭该window
+                    window.parent.$("#edit").data("kendoWindow").close();
+                }
+            });
+
+            var container = $("#mainform");
+            kendo.init(container);
+            //container.kendoValidator({
+            //    messages: {
+            //        required: "必填项"
+            //    },
+            //});
+            kendo.bind($('#page-content'), viewModel);
+            //初始化form表单
+            $.ajax({
+                url: '${base.contextPath}/csp/ljh/integral/rule/get',
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                data: {id: '${RequestParameters.id!0}'},
+                success: function (args) {
+                    var profile = args.dto || {};
+                    for (var i in profile) {
+                        console.log(i+"||"+ profile[i]);
+                        viewModel.set("model." + i, profile[i]);
+                    }
+                 /*   if(null!=viewModel.get("model.photo")&&""!=viewModel.get("model.photo")){
+                        $("#photoDiv").css("background-image","url("+profile["fastdfsImageServer"]+viewModel.get("model.photo")+")");
+                    }*/
+                }
+            });
+
+        /*    function modelBindphoto(){
+                viewModel.set("model.photo",$("#photo").val());
+            }*/
+        </script>
+
+        </body>
+        </html>

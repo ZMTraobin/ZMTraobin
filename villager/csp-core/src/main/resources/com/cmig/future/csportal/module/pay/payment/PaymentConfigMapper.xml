@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.pay.payment.mapper.PaymentConfigMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.pay.payment.dto.PaymentConfig">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="PING_APP_NAME" property="pingAppName" jdbcType="VARCHAR" />
+        <result column="PING_APP_ID" property="pingAppId" jdbcType="VARCHAR" />
+        <result column="TEST_SECRET_KEY" property="testSecretKey" jdbcType="VARCHAR" />
+        <result column="LIVE_SECRET_KEY" property="liveSecretKey" jdbcType="VARCHAR" />
+        <result column="PING_PUBLIC_KEY" property="pingPublicKey" jdbcType="VARCHAR" />
+        <result column="MERCHANT_PRIVATE_KEY" property="merchantPrivateKey" jdbcType="VARCHAR" />
+        <result column="ISENABLE" property="isenable" jdbcType="VARCHAR" />
+        <result column="IS_DEFAULT" property="isDefault" jdbcType="VARCHAR" />
+        <result column="IS_DEL" property="isDel" jdbcType="VARCHAR"/>
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <sql id="payMentColumns">
+        ID,
+        PING_APP_NAME,
+        PING_APP_ID,
+        TEST_SECRET_KEY,
+        LIVE_SECRET_KEY,
+        PING_PUBLIC_KEY,
+        MERCHANT_PRIVATE_KEY,
+        ISENABLE,
+        IS_DEFAULT,
+        IS_DEL
+
+    </sql>
+
+    <!--分页查询-->
+    <select id="selectPayment" parameterType="com.cmig.future.csportal.module.pay.payment.dto.PaymentConfig" resultMap="BaseResultMap">
+        select
+        <include refid="payMentColumns"/>
+        from csp_ljh_payment_config
+        <where>
+             1=1
+            <if test="pingAppName!=null and pingAppName!=''">
+                AND PING_APP_NAME=#{pingAppName}
+            </if>
+            <if test="pingAppId!=null and pingAppId!=''">
+                AND  PING_APP_ID=#{pingAppId}
+            </if>
+            and IS_DEL=#{DEL_FLAG_NORMAL}
+        </where>
+
+
+    </select>
+
+    <!--批量删除物业用户，也就是批量更新-->
+    <update id="bathupdatePayment" parameterType="java.util.Map">
+        update csp_ljh_payment_config
+        set IS_DEL=#{DEL_FLAG_DELETE}
+        where
+        ID in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--停用该账号状态-->
+    <update id="stopPayment" parameterType="com.cmig.future.csportal.module.pay.payment.dto.PaymentConfig">
+        update csp_ljh_payment_config
+        set ISENABLE=#{isenable}
+        where ID=#{id}
+    </update>
+
+    <!--停用该账号状态-->
+    <update id="startPayment" parameterType="com.cmig.future.csportal.module.pay.payment.dto.PaymentConfig">
+        update csp_ljh_payment_config
+        set ISENABLE=#{isenable}
+        where ID=#{id}
+    </update>
+    <!--查询出默认账号-->
+    <select id="selectPaymentIsDefault" parameterType="com.cmig.future.csportal.module.pay.payment.dto.PaymentConfig" resultMap="BaseResultMap">
+        select <include refid="payMentColumns"/>
+        from csp_ljh_payment_config
+        where IS_DEFAULT=#{payMentYES} AND IS_DEL=#{DEL_FLAG_NORMAL}
+    </select>
+    <!--更新默认账号-->
+    <update id="updatePaymentDefault" parameterType="com.cmig.future.csportal.module.pay.payment.dto.PaymentConfig">
+        update csp_ljh_payment_config
+        set IS_DEFAULT=#{payMentNO}
+        where ID=#{id}
+    </update>
+
+</mapper>

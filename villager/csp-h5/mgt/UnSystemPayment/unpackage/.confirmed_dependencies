@@ -1,0 +1,62 @@
+{
+  "userCreateRepair.html": {
+    "resources": [
+      "js/mui.picker.js",
+      "css/userCreateRepaire.css",
+      "js/util.js",
+      "js/mui.min.js",
+      "css/app.css",
+      "js/mui.poppicker.js",
+      "js/user-info-3.js",
+      "css/mui.min.css",
+      "css/mui.poppicker.css",
+      "css/mui.picker.min.css",
+      "js/user-info-1.js",
+      "js/mui.dtpicker.js"
+    ],
+    "refer": []
+  },
+  "userCreateRepairList.html": {
+    "resources": [
+      "css/mui.ttf",
+      "js/mui.min.js",
+      "css/app.css",
+      "css/mui.min.css",
+      "js/repairList.js",
+      "js/repair-ing.js",
+      "css/userCreateRepairList.css",
+      "js/jquery.js"
+    ],
+    "refer": [
+      "userCreateRepairDetail.html",
+      "userCreateRepairDetailDone.html"
+    ]
+  },
+  "userCreateRepairDetail.html": {
+    "resources": [
+      "css/userCreateRepairDetail.css",
+      "img/logo.jpg",
+      "css/mui.ttf",
+      "js/mui.min.js",
+      "css/app.css",
+      "css/mui.min.css",
+      "img/demo1.png",
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "img/demo2.png"
+    ],
+    "refer": [
+      "userCreateRepairList.html"
+    ]
+  },
+  "userCreateRepairDetailDone.html": {
+    "resources": [
+      "img/demo1.png",
+      "js/mui.zoom.js",
+      "js/mui.previewimage.js",
+      "css/userCreateRepairDetail.css",
+      "img/demo2.png"
+    ],
+    "refer": []
+  }
+}

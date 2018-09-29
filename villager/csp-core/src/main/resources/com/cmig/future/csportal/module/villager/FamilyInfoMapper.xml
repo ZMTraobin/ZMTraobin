@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.family.mapper.FamilyInfoMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.family.dto.FamilyInfo">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="FAMILY_CODE" property="familyCode" jdbcType="VARCHAR" />
+        <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+        <result column="USER_SEX" property="userSex" jdbcType="CHAR" />
+        <result column="MOBILE" property="mobile" jdbcType="BIGINT" />
+        <result column="FAMILY_RELATION" property="familyRelation" jdbcType="VARCHAR" />
+        <result column="AGE" property="age" jdbcType="BIGINT" />
+        <result column="POLITICAL_STATUS" property="politicalStatus" jdbcType="VARCHAR" />
+        <result column="EDUCATION" property="education" jdbcType="VARCHAR" />
+        <result column="IDCARD" property="idcard" jdbcType="VARCHAR" />
+        <result column="VILLAGE_CODE" property="villageCode" jdbcType="VARCHAR" />
+        <result column="VILLAGE_ID" property="villageId" jdbcType="VARCHAR" />
+        <result column="POPULATION" property="population" jdbcType="BIGINT" />
+        <result column="HOUSEHOLDER_MOBILE" property="householderMobile" jdbcType="BIGINT" />
+    </resultMap>
+    
+    <!-- 根据手机号查询 -->
+	<select id="selectByFamilyCode" resultMap="BaseResultMap">
+		SELECT
+			*
+		FROM
+			xl_family_info a
+		WHERE
+			a.MOBILE = #{mobile}
+	</select>
+
+    <select id="findByIdcardAndName" resultMap="BaseResultMap">
+		select * from xl_family_info a
+		where a.idcard=#{idcard}
+		and a.user_name=#{userName}
+	</select>
+	
+	<!-- 根据家庭编码查询 -->
+	<select id="queryFamily" resultMap="BaseResultMap">
+		SELECT
+			*
+		FROM
+			xl_family_info a
+		WHERE
+			a.family_code = #{familyCode}
+	</select>
+
+</mapper>

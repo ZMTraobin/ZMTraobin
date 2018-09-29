@@ -1,0 +1,39 @@
+{
+    "status": "1",
+    "message": "查询成功!",
+    "totall": 4,
+    "data": [
+        {
+            "buildingId": 4,
+            "houseCode": "A06-2-1-11-02",
+            "houseFullName": "2幢甲单元1102",
+            "paymentArea": 172.34,
+            "buildingArea": 172.34,
+            "ownerName": "马韵"
+        },
+        {
+            "buildingId": 5,
+            "houseCode": "A06-2-1-2-01",
+            "houseFullName": "2幢甲单元201",
+            "paymentArea": 123.46,
+            "buildingArea": 123.46,
+            "ownerName": "陈志坚"
+        },
+        {
+            "buildingId": 6,
+            "houseCode": "A06-2-1-2-02",
+            "houseFullName": "2幢甲单元202",
+            "paymentArea": 107.93,
+            "buildingArea": 107.93,
+            "ownerName": "吴卫琴"
+        },
+        {
+            "buildingId": 460,
+            "houseCode": "A109-1Q-A-0201",
+            "houseFullName": "1Q-A-0201",
+            "paymentArea": 89.43,
+            "buildingArea": 89.43,
+            "ownerName": "wang22,test5,test1"
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+td.td-l{font-size:15px;border-right: 1px solid #F3F3F3;}
+td.td-r,td.td-c{font-size:12px;color:#aaa;padding-left:5px;}
+td.td-r{text-align: right;}
+.listTable td{padding:8px 5px;}
+.housePicker{margin-top:20px;}
+.btn-select-left{border-top-right-radius: 0;border-bottom-right-radius:0;}
+.btn-select-right{border-top-left-radius: 0;border-bottom-left-radius:0;margin-left:-1px;}
+.mui-content-padded{background:#fff;padding:0 !important;border:1px solid #ddd;border-radius: 3px;}
+.mui-table-view,.mui-table-view-cell{padding:0px !important;}
+.list-checkbox{display: inline-block;width: 28px;height: 26px;border: 0;outline: 0!important;background-color: transparent;-webkit-appearance: none;}
+.list-checkbox:before{content:'\e411';font-family: Muiicons;font-size: 28px;font-weight: 400;line-height: 1;
+text-decoration: none;color: #aaa;border-radius: 0;background: 0 0;
+-webkit-font-smoothing: antialiased;}
+.list-checkbox:checked:before{
+	content: '\e442';
+	color:#007AFF;
+}
+.payerInfo{font-size:15px;}
+.payerInfo li{padding:10px !important;word-break: break-all;}
+.house-loc{padding:15px;margin-bottom:10px;}
+.paymentListTable{border:0;width:100%;margin-top:20px;}
+.paymentListTable td{text-align:center;border: 1px solid #ededed;font-size:12px;}
+.th td{color:#fff;background-color:#df2c12;padding:2px;}
+.noticeTable .tdLeft{width:60%;border-right:0;}
+.listTable td,.noticeTable td{word-break: break-all;}
+

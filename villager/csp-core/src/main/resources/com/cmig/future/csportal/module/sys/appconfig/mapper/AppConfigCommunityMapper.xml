@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.sys.appconfig.mapper.AppConfigCommunityMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigCommunity">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+        <result column="FUNCTION_CODES" property="functionCodes" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="CONFIG_FLAG" property="configFlag" jdbcType="VARCHAR" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+    </resultMap>
+
+
+    <!--分页查询业主端的数据-->
+    <select id="selectOwner" parameterType="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigCommunity" resultMap="BaseResultMap">
+            SELECT
+            b.ID as id,
+            c.function_names as  functionNames,
+            a.COMPANY_NAME as comPanyName,
+            a.COMMUNITY_NAME as communityName
+            FROM  csp_ljh_base_community a
+            left join csp_ljh_app_config_community b on a.id=b.COMMUNITY_ID
+            left join csp_v_app_con_community_view c on b.id=c.id
+            left outer join csp_ljh_sys_user_community  suc on a.ID = suc.COMMUNITY_ID
+            <where>
+                1=1
+                AND suc.SYS_USER_ID = #{request.userId,jdbcType=DECIMAL}
+                AND b.DEL_FLAG="0"
+                AND b.CONFIG_FLAG='owner'
+                <if test="companyId!=null and companyId!=''">
+                   and  a.COMPANY_ID=#{companyId}
+                </if>
+                <if test="communityId!=null and communityId!=''">
+                    and a.ID=#{communityId}
+                </if>
+                <if test="comPanyName!=null and comPanyName!=''">
+                    AND a.COMPANY_NAME LIKE CONCAT(CONCAT('%',#{comPanyName}),'%')
+                </if>
+                <if test="communityName!=null and communityName!=''">
+                    AND a.COMMUNITY_NAME LIKE CONCAT(CONCAT('%',#{communityName}),'%')
+                </if>
+            </where>
+    </select>
+
+
+    <!--分页查询物业端的数据-->
+    <select id="selectPropertyMC" parameterType="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigCommunity" resultMap="BaseResultMap">
+        SELECT
+        b.ID as id,
+        c.function_names as  functionNames,
+        a.COMPANY_NAME as comPanyName,
+        a.COMMUNITY_NAME as communityName
+        FROM  csp_ljh_base_community a
+        left join csp_ljh_app_config_community b on a.id=b.COMMUNITY_ID
+        left join csp_v_app_con_community_view c on b.id=c.id
+        left outer join csp_ljh_sys_user_community  suc on a.ID = suc.COMMUNITY_ID
+        <where>
+            1=1
+            AND suc.SYS_USER_ID = #{request.userId,jdbcType=DECIMAL}
+            AND b.DEL_FLAG="0"
+            AND b.CONFIG_FLAG='propertyMC'
+            <if test="companyId!=null and companyId!=''">
+                and  a.COMPANY_ID=#{companyId}
+            </if>
+            <if test="communityId!=null and communityId!=''">
+                and a.ID=#{communityId}
+            </if>
+            <if test="comPanyName!=null and comPanyName!=''">
+                AND a.COMPANY_NAME LIKE CONCAT(CONCAT('%',#{comPanyName}),'%')
+            </if>
+            <if test="communityName!=null and communityName!=''">
+                AND a.COMMUNITY_NAME LIKE CONCAT(CONCAT('%',#{communityName}),'%')
+            </if>
+        </where>
+
+    </select>
+
+
+
+
+    <!--根据主键查询业主端信息-->
+    <select id="getAppConfigCommunityById" parameterType="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigCommunity" resultMap="BaseResultMap">
+             SELECT
+             c.COMPANY_NAME as comPanyName,
+             COMMUNITY_NAME as communityName,
+             f.function_names as functionNames,
+             clacc.ID as id
+             FROM csp_ljh_base_community c
+             INNER JOIN csp_ljh_app_config_community clacc
+             ON c.ID = clacc.COMMUNITY_ID
+             INNER JOIN csp_v_app_con_community_view f
+             ON f.id = clacc.ID
+             WHERE clacc.CONFIG_FLAG = 'owner'
+             and clacc.DEL_FLAG="0" and clacc.ID=#{id}
+
+    </select>
+
+    <!--根据ID查询物业端信息-->
+    <select id="getAppConfigCommunityByIdPropertyMC" parameterType="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigCommunity" resultMap="BaseResultMap">
+        SELECT
+        c.COMPANY_NAME as comPanyName,
+        COMMUNITY_NAME as communityName,
+        f.function_names as functionNames,
+        clacc.ID as id
+        FROM csp_ljh_base_community c
+        INNER JOIN csp_ljh_app_config_community clacc
+        ON c.ID = clacc.COMMUNITY_ID
+        INNER JOIN csp_v_app_con_community_view f
+        ON f.id = clacc.ID
+        WHERE clacc.CONFIG_FLAG = 'propertyMC'
+        and clacc.DEL_FLAG="0" and clacc.ID=#{id}
+    </select>
+       <!--根据小区对象中的communityId查询该小区配置了哪些app应用-->
+        <select id="findAppCommunity" parameterType="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigCommunity" resultMap="BaseResultMap">
+
+            SELECT
+            a.ID as id
+            FROM csp_ljh_app_config_community a
+            LEFT join csp_v_app_con_community_view b
+            on a.ID=b.id
+            LEFT JOIN csp_ljh_base_community c
+            on a.COMMUNITY_ID=c.ID
+            where a.COMMUNITY_ID=#{communityId}
+
+        </select>
+
+
+    <!--根据小区配置ID更新小区配置的DEL_FLAG字段-->
+    <update id="updateAppCommunityFunction" parameterType="String">
+        update csp_ljh_app_community_function set
+        DEL_FLAG="1"
+        WHERE CID=#{AppConfigCommuntiyId}
+    </update>
+</mapper>

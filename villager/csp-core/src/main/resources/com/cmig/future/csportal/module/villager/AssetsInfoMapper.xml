@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.family.mapper.AssetsInfoMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.family.dto.AssetsInfo">
+        <result column="id" property="id" jdbcType="DECIMAL" />
+        <result column="family_code" property="familyCode" jdbcType="VARCHAR" />
+        <result column="deposit_bank" property="depositBank" jdbcType="VARCHAR" />
+        <result column="deposit_amount" property="depositAmount" jdbcType="VARCHAR" />
+        <result column="is_loan" property="isLoan" jdbcType="VARCHAR" />
+        <result column="loan_amount" property="loanAmount" jdbcType="VARCHAR" />
+        <result column="loan_balance" property="loanBalance" jdbcType="VARCHAR" />
+        <result column="loan_rate" property="loanRate" jdbcType="VARCHAR" />
+        <result column="acceptable_loan_rate" property="acceptableLoanRate" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <!-- 根据家庭编码查询 -->
+	<select id="selectByFamilyCode" resultMap="BaseResultMap">
+		SELECT
+			*
+		FROM
+			xl_assets_info a
+		WHERE
+			a.family_code = #{encodeStr}
+	</select>	
+
+	<!-- 根据家庭编码更新 -->
+	<update id="updateByFamilyCode" >
+		UPDATE
+		 	xl_assets_info 
+		set
+		 	deposit_amount = #{1},deposit_bank=#{2},is_loan=#{3}
+		where
+			family_code=#{0}
+	</update>	
+
+</mapper>

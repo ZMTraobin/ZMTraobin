@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.integral.mapper.IntegralRuleMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.integral.dto.IntegralRule">
+        <result column="RULE_ID" property="ruleId" jdbcType="DECIMAL" />
+        <result column="RULE_CODE" property="ruleCode" jdbcType="VARCHAR" />
+        <result column="ACTION_TYPE" property="actionType" jdbcType="VARCHAR" />
+        <result column="EVENT_CODE" property="eventCode" jdbcType="VARCHAR" />
+        <result column="NUM" property="num" jdbcType="DECIMAL" />
+        <result column="CAPPING_FACTOR" property="cappingFactor" jdbcType="VARCHAR" />
+        <result column="CAPPING_TIMES" property="cappingTimes" jdbcType="DECIMAL" />
+        <result column="BILLING_CYCLE" property="billingCycle" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="EFFECTIVE_START_DATE" property="effectiveStartDate" jdbcType="DATE" />
+        <result column="EFFECTIVE_END_DATE" property="effectiveEndDate" jdbcType="DATE" />
+        <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+</mapper>

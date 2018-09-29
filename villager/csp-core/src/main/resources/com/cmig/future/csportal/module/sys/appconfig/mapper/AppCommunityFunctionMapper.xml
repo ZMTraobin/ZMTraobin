@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.sys.appconfig.mapper.AppCommunityFunctionMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.sys.appconfig.dto.AppCommunityFunction">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+        <result column="CID" property="cid" jdbcType="VARCHAR" />
+        <result column="FID" property="fid" jdbcType="VARCHAR" />
+        <result column="NUMBER" property="number" jdbcType="DECIMAL" />
+        <result column="AUTHEN_TYPE" property="authenType" jdbcType="VARCHAR" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+    </resultMap>
+
+
+    <select id="select" parameterType="com.cmig.future.csportal.module.sys.appconfig.dto.AppCommunityFunction"  resultMap="BaseResultMap">
+        SELECT
+        a.ID AS id,
+        a.CID AS cid,
+        a.FID AS fid,
+        a.NUMBER AS number,
+        a.AUTHEN_TYPE AS authenType
+        FROM csp_ljh_app_community_function a
+        WHERE
+        a.del_flag = #{DEL_FLAG_NORMAL}
+        <if test="cid != null and cid != ''">
+            AND a.CID = #{cid}
+        </if>
+
+        <if test="fid != null and fid != ''">
+            AND a.FID = #{fid}
+        </if>
+        order by a.NUMBER asc
+    </select>
+    
+    <delete id="batchDeleteByCid">
+        delete from csp_ljh_app_community_function where
+         CID  in
+         <foreach collection="appConfigCommunityIds" item="cid" open="(" separator="," close=")">
+              #{cid}
+         </foreach>
+
+    </delete>
+
+</mapper>

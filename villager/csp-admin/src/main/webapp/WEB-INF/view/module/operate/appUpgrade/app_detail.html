@@ -1,0 +1,371 @@
+<!--
+        * description: cms app升级详情界面
+        *author:chao.wang@hand-china.com
+        * version: 1.0
+        *
+-->
+<#include "../../../include/header.html"/>
+<body>
+<style>
+	.down_b{
+		height: 36px;
+		padding-top: 8px;
+		padding-left: 8px;
+		border-bottom: 1px solid #ccc;
+		font-size: 13px;
+		font-family: 微软雅黑;
+	}
+</style>
+<script type="text/javascript" src="${base.contextPath}/lib/ckeditor/ckeditor.js"></script>	
+<script src="${base.contextPath}/common/code?yesNoData=SYS.YES_NO" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?cspOperateAppType=CSP.OPERATE.APP_TYPE" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?cspAppName=CSP.APP_NAME" type="text/javascript"></script>
+<script>
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    var content;
+	var attchDataArray = [];//上传文件集合
+	var mSize = 50;//文件大小,单位M
+	var fileCount = 1;//文件个数
+	//var fileTypes={"APk":"apk"};//上传文件格式限制
+    newViewModel = kendo.observable({
+        model: {}
+    });
+
+</script>
+    <div id="page-content" >
+        <form class="form-horizontal" id="mainform" enctype="application/json;charset=UTF-8">
+			<div class="col-xs-12">
+			   <div class="form-group">
+					<label class="col-sm-2 control-label">App名称：</label>
+					<div class="col-sm-3">
+						<input required style="width:100%" name="appName" id="appName" data-bind="value:model.appName" >
+						<script>kendo.bind($('#appName'), newViewModel);</script>
+					</div>
+					<div class="col-sm-4" >
+						 <span data-for="appName" class="k-invalid-msg"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12">
+			   <div class="form-group">
+					<label class="col-sm-2 control-label">适用平台：</label>
+					<div class="col-sm-3">
+						<input required style="width:100%" name="appType" id="appType" data-bind="value:model.appType" >
+						<script>kendo.bind($('#appType'), newViewModel);</script>
+					</div>
+					<div class="col-sm-4" >
+						 <span data-for="appType" class="k-invalid-msg"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12" >
+				<div class="form-group">
+					<label class="col-sm-2 control-label" style="text-align: right">版本编号：</label>
+					<div class="col-sm-3">
+						<input required id="version" name="版本编号" type="text" placeholder="xx.xx.xxx"  validationMessage='<@spring.message "hap.validation.notempty"/>' data-bind="value:model.version" class="k-textbox"
+							   style="width: 100%;" maxlength="9" >
+						<script>kendo.bind($('#version'), newViewModel);</script>
+					</div>
+					<div class="col-sm-4" >
+						<span data-for="版本编号" class="k-invalid-msg"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12">
+			   <div class="form-group">
+					<label class="col-sm-2 control-label">是否最新版本：</label>
+					<div class="col-sm-3">
+						<input required style="width:100%" name="versionFlag" id="versionFlag" data-bind="value:model.versionFlag" >
+						<script>kendo.bind($('#versionFlag'), newViewModel);</script>
+					</div>
+					<div class="col-sm-4" >
+						 <span data-for="versionFlag" class="k-invalid-msg"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">是否强制升级：</label>
+					<div class="col-sm-3">
+						<input required style="width:100%" name="ismupdatel" id="ismupdatel" data-bind="value:model.ismupdatel" >
+						<script>kendo.bind($('#ismupdatel'), newViewModel);</script>
+					</div>
+					<div class="col-sm-4" >
+						<span data-for="ismupdatel" class="k-invalid-msg"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-12" id="app_url" style="display: none;">
+				<div class="form-group">
+					<label class="col-sm-2 control-label" style="text-align: right">APP下载地址：</label>
+					<div class="col-sm-6">
+						<input id="url" name="APP下载地址" type="text" validationMessage='<@spring.message "hap.validation.notempty"/>' data-bind="value:model.appUrl" class="k-textbox"
+							   style="width: 100%;margin-bottom: 10px;">
+						<script>kendo.bind($('#url'), newViewModel);</script>
+					</div>
+					<div class="col-sm-4" >
+						<span data-for="APP下载地址" class="k-invalid-msg"></span>
+					</div>
+				</div>
+			</div>
+			<div id="url_div" class="row" style="display: none;margin-bottom: 10px;margin-top: 10px;">
+				<div class="col-sm-12">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" style="text-align: right">附件下载:</label>
+						<div class="col-sm-7" id="downList">
+							<div class='down_b'>
+								<input id="apkUrl" style='color: #38f;display: inline-block;border: none;width: 90%;margin-bottom: 10px;' data-bind="value:model.apkUrl" />
+								<button type='button' class='k-button k-button-bare k-upload-action' style='float: right;margin-top: -5px;margin-right: -13px;'>
+									<span class='k-icon k-i-close k-i-delete' title='移除' aria-label='移除' onclick='removeSysAttach()'></span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12" id="apk_url" style="display: block;">
+				<div class="form-group">
+						<div class="row" style="margin-bottom: 10px;">
+							<#include "../../base/sys_attachment_upload.html"/>
+							<script>$("#tipName").html("上传APP(apk文件)：");
+							$("#files_tip").html("* 单个文件不能超过50M(必填)");</script>
+						</div>
+				</div>
+			</div>
+
+			<div class="col-xs-12">
+				<div class="form-group">
+				<label class="col-xs-2 control-label" style="text-align: right;margin-left: -15px;">升级内容:</label>
+					<div class="col-sm-8">
+						<textarea id="content" style="height:150px;width:320px" data-bind="value:model.appContent" ></textarea>
+					</div>
+					<div class="col-sm-2">
+						<span data-for="appContent" class="k-invalid-msg"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-12" align="center" style=" background: #fff;margin-top: 10px;">
+			  <span class="btn btn-success" id="saveGrid" type="submit"><@spring.message "hap.save"/></span>
+			  <span class="btn btn-success" id="closeWin" type="button"><@spring.message "hap.cancel"/></span>
+			</div>
+        </form>
+    </div>
+<script>
+	//编辑:加载数据
+	if (isedit) {
+		$.ajax({
+			url    : '${base.contextPath}/csp/ljh/app/download/query?id=${RequestParameters.id!0}',
+			async: false,
+			success: function (args) {
+				var a0 = args.rows[0] || {};
+				var appType = "";
+				var url = "";
+				for (var k in a0) {
+					if(k == "appType"){
+						appType = a0[k];
+					}
+					if(k == "url"){
+						url = a0[k];
+					}
+					newViewModel.model.set(k, a0[k]);
+				}
+				if(appType == "Android"){
+					$("#url").attr("required",false);
+					$("#url_div").css({"display":"block"});
+					$("#apk_url").css({"display":"none"});
+					$("#app_url").css({"display":"none"});
+					newViewModel.model.set("apkUrl", url);
+				}else if(appType == "IOS"){
+					$("#url").attr("required",true);
+					$("#url_div").css({"display":"none"});
+					$("#apk_url").css({"display":"none"});
+					$("#app_url").css({"display":"block"});
+					newViewModel.model.set("appUrl", url);
+				}
+			}
+		});
+	}
+/* $(document).ready(function() {
+	//富文本编辑框
+	 content = CKEDITOR.replace('editor',{
+	 removeButtons : 'Underline,Subscript,Superscript,Source,About',
+	 height : '200px',
+	 weight : '400px',
+	 language:'zh-cn'
+	 });
+	 content.setData(newViewModel.model.appContent);
+
+}); */
+
+//绑定初始化
+var container = $("#mainform");
+kendo.init(container);
+//必填验证
+container.kendoValidator({
+	messages: {
+		required: "必填项"
+	},
+});
+kendo.bind($('#page-content'), newViewModel);
+
+//平台切换
+	var modelAppType = newViewModel.model.appType;
+	var url = newViewModel.model.url || "";
+
+$("#appType").change(function(){
+	var appType = $("#appType").val();
+	var apkUrl = newViewModel.model.apkUrl || "";
+	var appUrl = newViewModel.model.appUrl || "";
+	//console.log(url+"|"+appUrl+"|"+apkUrl);
+	if(appType == "Android"){
+		$("#url").attr("required",false);
+		$("#app_url").css({"display":"none"});
+		$("#apk_url").css({"display":"block"});
+		$("#url_div").css({"display":"none"});
+		var i = attchDataArray.length;
+		if( i > 0 || apkUrl != ""){//存在上传的apk文件
+			if(i > 0){//有新上传的文件
+				newViewModel.model.set('url',attchDataArray[i-1].attachUrl);
+				newViewModel.model.set('apkUrl',attchDataArray[i-1].attachUrl);
+				newViewModel.model.set('appSize',(attchDataArray[i-1].size/1024/1024).toFixed(2));
+			}
+			$("#apk_url").css({"display":"none"});
+			$("#url_div").css({"display":"block"});
+		}else{//不存在上传的apk文件
+			newViewModel.model.set('url',"");
+			newViewModel.model.set('apkUrl',"");
+			$("#apk_url").css({"display":"block"});
+			$("#url_div").css({"display":"none"});
+		}
+	}else if(appType == "IOS"){
+		$("#url").attr("required",true);
+		$("#app_url").css({"display":"block"});
+		$("#apk_url").css({"display":"none"});
+		$("#url_div").css({"display":"none"});
+		if(appUrl != "" || appUrl != null){//存在app文件路径
+			newViewModel.model.set('appUrl',appUrl);
+		}
+	}
+});
+	//验证标识符
+	var isOK = true;
+	//版本号验证
+	function validator_version(){
+		var reg = /^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,3}$/; //版本号格式:xx.xx.xxx
+		var str = document.getElementById('version').value.trim();
+		if(!reg.test(str)){
+			kendo.ui.showInfoDialog({
+				message:'不符合版本号规则!'
+			});
+			isOK = false;
+		}
+		else{
+			isOK = true;
+		}
+	}
+$("#saveGrid").click(function () {
+	$("#page-content").kendoValidator();
+	var content = document.getElementById("content").value;
+	newViewModel.model.set('appContent',content);
+	newViewModel.model.__status = isedit ? 'update' : 'add';
+	var validator = $("#mainform").data("kendoValidator");
+
+	//上传
+	for(var i = 0 ; i < attchDataArray.length;i++){
+		newViewModel.model.set('url',attchDataArray[i].attachUrl);
+		newViewModel.model.set('appSize',(attchDataArray[i].size/1024/1024).toFixed(2));
+	}
+	var appType = $("#appType").val();
+	var files_tip_message = "请上传apk文件!";
+	if(appType == "Android"){
+		if(attchDataArray.length == 0){
+			newViewModel.model.set('url',newViewModel.model.apkUrl);
+		}
+		files_tip_message = "请上传apk文件!";
+	}else if(appType == "IOS"){
+		newViewModel.model.set('appSize',"");
+		newViewModel.model.set('url',newViewModel.model.appUrl);
+		files_tip_message = "请输入app下载地址!";
+	}
+
+	if(newViewModel.model.url == null || newViewModel.model.url == ""){
+		kendo.ui.showInfoDialog({
+			title: '提示信息',
+			message: files_tip_message
+		});
+	}else{
+		if (validator.validate()) {
+			validator_version();
+			if(!isOK){
+				return;
+			}
+			Hap.submitForm({
+				url: '${base.contextPath}/csp/ljh/app/download/saveOrUpdate',
+				formModel: newViewModel.model,
+				success: function (data) {
+					if (data.success == false) {
+						kendo.ui.showErrorDialog({
+							message: data.message
+						});
+					}
+					else {
+						kendo.ui.showInfoDialog({
+							title: '提示信息',
+							message: '保存成功!'
+						}).done(function (args) {
+							window.parent.$("#Grid").data("kendoGrid").dataSource.read();
+							window.parent.$("#appDetails").data("kendoWindow").close();
+						});
+					}
+				}
+			});
+		}
+	}
+
+});
+function removeSysAttach(){
+	newViewModel.model.set('url',"");
+	newViewModel.model.set('apkUrl',"");
+	newViewModel.model.set('appSize',"");
+	$(".k-upload-files").find("button").eq(0).click();//删除按钮
+	$("#apkUrl").val("");
+	$("#url_div").css({"display":"none"});
+	$("#apk_url").css({"display":"block"});
+}
+$("#closeWin").click(function(){
+	if (isedit) {
+        window.parent.$("#appDetails").data("kendoWindow").close();
+    } else {
+        window.parent.$("#appDetails").data("kendoWindow").close();
+    }
+});
+
+    //状态栏下拉框
+    $("#versionFlag").kendoDropDownList({
+		  dataSource:yesNoData,
+		  valuePrimitive: true,
+		  dataTextField: "meaning",
+          dataValueField: "value"
+	});
+	$("#ismupdatel").kendoDropDownList({
+		  dataSource:yesNoData,
+		  valuePrimitive: true,
+		  dataTextField: "meaning",
+          dataValueField: "value"
+	});
+	$("#appType").kendoDropDownList({
+		  dataSource:cspOperateAppType,
+		  valuePrimitive: true,
+		  dataTextField: "meaning",
+          dataValueField: "value"
+	});
+	$("#appName").kendoDropDownList({
+		dataSource:cspAppName,
+		valuePrimitive: true,
+		dataTextField: "meaning",
+		dataValueField: "value"
+	});
+
+</script>
+</body>
+</html>

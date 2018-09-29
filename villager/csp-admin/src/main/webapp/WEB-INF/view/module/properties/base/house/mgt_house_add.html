@@ -1,0 +1,232 @@
+<!-- * description: 房屋新增 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../../include/header.html"/>
+<script src="${base.contextPath}/common/code?mgtHouseUserType=MGT.HOUSE_USE_TYPE" type="text/javascript"></script>
+<body>
+<div id="content-container">
+    <div id="page-content">
+        <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">房屋编码：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="houseCode" name="houseCode" data-bind="value:model.houseCode" class="k-textbox" maxlength="50"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">节点名称：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="houseName" name="houseName" data-bind="value:model.houseName" class="k-textbox" maxlength="50"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">建筑实体：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="houseFullName" name="houseFullName" data-bind="value:model.houseFullName" class="k-textbox" maxlength="50"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">项目：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="communityId" name="communityId" data-bind="value:model.communityId,text:model.communityName" class="k-textbox" />
+                            <script>
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">建筑面积(㎡)：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="buildingArea" name="buildingArea" data-bind="value:model.buildingArea" class="k-textbox" min="0" onkeyup='clearNoNum(this)' maxlength="50"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">收费面积(㎡)：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="paymentArea" name="paymentArea" data-bind="value:model.paymentArea" class="k-textbox" min="0" onkeyup='clearNoNum(this)' maxlength="50"/>
+                            <script>
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">用途：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="useType" name="useType" data-bind="value:model.useType" class="k-textbox"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">装修情况：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="decorationStatus" name="decorationStatus" data-bind="value:model.decorationStatus" class="k-textbox" maxlength="50"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <div class="col-sm-12 text-center">
+                        <span class="btn btn-success" id="save" type="submit">
+                            <i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                        <span id="back" class="btn btn-primary" style="" onclick="back()">返回</span>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    //console.log("${RequestParameters.id!0}");
+    window.viewModel = kendo.observable({
+        model: {},
+        mgtHouseUserType:mgtHouseUserType,
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin").data("kendoWindow").close();
+        }
+    });
+
+    //LOV
+    $("#communityId").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "COMMUNITY_LOV")});
+    $($("input[name='communityId_input']").next()).css("margin-top","0px");
+    $($("input[name='communityId_input']").next().next().find("span")).css("margin-left","-7px");
+
+    //枚举数据下拉框
+    $("#useType").kendoDropDownList({
+        valuePrimitive:true,
+        dataTextField: "meaning",
+        dataValueField: "value",
+        dataSource: mgtHouseUserType
+    });
+
+    //绑定初始化
+    var container = $("#mainform");
+    kendo.init(container);
+    //必填验证
+    container.kendoValidator({
+        messages: {
+            required: "必填项"
+        },
+    });
+    kendo.bind($('#page-content'), viewModel);
+
+    var url = '';
+    var validator = $("#mainform").data("kendoValidator");
+
+    //只能输入正数
+    function clearNoNum(obj) {
+        //先把非数字的都替换掉，除了数字和.
+        obj.value = obj.value.replace(/[^\d.]/g, "");
+        //必须保证第一个为数字而不是.
+        obj.value = obj.value.replace(/^\./g, "");
+        //保证只有出现一个.而没有多个.
+        obj.value = obj.value.replace(/\.{2,}/g, ".");
+        //保证.只出现一次，而不能出现两次以上
+        obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+    }
+    //验证标识符
+    var isOK = true;
+    //编码格式验证
+    function validator_code(str) {
+        var patrn=/^([A-Z]{1,}[0-9]{0,})(\-[A-Z0-9]{1,}){0,}$/;//编码格式
+        if (!patrn.test(str)) {
+            kendo.ui.showInfoDialog({
+                message:'房屋编码格式不正确'
+            });
+            isOK = false;
+        }else{
+            isOK = true;
+        }
+    }
+
+    $("#save").click(function(){
+        $("#page-content").kendoValidator();
+        viewModel.model.__status = isedit ? 'update' : 'add';
+        var url = '${base.contextPath}/csp/mgt/house/saveOrUpdate?isedit='+"add";
+        if (validator.validate()) {
+            var houseId = viewModel.model.houseId;
+            var houseCode = viewModel.model.houseCode;
+            var houseName = viewModel.model.houseName;
+            var houseNickName = viewModel.model.houseNickName;
+            var houseFullName = viewModel.model.houseFullName;
+            var useType = viewModel.model.useType;
+            var buildingArea = viewModel.model.buildingArea;
+            var paymentArea = viewModel.model.paymentArea;
+            var decorationStatus = viewModel.model.decorationStatus;
+            var structureParentFullName = viewModel.model.structureParentFullName;
+            var parentStructureId = viewModel.model.parentStructureId;
+            var communityId = viewModel.model.communityId;
+            validator_code(houseCode);
+            if(!isOK){
+                return;
+            }
+            var jsonArray = {
+                houseId: houseId,
+                houseCode: houseCode,
+                houseName: houseName,
+                houseNickName: houseNickName,
+                houseFullName: houseFullName,
+                useType: useType,
+                buildingArea: buildingArea,
+                paymentArea: paymentArea,
+                decorationStatus: decorationStatus,
+                structureParentFullName:structureParentFullName,
+                parentStructureId:parentStructureId,
+                communityId:communityId
+            };
+            console.log(jsonArray);
+            $.ajax({
+                url: url,
+                async: false,
+                type: "post",
+                data: jsonArray,
+                dataType: "json",
+                success: function (data) {
+                    //console.log(data);
+                    var message = '保存成功!';
+                    if(!data.success){
+                        message = data.message;
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: message
+                        });
+                    }else {
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: '保存成功!'
+                        }).done(function (e) {
+                            window.parent.$("#editWin1").data("kendoWindow").close();
+                            var grid = window.parent.$('#Grid').data('kendoGrid');
+                            grid.dataSource.page(grid.dataSource._page);
+                        });
+                    }
+                },
+                error: function (data) {
+                    kendo.ui.showErrorDialog({
+                        message: data.message
+                    });
+                }
+            });
+        }
+    });
+
+    $(document).ready(function(){
+
+    });
+
+    function back(){
+        var details =  window.parent.$("#editWin1").data("kendoWindow");
+        details.close();
+    }
+
+</script>
+</body>
+</html>

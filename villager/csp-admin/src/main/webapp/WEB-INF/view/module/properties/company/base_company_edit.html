@@ -1,0 +1,268 @@
+<#--
+        * description: 快速编码界面
+        * author:jialong.zuo@hand-china.com
+        * version: 1.0
+        *
+        -->
+    <#include "../../../include/header.html">
+        <div>
+            <script src="${base.contextPath}/common/code?agentTypeData=CSP.COMPANY_AGENT_TYPE"
+                    type="text/javascript"></script>
+            <script src="${base.contextPath}/common/code?yesnoData=SYS.YES_NO" type="text/javascript"></script>
+            <script type="text/javascript">
+                var isedit = '${RequestParameters.isedit!0}' == '1';
+                viewModel = kendo.observable({
+                    model: {}
+                });
+
+                if (isedit) {
+                    $.ajax({
+                        url: '${base.contextPath}/csp/ljh/base/company/query?companyId=${RequestParameters.companyId!0}',
+                        success: function (args) {
+                            var a0 = args.rows[0] || {};
+                            for (var k in a0) {
+                                viewModel.model.set(k, a0[k]);
+                            }
+                        }
+                    });
+                }else{
+                    viewModel.model.set("workWxFlag", "N");
+                }
+            </script>
+            <div id="page-content">
+                <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label" style="text-align: right">公司编码：</label>
+                                <div class="col-xs-4">
+                                    <input required type="text" style="width: 100%" id="companyCode" name="companyCode"
+                                           data-bind="value:model.companyCode" class="k-textbox" maxlength="50"/>
+                                    <script>kendo.bind($('#companyCode'), viewModel);</script>
+                                </div>
+                                <label class="col-xs-2  control-label" style="text-align: right">公司名称：</label>
+                                <div class="col-xs-4">
+                                    <input required type="text" style="width: 100%" id="companyName" name="companyName"
+                                           data-bind="value:model.companyName" class="k-textbox" maxlength="50"/>
+                                    <script>kendo.bind($('#companyName'), viewModel);</script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label" style="text-align: right">源系统公司id：</label>
+                                <div class="col-xs-4">
+                                    <input type="text" style="width: 100%" id="sourceSystemId" name="sourceSystemId"
+                                           data-bind="value:model.sourceSystemId" class="k-textbox"/>
+                                    <script>kendo.bind($('#sourceSystemId'), viewModel);</script>
+                                </div>
+                                <label class="col-xs-2  control-label" style="text-align: right">物管云服务地址：</label>
+                                <div class="col-xs-4">
+                                    <input required type="text" style="width: 100%" id="serverUrl" name="serverUrl"
+                                           data-bind="value:model.serverUrl" class="k-textbox" min="0"
+                                           onkeyup='clearNoNum(this)' maxlength="50"/>
+                                    <script>kendo.bind($('#serverUrl'), viewModel);</script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label" style="text-align: right">企业微信corpId：</label>
+                                <div class="col-xs-4">
+                                    <input required type="text" style="width: 100%" id="corpId"
+                                           name="corpId" data-bind="value:model.corpId" class="k-textbox"
+                                           maxlength="50"/>
+                                    <script>kendo.bind($('#corpId'), viewModel);</script>
+                                </div>
+                                <label class="col-xs-2  control-label" style="text-align: right">通讯录密钥：</label>
+                                <div class="col-xs-4">
+                                    <input required type="text" style="width: 100%" id="addressSecret"
+                                           name="addressSecret" data-bind="value:model.addressSecret" class="k-textbox"
+                                           maxlength="50"/>
+                                    <script>kendo.bind($('#addressSecret'), viewModel);</script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label" style="text-align: right">启用企业微信：</label>
+                                <div class="col-xs-4">
+                                    <input type="text" style="width: 100%" id="workWxFlag" name="workWxFlag"
+                                           data-bind="value:model.workWxFlag" class="k-textbox" maxlength="50"/>
+                                    <script>kendo.bind($('#workWxFlag'), viewModel);</script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <br>
+                </form>
+            </div>
+        </div>
+
+        <div id='grid-container' style="clear: both;">
+            <div id="corpAgentGrid" style="margin-left:10px"></div>
+            <!--        <div style="width: 600px;align:center;" >
+                <span id= "saveGrid" class="btn btn-success k-grid-save-changes"  style="margin-left:270px ;margin-top:12px; margin-bottom:10px" ><@spring.message "hap.save"/></span>
+               </div>-->
+        </div>
+
+        </div>
+        <script>
+
+
+            var crudServiceBaseUrl = "${base.contextPath}/csp/ljh/corp/agent";
+            dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: crudServiceBaseUrl + "/query?corpId=${RequestParameters.companyId!0}",
+                        type: "POST",
+                        dataType: "json"
+                    },
+                    create: {
+                        url: "${base.contextPath}/csp/ljh/corp/agent/submit",
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    update: {
+                        url: "${base.contextPath}/csp/ljh/corp/agent/submit",
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    destroy: {
+                        url: crudServiceBaseUrl + "/remove",
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    parameterMap: function (options, type) {
+                        if (type !== "read" && options.models) {
+                            var datas = Hap.prepareSubmitParameter(options, type);
+                            return kendo.stringify(datas);
+                        } else if (type === "read") {
+                            return Hap.prepareQueryParameter(viewModel.model.toJSON(), options);
+                        }
+                    }
+                },
+                batch: true,
+                serverPaging: true,
+                pageSize: 10,
+                schema: {
+                    data: 'rows',
+                    total: 'total',
+                    model: {
+                        id: "id",
+                        fields: {
+                            agentNo: {type: "string"},
+                            agentId: {validation: {required: true}},
+                            agentSecret: {validation: {required: true}},
+                            messageToken: {validation: {required: true}},
+                            tncodingAesKey: {validation: {required: true}},
+                            agentType: {validation: {required: true}},
+                        }
+                    }
+                }
+            });
+
+            var grid = $("#corpAgentGrid").kendoGrid({
+                dataSource: dataSource,
+                navigatable: false,
+                height: '200px',
+                width: '750px',
+                resizable: true,
+                scrollable: true,
+                selectable: 'multiple,rowbox',
+                toolbar: [{
+                    name: "create",
+                    template: '<span class="btn btn-primary k-grid-add"><@spring.message "hap.new"/></span>'
+                }, {
+                    template: '<span id= "saveGrid" class="btn btn-success" ><@spring.message "hap.save"/></span>'
+                },
+                    {
+                        template: '<span  onclick="deleteData()"  class="btn btn-danger"><@spring.message "hap.delete"/></span>'
+                    }],
+                columns: [
+                    {field: "agentNo", title: '应用编号', width: 80},
+                    {field: "agentId", title: '应用ID', width: 80},
+                    {field: "agentSecret", title: '应用秘钥', width: 80},
+                    {field: "messageToken", title: '消息TOKEN', width: 80},
+                    {field: "tncodingAesKey", title: '消息密钥', width: 80},
+                    {
+                        field: "agentType",
+                        title: '应用类型',
+                        width: 120,
+                        template: function (dataItem) {
+                            var v = dataItem.agentType;
+                            if (v != undefined) {
+                                $.each(agentTypeData, function (i, n) {
+                                    if ((n.value || '').toLowerCase() == (String(v) || '').toLowerCase()) {
+                                        v = n.meaning;
+                                        return v;
+                                    }
+                                })
+                                return v;
+                            } else {
+                                return '';
+                            }
+                        },
+                        editor: function (container, options) {
+                            $('<input name="' + options.field + '"/>')
+                                .appendTo(container)
+                                .kendoDropDownList({
+                                    dataTextField: "meaning",
+                                    dataValueField: "value",
+                                    valuePrimitive: true,
+                                    dataSource: agentTypeData
+                                });
+                        }
+                    }
+                ],
+                editable: true
+            }).data("kendoGrid");
+
+            function deleteData() {
+                Hap.deleteGridSelection({
+                    grid: $('#corpAgentGrid')
+                });
+            }
+
+            $("#saveGrid").click(function () {
+                viewModel.model.__status = isedit ? 'update' : 'add';
+                Hap.submitForm({
+                    url: '${base.contextPath}/csp/ljh/base/company/submit',
+                    formModel: viewModel.model,
+                    grid: {"corpAgents": $("#corpAgentGrid")},
+                    success: function (data) {
+                        //grid.dataSource.query();
+                        window.parent.$('#Grid').data('kendoGrid').dataSource.query();
+                        if (isedit) {
+                            window.parent.$("#editWin").data("kendoWindow").close();
+                        } else {
+                            window.parent.$("#newWin").data("kendoWindow").close();
+                        }
+
+
+                    }
+                });
+            });
+
+
+            //状态栏下拉框
+            $("#workWxFlag").kendoDropDownList({
+                dataSource:yesnoData,
+                valuePrimitive: true,
+                dataTextField: "meaning",
+                dataValueField: "value"
+            });
+        </script>
+        </body>
+        </html>

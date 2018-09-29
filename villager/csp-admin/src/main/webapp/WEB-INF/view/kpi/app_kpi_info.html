@@ -1,0 +1,85 @@
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+        queryResource: function (e) {
+            $('#Grid').data('kendoGrid').dataSource.page(1);
+        }
+    });
+</script>
+<body>
+<div id="Grid"></div>
+
+<script type="text/javascript">
+
+    var BaseUrl = _basePath;
+    dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: BaseUrl + "/csp/umeng/all/base",
+                type: "POST",
+                dataType: "json"
+            },
+            parameterMap: function (options, type) {
+                if (type !== "read" && options.models) {
+                    var datas = Hap.prepareSubmitParameter(options, type)
+                    return kendo.stringify(datas);
+                } else if (type === "read") {
+                    return Hap.prepareQueryParameter(viewModel.model.toJSON(), options)
+                }
+            }
+        },
+        batch: true,
+        serverPaging: true,
+        pageSize: 10,
+        schema: {
+            data: 'rows',
+            total: 'total',
+            model: {
+                id: "id",
+                fields: {}
+            }
+        }
+    });
+
+    $("#Grid").kendoGrid({
+        dataSource: dataSource,
+        height: '99%',
+        resizable: true,
+        scrollable: false,
+        navigatable: false,
+        columns: [
+            {
+                field: "title",
+                title: '日期',
+                width: 10
+            },
+            {
+                field: "today_new_users",
+                title: '新增用户',
+                width: 10
+            },
+                    {
+                field: "today_active_users",
+                title: '活跃用户',
+                width: 10
+            },
+                    {
+                field: "today_launches",
+                title: '启动次数',
+                width: 10
+            },
+                    {
+                field: "installations",
+                title: '累计用户',
+                width: 10
+            },
+        ],
+        editable: false
+    });
+
+    //Hap.autoResizeGrid("#Grid");
+
+
+</script>
+</body>
+</html>

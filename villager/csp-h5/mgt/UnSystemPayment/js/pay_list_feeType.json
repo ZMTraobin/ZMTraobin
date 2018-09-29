@@ -1,0 +1,55 @@
+{
+    "status": "1",
+    "message": "查询成功!",
+    "totall": 6,
+    "data": {
+        "expenditureList": [
+            {
+                "expenditure": "PROPERTY_FEE",
+                "expenditureDesc": "物业费"
+            }
+        ],
+        "detailList": [
+            {
+                "receivableId": 2,
+                "expenditure": "PROPERTY_FEE",
+                "expenditureDesc": "物业费",
+                "priceAmout": 0,
+                "area": 0,
+                "totalAmount": 15000,
+                "discountAmount": 300,
+                "receivableAmount": 14700,
+                "sourceSystem": "zhongjia",
+                "periodName": "2017-03"
+            },
+            {
+                "receivableId": 3,
+                "expenditure": "PROPERTY_FEE",
+                "expenditureDesc": "物业费",
+                "priceAmout": 0,
+                "area": 0,
+                "totalAmount": 33000,
+                "discountAmount": 0,
+                "receivableAmount": 33000,
+                "sourceSystem": "zhongjia",
+                "periodName": "2017-06"
+            },
+            {
+                "receivableId": 4,
+                "expenditure": "PROPERTY_FEE",
+                "expenditureDesc": "物业费",
+                "priceAmout": 0,
+                "area": 0,
+                "totalAmount": 34000,
+                "discountAmount": 0,
+                "receivableAmount": 34000,
+                "sourceSystem": "zhongjia",
+                "periodName": "2017-01"
+            }
+        ],
+        "uncalledFee": 81700,
+        "payableFee": 81700,
+        "periodStart": "2017-01",
+        "periodEnd": "2017-06"
+    }
+}

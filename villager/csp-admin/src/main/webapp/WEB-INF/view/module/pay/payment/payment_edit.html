@@ -1,0 +1,212 @@
+<!-- * description: 配置维护界面 * version: 1.0 *
+        author:qingliang.zeng@hand-china.com * * -->
+<#include "../../../include/header.html"/>
+
+<body style="padding: 10px;" >
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="${base.contextPath}/common/code?appfunctiontype=APP_FUNCTION_TYPE" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?appfunctionsort=APP_CONFIG_FUNCTION_SORT" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?yesOrNo=APPCONFIGYESNO" type="text/javascript"></script>
+<div id="content-container">
+    <div id="page-content">
+        <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">APPID</label>
+                        <div class="col-xs-6">
+                            <input required type="text" style="width: 100%" id="pingAppId" name="pingAppId" data-bind="value:model.pingAppId" class="k-textbox">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">应用名称</label>
+                        <div class="col-xs-6">
+                            <input style="width: 100%" required type="text" id="pingAppName" name="pingAppName"
+                                   data-bind="value:model.pingAppName" class="k-textbox"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">测试KEY</label>
+                        <div class="col-xs-6">
+                            <input required type="text" style="width: 100%" id="testSecretKey" name="testSecretKey" data-bind="value:model.testSecretKey" class="k-textbox">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">生产KEY</label>
+                        <div class="col-xs-6">
+                            <input required type="text" style="width: 100%" id="liveSecretKey" name="liveSecretKey" data-bind="value:model.liveSecretKey" class="k-textbox">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 col-xs-offset-1 control-label">ping++公钥</label>
+                        <div class="col-sm-6">
+                            <textarea required id="editor" name="" data-bind="value:model.pingPublicKey" style="width: 100%;height: 80px;"></textarea>
+                            <!--  <script>kendo.bind($("#editor"), viewModel);</script>-->
+                        </div>
+                        <div class="col-sm-2" >
+                            <label style="color:red;margin-top: 75px;">*</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 col-xs-offset-1 control-label">商户私钥</label>
+                        <div class="col-sm-6">
+                            <textarea required id="editor" name="" data-bind="value:model.merchantPrivateKey" style="width: 100%;height: 80px;"></textarea>
+                            <!--  <script>kendo.bind($("#editor"), viewModel);</script>-->
+                        </div>
+                        <div class="col-sm-2" >
+                            <label style="color:red;margin-top: 75px;">*</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">是否作为默认账户</label>
+                        <div class="col-xs-6" id="isDefault" style="position: relative;top:10px;">
+                         <!--   <input type="radio"   name="isDefault"  data-bind="value:model.isDefault"/>是
+                            <input type="radio"   name="isDefault"   data-bind="value:model.isDefault" checked="checked" value="N"/>否
+-->
+                        </div>
+                        <!-- <div class="col-xs-3" >
+                             <span data-for="serverIp" class=".k-invalid-msg"></span>
+                         </div>-->
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="col-sm-12 text-center">
+                        <span class="btn btn-success" data-bind="click:save" type="submit"><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    var viewModel = kendo.observable({
+        model: {},
+        source: yesOrNo,
+        save:function(e){
+            var url ;
+           // if (isedit)
+                url = '${base.contextPath}/csp/ljh/payment/config/updatePayment';
+           /* else
+                url = '${base.contextPath}/csp/ljh/app/config/function/addOwner';*/
+            var validator = $("#mainform").data("kendoValidator");
+            if (validator.validate()) {
+                Hap.submitForm({
+                    url           : url,
+                    formModel     : viewModel.model,
+                    asArray       : false,
+                    success       : function (data) {
+                        kendo.ui.showInfoDialog({
+                            title:'提示信息',
+                            message:'保存成功!'
+                        }).done(function(e){
+                            window.parent.$("#editPayment").data("kendoWindow").close();
+                            window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+                        });
+                    }
+                });
+            }
+        },
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin").data("kendoWindow").close();
+        }
+    });
+
+    var container = $("#mainform");
+    kendo.init(container);
+    container.kendoValidator({
+        messages: {
+            required: "必填项"
+        },
+    });
+
+
+    //是否检验登陆
+    var loginStatuss = $("input[name='isDefault']");
+    $("#isDefault").delegate("input[name='isDefault']","change",function(){
+        var vals=$('input:radio[name="isDefault"]:checked').val();
+        $("#changeLoginStatus").val(vals);
+        viewModel.set("model.isDefault",vals);
+    });
+
+
+    kendo.bind($('#page-content'), viewModel);
+
+    //初始化form表单
+    $.ajax({
+        url: '${base.contextPath}/csp/ljh/payment/config/getPaymentById',
+        type : "GET",
+        dataType : "json",
+        contentType : "application/json",
+        data : {id:'${RequestParameters.id!0}'},
+        success: function (args) {
+            var profile = args.dto||{};
+            var isDefaulthtml= "";
+            for(var i in profile){
+                if(i=="isDefault"){
+                    if(profile[i]=="Y"){
+                        isDefaulthtml+='<input name="isDefault" value="Y"   type="radio" checked="checked"/> 是';
+                        isDefaulthtml+='<input name="isDefault" value="N"  type="radio"  /> 否';
+                    }else if(profile[i]=="N"){
+                        isDefaulthtml+='<input name="isDefault" value="Y"  type="radio"/> 是';
+                        isDefaulthtml+='<input name="isDefault" value="N"  type="radio"  checked="checked" /> 否';
+                    }
+                }
+                viewModel.set("model."+i,profile[i]);
+            }
+            $("#isDefault").html(isDefaulthtml);
+        }
+    });
+    function modelBindFunctionImg(){
+        viewModel.set("model.functionImg",$("#functionImg").val());
+    }
+
+
+
+
+</script>
+
+</body>
+</html>

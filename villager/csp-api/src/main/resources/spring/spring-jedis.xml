@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.2.xsd"
+       default-lazy-init="true">
+
+    <description>Jedis Configuration</description>
+
+    <!-- 加载配置属性文件 -->
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:config.properties" />
+    <!-- jedis configuration starts -->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!--最大连接数-->
+        <property name="maxTotal" value="${redis.pool.maxTotal}" />
+        <!--最大空闲连接数-->
+        <property name="maxIdle" value="${redis.pool.maxIdle}" />
+        <!--初始化连接数-->
+        <property name="minIdle" value="${redis.pool.minIdle}"/>
+        <!--对拿到的connection进行validateObject校验-->
+        <property name="testOnBorrow" value="true" />
+        <!--在进行returnObject对返回的connection进行validateObject校验-->
+        <property name="testOnReturn" value="true" />
+        <!--定时对线程池中空闲的链接进行validateObject校验-->
+        <property name="testWhileIdle" value="true" />
+    </bean>
+
+    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+        <constructor-arg index="0" ref="jedisPoolConfig" />
+        <constructor-arg index="1" value="${redis.ip}" type="java.lang.String" />
+        <constructor-arg index="2" value="${redis.port}" type="int" />
+        <!-- timeout  -->
+        <constructor-arg index="3" value="${redis.timeout}" type="int" />
+        <!--表示当redis.password不为空时，那么返回redis.password，否则返回null -->
+        <constructor-arg index="4" type="java.lang.String" value="#{'${redis.password}'!=''?'${redis.password}':null}"></constructor-arg>
+        <!-- database  -->
+        <constructor-arg index="5" value="${redis.csp.db}" type="int" />
+    </bean>
+
+    <bean id="cspRedisNodes" class="com.cmig.future.csportal.common.utils.redis.RedisNodeAutoConfig">
+        <property name="sentinels" value="${redis.sentinel}"/>
+    </bean>
+
+    <bean id="jedisSentinelPool" class="redis.clients.jedis.JedisSentinelPool" destroy-method="destroy">
+        <constructor-arg name="masterName">
+            <value>mymaster</value>
+        </constructor-arg>
+        <constructor-arg name="sentinels" ref="cspRedisNodes" />
+        <constructor-arg name="poolConfig" ref="jedisPoolConfig" />
+        <constructor-arg name="timeout" value="${redis.timeout}" type="int" />
+        <!--表示当redis.password不为空时，那么返回redis.password，否则返回null -->
+        <constructor-arg name="password" value="#{'${redis.password}'!=''?'${redis.password}':null}"></constructor-arg>
+        <constructor-arg name="database" value="${redis.csp.db}" type="int" />
+    </bean>
+
+    <!-- hap框架password取值错误，此处覆盖hap框架代码 -->
+    <bean id="v2redisConnectionFactory" class="com.cmig.future.csportal.module.hap.core.CspJedisConnectionFactoryBean">
+        <property name="useSentinel" value="${redis.useSentinel}"/>
+        <property name="sentinelConfiguration" ref="redisSentinelConfiguration"/>
+        <property name="hostName" value="${redis.ip}"/>
+        <property name="port" value="${redis.port}"/>
+        <property name="database" value="${redis.db}"/>
+        <property name="password" value="${redis.password}"/>
+        <property name="poolConfig">
+            <bean class="redis.clients.jedis.JedisPoolConfig">
+                <property name="maxIdle" value="999"/>
+                <property name="maxTotal" value="9999"/>
+                <property name="minIdle" value="20"/>
+            </bean>
+        </property>
+    </bean>
+
+</beans>

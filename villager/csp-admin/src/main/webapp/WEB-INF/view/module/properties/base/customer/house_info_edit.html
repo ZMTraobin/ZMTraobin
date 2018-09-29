@@ -1,0 +1,106 @@
+<! * description: 配置维护界面 * version: 1.0 *
+author:qingliang.zeng@hand-china.com * * -->
+    <#include "../../../../include/header.html"/>
+<body style="padding: 10px;">
+<script>
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+
+    newViewModel = kendo.observable({
+        model: {}
+    });
+</script>
+	<div id="content-container">
+		<div id="page-content">
+				<form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                     <div class="col-xs-8">
+                <div class="form-group">
+                    <label class="col-xs-4 control-label"
+                           style="text-align: right">房屋全称</label>
+                    <div class="col-xs-8">
+                        <input type="text" id="houseFullName"
+                               style="width:100%;" data-bind="value:model.houseId,text:model.houseFullName">
+                        <script>
+                            $("#houseFullName").kendoLov($.extend(${lovProvider.getLov(base.contextPath, base.locale, "MGT_HOUSE_COMMUNITY_LOV")}, {
+                                query: function (e) {
+                                    //e.param['enabledFlag'] = 'Y';
+                                }
+                            }))
+                            kendo.bind($('#houseFullName'), newViewModel);
+                        </script>
+                    </div>
+                </div>
+            </div>
+                    
+                    <div class="col-xs-8">
+                <div class="form-group">
+                    <label class="col-xs-4 control-label"
+                           style="text-align: right"><@spring.message "user.startactivedate"/></label>
+                    <div class="col-xs-8">
+                        <input id="effectiveStartDate" style="width: 100%"  data-bind="value:model.effectiveStartDate">
+                        <script>
+                            $('#effectiveStartDate').kendoDatePicker();
+                            kendo.bind($('#effectiveStartDate'), newViewModel);</script>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-8" >
+                <div class="form-group">
+                    <label class="col-xs-4 control-label"
+                           style="text-align: right"><@spring.message "user.endactivedate"/></label>
+                    <div class="col-xs-8">
+                        <input style="width: 100%" id="effectiveEndDate"  data-bind="value:model.effectiveEndDate"/>
+                        <script>
+                            $('#effectiveEndDate').kendoDatePicker();
+                            kendo.bind($('#effectiveEndDate'), newViewModel);
+                        </script>
+                    </div>
+                </div>
+            </div>
+                    
+                  
+                  <div class="text-right" style="bottom: 20px;position: fixed; right: 85px; float: left; background: #fff;">
+    	      <span class="btn btn-success" id="saveGrid" type="submit"><@spring.message "hap.save"/></span>
+    	      <span class="btn btn-success" id="closeWin" type="button"><@spring.message "hap.cancel"/></span>
+	        </div>
+                  
+				</form>
+		</div>
+		</div>
+<script type="text/javascript">
+ $("#page-content").kendoValidator();
+    $("#closeWin").click(function(){
+            window.parent.$("#houseForm").data("kendoWindow").close();
+    });
+    $("#saveGrid").click(function () {
+        if(newViewModel.model.houseId==''||newViewModel.model.houseId==null){
+            kendo.ui.showInfoDialog({
+                message:'房屋全称不能为空'
+            })
+        }else if(newViewModel.model.effectiveStartDate==''||newViewModel.model.effectiveStartDate==null){
+            kendo.ui.showInfoDialog({
+                message:'开始有效日期不能为空'
+            })
+        }else if(newViewModel.model.effectiveEndDate==''||newViewModel.model.effectiveEndDate==null){
+            kendo.ui.showInfoDialog({
+                message:'失效日期不能为空'
+            })
+        }else {
+        newViewModel.model.bpType='OWNER';
+    newViewModel.model.buildingType='HOUSING';
+    newViewModel.model.bpExtId='${RequestParameters.bpOwnerId!0}';
+    newViewModel.model.buildingId=newViewModel.model.houseId;
+            newViewModel.model.__status = isedit ? 'update' : 'add';
+            Hap.submitForm({
+                url: '${base.contextPath}/csp/bp/house/map/submit',
+                formModel: newViewModel.model,
+                success: function (data) {
+                    window.parent.$('#houseGrid').data('kendoGrid').dataSource.page(1);
+                        window.parent.$("#houseForm").data("kendoWindow").close();
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

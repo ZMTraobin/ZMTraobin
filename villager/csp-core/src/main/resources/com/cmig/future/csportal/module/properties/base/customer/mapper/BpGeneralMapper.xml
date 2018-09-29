@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.properties.base.customer.mapper.BpGeneralMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.properties.base.customer.dto.BpGeneral">
+		<result column="BP_ID" property="bpId" jdbcType="DECIMAL" />
+		<result column="BP_CODE" property="bpCode" jdbcType="VARCHAR" />
+		<result column="BP_NAME" property="bpName" jdbcType="VARCHAR" />
+		<result column="BP_NICK_NAME" property="bpNickName" jdbcType="VARCHAR" />
+		<result column="ID_TYPE" property="idType" jdbcType="VARCHAR" />
+		<result column="ID_NO" property="idNo" jdbcType="VARCHAR" />
+		<result column="PHOTO" property="photo" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="GENDER" property="gender" jdbcType="VARCHAR" />
+		<result column="BIRTHDAY" property="birthday" jdbcType="DATE" />
+		<result column="AGE" property="age" jdbcType="DECIMAL" />
+		
+		<result column="BP_OWNER_ID" property="bpOwnerId" jdbcType="DECIMAL" />
+	</resultMap>
+
+	<select id="getByIdCard" resultType="java.lang.Integer">
+		select count(*) from csp_bp_general t where
+		t.id_type= #{idType}
+		and t.id_no = #{idNo}
+	</select>
+
+	<select id="getByMobile" resultMap="BaseResultMap">
+		select bo.BP_OWNER_ID from csp_bp_owner bo
+		left outer join csp_bp_general bg
+		on bg.BP_ID = bo.BP_ID
+		where bg.MOBILE = #{mobile}
+	</select>
+	
+	
+	<select id="getNextIndex" resultType="java.lang.Long">
+	    SELECT auto_increment FROM information_schema.`TABLES` WHERE TABLE_NAME='csp_bp_general'
+	</select>
+	
+	<select id="getUnionMobile" resultMap="BaseResultMap">
+	    select g.* from csp_bp_general g
+	    where g.MOBILE = #{mobile}
+	</select>
+	
+	<select id="getByIdNo" resultMap="BaseResultMap">
+	    select g.* from csp_bp_general g
+	    where g.id_no = #{idNo}
+	    and g.id_type = #{idType}
+	</select>
+	
+	<delete id="deleteByBpId">
+	   delete from csp_bp_general where bp_id = #{bpId}
+	</delete>
+
+</mapper>

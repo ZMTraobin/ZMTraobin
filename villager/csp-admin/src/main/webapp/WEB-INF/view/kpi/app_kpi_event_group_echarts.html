@@ -1,0 +1,117 @@
+
+<script src="${base.contextPath}/lib/js/echarts/echarts.js" type="text/javascript"></script>
+<style>
+    .active {
+        background-color: #33CCCC;
+    }
+</style>
+<div id="eventGroupDiv" align="center" style="margin:8px auto auto auto;">
+    <input type="button" id="w1" value="一周" class="active" data-bind="7" onclick="loadEventGroup(this)" >
+    <input type="button" id="w2" value="两周" data-bind="14" onclick="loadEventGroup(this)" >
+    <input type="button" id="m1" value="一个月" data-bind="30" onclick="loadEventGroup(this)" >
+    <input type="button" id="m3" value="三个月" data-bind="60" onclick="loadEventGroup(this)" >
+    <input type="button" id="m6" value="六个月" data-bind="180" onclick="loadEventGroup(this)" >
+    <input type="hidden" id="daysEventGroup" name="daysEventGroup" value="7">
+
+    <b>TOP <span id="topNum" style="color:#F00" ></span></b>
+</div>
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+<div id="eventGroupReport" style="width: 99%;height:95%;"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        var topNum = '${RequestParameters.topNum!10}';
+        $("#topNum").text(topNum);
+    });
+
+    var myEventGroupChart;
+    function loadEchartsDataEventGroup(option){
+        var days=$("#daysEventGroup").val();
+        var topNum=$("#topNum").text();
+        $.get('${base.contextPath}/csp/ljh/kpi/event/group/report?days='+days+"&topNum="+topNum).done(function (result) {
+            if (result) {
+                var rows=result.rows;
+                //初始化option.yAxis[0]中的data
+                option.yAxis.data=[];
+
+                //初始化option.series[0]中的data
+                option.series[0].data=[];
+                if(rows){
+                    for(var i=0;i<rows.length;i++){
+                        option.yAxis.data.push(rows[i].displayName);
+                    }
+
+                    var daysTips=$("#eventGroupDiv").children(".active").val();
+                    option.series[0].name="最近"+daysTips;
+                    for(var i=0;i<rows.length;i++){
+                        option.series[0].data.push(rows[i].num);
+                    }
+                }
+            }
+
+            if (myEventGroupChart != null && myEventGroupChart != "" && myEventGroupChart != undefined) {
+                myEventGroupChart.dispose();
+            }
+            // 基于准备好的dom，初始化echarts实例
+            myEventGroupChart = echarts.init(document.getElementById('eventGroupReport'));
+            // 使用刚指定的配置项和数据显示图表。
+            myEventGroupChart.setOption(option);
+        });
+
+    }
+
+    function initEchartsEventGroup(){
+        // 指定图表的配置项和数据
+        var option = {
+            color: ['#3398DB'],
+            title: {
+                text: '',
+                subtext: ''
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            /*legend: {
+                data: ['2011年']
+            },*/
+            grid: {
+                top:'5%',
+                left: '3%',
+                right: '4%',
+                //bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            yAxis: {
+                type: 'category',
+                data: ['巴西','印尼','美国','印度','中国','世界人口(万)']
+            },
+            series: [
+                {
+                    name: '2011年',
+                    type: 'bar',
+                    data: [18203, 23489, 29034, 104970, 131744, 630230]
+                }
+            ]
+        };
+        loadEchartsDataEventGroup(option);
+    }
+
+    initEchartsEventGroup();
+
+    function loadEventGroup(obj){
+        var days=$(obj).attr("data-bind");
+        $("#eventGroupDiv").children(".active").removeClass("active");
+        $(obj).addClass("active");
+        $("#daysEventGroup").val(days);
+        initEchartsEventGroup();
+    }
+
+</script>

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.sys.notifyrecord.mapper.SysNotifyRecordMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.sys.notifyrecord.dto.SysNotifyRecord">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="MESSAGE_TYPE" property="messageType" jdbcType="VARCHAR" />
+        <result column="CATEGORY" property="category" jdbcType="VARCHAR" />
+        <result column="CMS_NOTIFY_ID" property="cmsNotifyId" jdbcType="VARCHAR" />
+        <result column="SUBJECT" property="subject" jdbcType="VARCHAR" />
+        <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+        <result column="CONTENT_EXT" property="contentExt" jdbcType="VARCHAR" />
+        <result column="MGT_USER_ID" property="mgtUserId" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="APP_USER_ID" property="appUserId" jdbcType="VARCHAR" />
+        <result column="RECEIVER_INFO" property="receiverInfo" jdbcType="VARCHAR" />
+        <result column="READ_FLAG" property="readFlag" jdbcType="VARCHAR" />
+        <result column="READ_DATE" property="readDate" jdbcType="DATE" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="TIMES" property="times" jdbcType="DECIMAL" />
+        <result column="MSG_ID" property="msgId" jdbcType="VARCHAR" />
+        <result column="SEND_NO" property="sendNo" jdbcType="VARCHAR" />
+        <result column="SPRS_UID" property="sprsUid" jdbcType="VARCHAR" />
+        <result column="RQ_UID" property="rqUid" jdbcType="VARCHAR" />
+        <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+        <result column="OBJECT_VERSION_NUMBER" property="objectVersionNumber" jdbcType="DECIMAL" />
+        <result column="REQUEST_ID" property="requestId" jdbcType="DECIMAL" />
+        <result column="PROGRAM_ID" property="programId" jdbcType="DECIMAL" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="TIMESTAMP" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+        <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL" />
+
+        <result column="COMMUNITY_NAME" property="communityName" jdbcType="VARCHAR" />
+        <result column="NAME" property="userName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="sysNotifyRecordColumns">
+      a.ID AS "id",
+      a.MESSAGE_TYPE AS "messageType",
+      a.CATEGORY AS "category",
+      a.CMS_NOTIFY_ID AS "cmsNotifyId",
+      a.SUBJECT AS "subject",
+      a.CONTENT AS "content",
+      a.CONTENT_EXT AS "contentExt",
+      a.MGT_USER_ID AS "mgtUserId",
+      a.COMMUNITY_ID AS "communityId",
+      a.APP_USER_ID AS "appUserId",
+      a.RECEIVER_INFO AS "receiverInfo",
+      a.READ_FLAG AS "readFlag",
+      a.READ_DATE AS "readDate",
+      a.STATUS AS "status",
+      a.TIMES AS "times",
+      a.MSG_ID AS "msgId",
+      a.SEND_NO AS "sendNo",
+      a.SPRS_UID AS "sprsUid",
+      a.RQ_UID AS "rqUid",
+      a.REMARK AS "remark",
+      a.SOURCE_SYSTEM AS "sourceSystem",
+      a.DEL_FLAG AS "delFlag",
+      a.LAST_UPDATE_DATE AS "lastUpdateDate",
+      b.COMMUNITY_NAME AS "communityName",
+      u.NAME AS "userName"
+    </sql>
+    <sql id="sysNotifyRecordJoins">
+        left join csp_ljh_base_community b on a.COMMUNITY_ID=b.id
+        left join csp_ljh_mgt_user u on a.MGT_USER_ID=u.id
+    </sql>
+
+    <!--关联人员,项目表,查询列表-->
+    <select id="findList" resultMap="BaseResultMap">
+      SELECT
+        <include refid="sysNotifyRecordColumns"/>
+      FROM csp_ljh_sys_notify_record a
+        <include refid="sysNotifyRecordJoins"/>
+      WHERE
+        a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        <if test="cmsNotifyId != null and cmsNotifyId != '' ">
+            AND a.CMS_NOTIFY_ID = #{cmsNotifyId}
+        </if>
+        <if test="communityId != null and communityId != '' ">
+            AND a.COMMUNITY_ID = #{communityId}
+        </if>
+        <if test="userName != null and userName != '' ">
+            AND u.NAME like concat('%',concat(#{userName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="status != null and status != '' and status != 'ALL' ">
+            AND a.STATUS = #{status}
+        </if>
+        ORDER BY a.LAST_UPDATE_DATE DESC
+    </select>
+
+    <update id="clean">
+        UPDATE csp_ljh_sys_notify_record SET
+        DEL_FLAG =#{DEL_FLAG_DELETE}
+        WHERE 1=1
+
+        <if test="communityId != null and communityId != '' ">
+            AND COMMUNITY_ID = #{communityId}
+        </if>
+
+        <choose>
+            <when test="appUserId!=null and appUserId!='' ">
+                AND APP_USER_ID  = #{appUserId}
+            </when>
+            <when test="mgtUserId!=null and mgtUserId!=''  ">
+                AND MGT_USER_ID=#{mgtUserId}
+            </when>
+            <otherwise>
+
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="category!=null and category!=''  and category=='OTHER'  ">
+                and CATEGORY  &lt;&gt; 'NOTIFY'
+            </when>
+            <when test="category!=null and category!=''  and category!='OTHER'  ">
+                and CATEGORY=#{category}
+            </when>
+            <otherwise>
+
+            </otherwise>
+        </choose>
+    </update>
+
+    <update id="deleteSysNotifyRecord" >
+        UPDATE csp_ljh_sys_notify_record SET
+        DEL_FLAG =#{DEL_FLAG_DELETE}
+        WHERE
+        <choose>
+            <when test="appUserId!=null and appUserId!='' ">
+                APP_USER_ID  = #{appUserId}
+            </when>
+            <when test="mgtUserId!=null and mgtUserId!=''  ">
+               MGT_USER_ID=#{mgtUserId}
+            </when>
+            <otherwise>
+
+            </otherwise>
+        </choose>
+            AND ID = #{id}
+    </update>
+
+    <sql id="sysNotifyRecordColumnsBranch">
+        a.ID AS "id",
+        a.MESSAGE_TYPE AS "messageType",
+        a.CATEGORY AS "category",
+        a.CMS_NOTIFY_ID AS "cmsNotifyId",
+        a.SUBJECT AS "subject",
+        a.CONTENT AS "content",
+        a.CONTENT_EXT AS "contentExt",
+        a.MGT_USER_ID AS "mgtUserId",
+        a.COMMUNITY_ID AS "communityId",
+        a.APP_USER_ID AS "appUserId",
+        a.RECEIVER_INFO AS "receiverInfo",
+        a.READ_FLAG AS "readFlag",
+        a.READ_DATE AS "readDate",
+        a.STATUS AS "status",
+        a.TIMES AS "times",
+        a.MSG_ID AS "msgId",
+        a.SEND_NO AS "sendNo",
+        a.SPRS_UID AS "sprsUid",
+        a.RQ_UID AS "rqUid",
+        a.REMARK AS "remark",
+        a.SOURCE_SYSTEM AS "sourceSystem",
+        a.DEL_FLAG AS "delFlag",
+        a.CREATION_DATE AS "creationDate",
+        a.LAST_UPDATE_DATE AS "lastUpdateDate"
+    </sql>
+
+    <select id="selectSysNotifyRecord" resultMap="BaseResultMap">
+      SELECT
+        <include refid="sysNotifyRecordColumnsBranch"/>
+        FROM csp_ljh_sys_notify_record a
+      WHERE
+        a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        <choose>
+            <when test="category!=null and category!=''  and category=='OTHER'  ">
+                and a.CATEGORY  &lt;&gt; 'NOTIFY'
+            </when>
+            <when test="category!=null and category!=''  and category!='OTHER'  ">
+                and a.CATEGORY=#{category}
+            </when>
+            <otherwise>
+
+            </otherwise>
+        </choose>
+        <if test="communityId != null and communityId != '' ">
+            AND (a.COMMUNITY_ID = #{communityId}
+            OR ISNULL(a.COMMUNITY_ID))
+        </if>
+        <if test="messageType != null and messageType != '' ">
+            AND a.MESSAGE_TYPE = #{messageType}
+        </if>
+        <if test="readFlag != null and readFlag != '' ">
+            AND a.READ_FLAG = #{readFlag}
+        </if>
+        <choose>
+            <when test="appUserId!=null and appUserId!='' ">
+                AND a.APP_USER_ID  = #{appUserId}
+            </when>
+            <when test="mgtUserId!=null and mgtUserId!=''  ">
+                AND a.MGT_USER_ID=#{mgtUserId}
+            </when>
+            <otherwise>
+
+            </otherwise>
+        </choose>
+        <if test="selectIds!=null and selectIds!= '' and sourceSystem==null">
+            and a.COMMUNITY_ID in
+            <foreach collection="selectIds" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        <if test="selectIds!=null and selectIds!= '' and sourceSystem!=null and sourceSystem!='' ">
+            and a.COMMUNITY_ID in ( select b.id from csp_ljh_base_community b where b.SOURCE_SYSTEM=#{sourceSystem}
+            and b.SOURCE_SYSTEM_ID in
+            <foreach collection="selectIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="selectIds==null and selectIds != '' and sourceSystem != null and sourceSystem != '' ">
+            AND a.SOURCE_SYSTEM = #{sourceSystem}
+        </if>
+        ORDER BY a.CREATION_DATE DESC
+    </select>
+
+    <!--手动消息,查询列表-->
+    <select id="findListByMsg" resultMap="BaseResultMap">
+        SELECT
+        a.*
+        FROM csp_ljh_sys_notify_record a
+        WHERE
+        a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        <if test="category != null and category != '' ">
+            AND a.CATEGORY = #{category}
+        </if>
+        <if test="messageType != null and messageType != '' ">
+            AND a.MESSAGE_TYPE = #{messageType}
+        </if>
+        <if test="status != null and status != '' and status != 'ALL' ">
+            AND a.STATUS = #{status}
+        </if>
+        <if test="content != null and content != '' ">
+            AND a.CONTENT like concat('%',concat(#{content,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="beginTime != null and beginTime != '' ">
+            AND a.CREATION_DATE &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != '' ">
+            AND a.CREATION_DATE &lt;= #{endTime}
+        </if>
+        AND a.CATEGORY in ('PROPERTY','SERVICE','SYSTEM')
+        GROUP BY a.CREATION_DATE,a.MESSAGE_TYPE,a.CATEGORY
+        ORDER BY a.CREATION_DATE DESC
+    </select>
+    
+    <update id="deleteByTimeAndCateoryAndType" >
+        UPDATE csp_ljh_sys_notify_record  SET
+        DEL_FLAG =  #{DEL_FLAG_DELETE},
+        LAST_UPDATE_DATE = CURRENT_TIMESTAMP
+        WHERE CATEGORY = #{category}
+        AND MESSAGE_TYPE = #{messageType}
+        AND CREATION_DATE = #{creationDate}
+    </update>
+
+</mapper>

@@ -1,0 +1,583 @@
+<!--
+        * description: cms订单详情界面
+        *author:chao.wang@hand-china.com
+        * version: 1.0
+        *
+-->
+<#include "../../../../include/header.html"/>
+<body>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="${base.contextPath}/common/code?genderData=HR.EMPLOYEE_GENDER" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?idTypeData=CUSTOMER.CARD_TYPE" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?yesnoData=SYS.YES_NO" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?userTypeData=MGT.HOUSE_USE_TYPE" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?contacterTypeData=OWNER.CONTACTER_TYPE" type="text/javascript"></script>
+<script>
+    newViewModel = kendo.observable({
+        model: {},
+        createFunction: function () {
+            $('#houseGrid').data('kendoGrid').addRow();
+        },
+        saveFunction: function () {
+            $('#houseGrid').data('kendoGrid').saveChanges();
+        },
+    });
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    if (isedit) {
+        $.ajax({
+            url: '${base.contextPath}/csp/bp/owner/queryInfoById?id=${RequestParameters.id!0}',
+            async: false,
+            success: function (args) {
+                var a0 = args.rows[0] || {};
+                for (var k in a0) {
+                    newViewModel.model.set(k, a0[k]);
+                }
+            }
+        });
+    } else {
+
+    }
+</script>
+
+<div id="main-content">
+    <div class="panel-body form-horizontal">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label class="col-xs-4 control-label"
+                       style="text-align: right">业主名称</label>
+                <div class="col-xs-7">
+                    <input id="bpName" type="text" data-bind="value:model.bpName" class="k-textbox"
+                           style="width: 100%;">
+                    <script>kendo.bind($('#bpName'), newViewModel);</script>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label class="col-xs-4 control-label"
+                       style="text-align: right">证件类型</label>
+                <div class="col-xs-7">
+                    <input id="idType" type="text" data-bind="value:model.idType" class="k-textbox"
+                           style="width: 100%;">
+                    <script>kendo.bind($('#idType'), newViewModel);
+                    //下拉框
+                    $("#idType").kendoDropDownList({
+                        valuePrimitive: true,
+                        dataTextField: "meaning",
+                        dataValueField: "value",
+                        dataSource: idTypeData
+                    });</script>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label class="col-xs-4 control-label"
+                       style="text-align: right">证件号</label>
+                <div class="col-xs-7">
+                    <input id="idNo" type="text" data-bind="value:model.idNo" class="k-textbox"
+                           style="width: 100%;">
+                    <script>kendo.bind($('#idNo'), newViewModel);</script>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label class="col-xs-4 control-label"
+                       style="text-align: right">手机号</label>
+                <div class="col-xs-7">
+                    <input id="mobile" type="text" data-bind="value:model.mobile" class="k-textbox"
+                           style="width: 100%;">
+                    <script>kendo.bind($('#mobile'), newViewModel);</script>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="col-xs-6" >
+             <div class="form-group">
+                 <label class="col-xs-4 control-label"
+                        style="text-align: right">业主别名</label>
+                 <div class="col-xs-7">
+                     <input id="bpNickName" type="text"  data-bind="value:model.bpNickName" class="k-textbox"
+                            style="width: 100%;">
+                     <script>kendo.bind($('#bpNickName'), newViewModel);</script>
+                 </div>
+             </div>
+         </div> -->
+
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label class="col-xs-4 control-label"
+                       style="text-align: right">联系电话</label>
+                <div class="col-xs-7">
+                    <input id="phone" type="text" data-bind="value:model.phone" class="k-textbox"
+                           style="width: 100%;">
+                    <script>kendo.bind($('#phone'), newViewModel);</script>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label class="col-xs-4 control-label"
+                       style="text-align: right">邮箱</label>
+                <div class="col-xs-7">
+                    <input id="email" type="text" data-bind="value:model.email" class="k-textbox"
+                           style="width: 100%;">
+                    <script>kendo.bind($('#email'), newViewModel);</script>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label class="col-xs-4 control-label"
+                       style="text-align: right">性别</label>
+                <div class="col-xs-7">
+                    <input id="gender" type="text" data-bind="value:model.gender" class="k-textbox"
+                           style="width: 100%;">
+                    <script>kendo.bind($('#gender'), newViewModel);
+                    //下拉框
+                    $("#gender").kendoDropDownList({
+                        valuePrimitive: true,
+                        dataTextField: "meaning",
+                        dataValueField: "value",
+                        dataSource: genderData
+                    });</script>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label class="col-xs-4 control-label"
+                       style="text-align: right">生日</label>
+                <div class="col-xs-7">
+                    <input id="birthday" style="width: 100%" data-role="datepicker"
+                           data-bind="value:model.birthday" class="datepicker">
+                    <script>kendo.bind($('#birthday'), newViewModel);</script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <ul class="nav nav-tabs" id="mdytab">
+        <li class="active"><a href="#house-info" data-toggle="tab">房屋信息</a></li>
+        <li><a href="#contacter-info" data-toggle="tab" onclick="queryContacter()">关系人信息</a></li>
+    </ul>
+    <div id="page-content">
+        <div id="houseForm"></div>
+        <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+            <span onclick="addData()" class="btn btn-primary" style="float:left;margin-right:5px;"><i
+                    class="fa fa-plus-square" style="margin-right:3px;"></i><@spring.message "hap.new"/></span>
+            <span onclick="deleteData()" class="btn btn-danger" style="float:left;"><i class="fa fa-trash-o"
+                                                                                       style="margin-right:3px;"></i>失效</span>
+        </div>
+        <script>kendo.bind($('#toolbar-btn'), newViewModel);</script>
+        <div id="tabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="house-info">
+                <div style="clear:both">
+                    <div id="houseGrid"></div>
+                </div>
+
+                <div class="text-right"
+                     style="bottom: 20px;position: fixed; right: 85px; float: left; background: #fff;">
+                    <span class="btn btn-success" id="saveGrid" type="submit"><@spring.message "hap.save"/></span>
+                    <span class="btn btn-success" id="closeWin" type="button"><@spring.message "hap.cancel"/></span>
+                </div>
+            </div>
+
+            <div id="contacter-info" class="tab-pane fade">
+                <div id="contacerGrid"/>
+                <script>
+                    var contachterModel = kendo.observable({
+                        model: {},
+                        createFunction: function () {
+                            $('#contacerGrid').data('kendoGrid').addRow();
+                        },
+                        saveFunction: function () {
+                            $('#contacerGrid').data('kendoGrid').saveChanges();
+                        },
+                        queryResource: function (e) {
+                            $('#contacerGrid').data('kendoGrid').dataSource.page(1);
+                        }
+                    });
+                    var BaseUrl = _basePath;
+                    contacterDataSource = new kendo.data.DataSource({
+                        transport: {
+                            read: {
+                                url: BaseUrl + "/csp/bp/owner/contacter/query",
+                                type: "POST",
+                                dataType: "json"
+                            },
+                            update: {
+                                url: BaseUrl + "/csp/bp/owner/contacter/submit",
+                                type: "POST",
+                                contentType: "application/json"
+                            },
+                            destroy: {
+                                url: BaseUrl + "/csp/bp/owner/contacter/remove",
+                                type: "POST",
+                                contentType: "application/json"
+                            },
+                            create: {
+                                url: BaseUrl + "/csp/bp/owner/contacter/submit",
+                                type: "POST",
+                                contentType: "application/json"
+                            },
+                            parameterMap: function (options, type) {
+                                if (type !== "read" && options.models) {
+                                    var datas = Hap.prepareSubmitParameter(options, type)
+                                    return kendo.stringify(datas);
+                                } else if (type === "read") {
+                                    contachterModel.model.bpOwnerId = newViewModel.model.bpOwnerId;
+                                    return Hap.prepareQueryParameter(contachterModel.model.toJSON(), options)
+                                }
+                            }
+                        },
+                        batch: true,
+                        serverPaging: true,
+                        pageSize: 10,
+                        schema: {
+                            data: 'rows',
+                            total: 'total',
+                            model: {
+                                id: "ownerContacterId",
+                                fields: {}
+                            }
+                        }
+                    });
+
+                    var contacterGrid = $('#contacerGrid').kendoGrid({
+                        dataSource: contacterDataSource,
+                        navigatable: true,
+                        height: '100%',
+                        resizable: true,
+                        sortable: true,
+                        selectable: 'multiple,rowbox',
+                        pageable: {
+                            pageSizes: [5, 10, 20, 50],
+                            refresh: true,
+                            buttonCount: 5
+                        },
+                        columns: [
+                            {
+                                field: "type",
+                                title: '联系人类型',
+                                width: 120,
+                                template: function (dataItem) {
+                                    var v = dataItem.type;
+                                    $.each(contacterTypeData, function (i, n) {
+                                        if ((n.value || '').toLowerCase() == (v || '').toLowerCase()) {
+                                            v = n.meaning;
+                                            return v;
+                                        }
+                                    })
+                                    return v;
+                                },
+                            },
+                            {
+                                field: "contacterName",
+                                title: '联系人名称',
+                                width: 120
+                            },
+                            {
+                                field: "idNo",
+                                title: '身份证',
+                                width: 120
+                            },
+                            {
+                                field: "mobile",
+                                title: '手机',
+                                width: 120
+                            },
+                        ],
+                        editable: "inline"
+                    }).data("kendoGrid");
+
+                    function queryContacter() {
+                        contacterDataSource.read();
+                    }
+                </script>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            var bpOwnerId = newViewModel.model.bpOwnerId;
+            var bpId = newViewModel.model.bpId;
+            var crudServiceBaseUrl = '${base.contextPath}/csp/bp/house/map',
+                dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: crudServiceBaseUrl + "/queryByBpId?bpId=" + bpId,
+                            type: "POST",
+                            dataType: "json"
+                        },
+                        create: {
+                            url: crudServiceBaseUrl + "/submit",
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        update: {
+                            url: crudServiceBaseUrl + "/submit",
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        destroy: {
+                            url: crudServiceBaseUrl + "/remove",
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        parameterMap: function (options, type) {
+                            if (type !== "read" && options.models) {
+                                var datas = Hap.prepareSubmitParameter(options, type);
+                                return kendo.stringify(datas);
+                            } else if (type === "read") {
+                                //return Hap.prepareQueryParameter(newViewModel.model.toJSON(), options);
+                            }
+                        }
+                    },
+                    batch: true,
+                    serverPaging: true,
+                    pageSize: 10,
+                    schema: {
+                        data: 'rows',
+                        total: 'total',
+                        model: {
+                            id: "mapId",
+                            fields: {}
+                        }
+                    }
+                });
+            var grid = $("#houseGrid").kendoGrid({
+                dataSource: dataSource,
+                navigatable: true,
+                height: '100%',
+                resizable: true,
+                scrollable: true,
+                selectable: 'multiple,rowbox',
+                pageable: {
+                    pageSizes: [5, 10, 20, 50],
+                    refresh: true,
+                    buttonCount: 5
+                },
+                columns: [
+                    {
+                        field: 'houseFullName',
+                        title: '房屋全称',
+                        width: 120,
+                    },
+                    {
+                        field: 'houseCode',
+                        title: '房屋编号',
+                        width: 120,
+                    },
+                    {
+                        field: 'companyName',
+                        title: '物业公司',
+                        width: 110,
+                    },
+                    {
+                        field: 'communityName',
+                        title: '项目名称',
+                        width: 110,
+                    },
+
+                    {
+                        field: 'useType',
+                        title: '用途分类',
+                        width: 80,
+                        template: function (dataItem) {
+                            var v = dataItem.useType;
+                            $.each(userTypeData, function (i, n) {
+                                if ((n.value || '').toLowerCase() == (v || '').toLowerCase()) {
+                                    v = n.meaning;
+                                    return v;
+                                }
+                            })
+                            return v;
+                        },
+
+                    },
+                    {
+                        field: 'authenticateStatus',
+                        title: '是否认证',
+                        width: 80,
+                        template: function (dataItem) {
+                            var v = dataItem.authenticateStatus;
+                            $.each(yesnoData, function (i, n) {
+                                if ((n.value || '').toLowerCase() == (v || '').toLowerCase()) {
+                                    v = n.meaning;
+                                    return v;
+                                }
+                            })
+                            return v;
+                        }
+
+                    },
+                    {
+                        field: 'status',
+                        title: '是否有效',
+                        width: 80,
+                        template: function (dataItem) {
+                            var v = dataItem.status;
+                            $.each(yesnoData, function (i, n) {
+                                if ((n.value || '').toLowerCase() == (v || '').toLowerCase()) {
+                                    v = n.meaning;
+                                    return v;
+
+                                }
+                            })
+                            return v;
+                        }
+                    },
+                    {
+                        field: 'sourceHouseCode',
+                        title: '房屋原系统编码',
+                        width: 120,
+                    },
+                    {
+                        field: "effectiveStartDate",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        },
+                        attributes: {style: "text-align:center"},
+                        title: '生效开始日期',
+                        width: 120,
+                        format: "{0:yyyy-MM-dd}"
+                    },
+                    {
+                        field: "effectiveEndDate",
+                        title: '生效结束日期',
+                        width: 120,
+                        headerAttributes: {
+                            style: "text-align: center"
+                        },
+                        attributes: {style: "text-align:center"},
+                        format: "{0:yyyy-MM-dd}",
+
+                    },
+                ],
+                editable: "false"
+            }).data("kendoGrid");
+
+
+            function addData() {
+                $("#houseForm").kendoWindow({
+                    width: "65%",
+                    height: "71%",
+                    actions: [
+                        "Pin",
+                        "Minimize",
+                        "Maximize",
+                        "Close"
+                    ],
+                    modal: true,
+                    visible: false,
+                    iframe: true
+                });
+
+                var ownerDetails = $("#houseForm").data("kendoWindow");
+                ownerDetails.refresh('house_info_edit.html?bpOwnerId=' + bpOwnerId);
+                ownerDetails.title('添加房屋').center().open();
+            }
+
+            function deleteData() {
+                var checked = grid.selectedDataItems();
+                if (grid.selectedDataItems().length) {
+                    var statusFlag = 0
+                    var dataJson = []
+                    $.each(checked, function (i, v) {
+                        dataJson.push({"mapId": v.mapId});
+                        if(v.status == 'N'){
+                            statusFlag ++;
+                        }
+                    })
+                    if(statusFlag > 0){
+                        kendo.ui.showInfoDialog({
+                            message: $l('请选择未失效的房屋')
+                        })
+                        return;
+                    }else{
+                        kendo.ui.showConfirmDialog({
+                            title: $l('hap.tip.info'),
+                            message: $l('确认失效？')
+                        }).done(function (event) {
+                            if (event.button == 'OK') {
+                                //var items = dataSource.data;
+                                $.ajax({
+                                    url: crudServiceBaseUrl + "/remove",
+                                    data: JSON.stringify(dataJson),
+                                    contentType: "application/json",
+                                    type: "POST",
+                                    async: false,
+                                    success:function(data){
+                                        $('#houseGrid').data('kendoGrid').dataSource.page(1);
+                                    }
+                                });
+//                                $.each(checked, function (i, v) {
+//                                    grid.dataSource.remove(v)
+//                                })
+//                                grid.dataSource.sync();
+                            }
+                            //grid.dataSource.sync();
+
+                        })
+
+
+                    }
+                } else {
+                    kendo.ui.showInfoDialog({
+                        message: $l('hap.tip.selectrow')
+                    })
+                }
+            }
+
+            Hap.autoResizeGrid("#houseGrid");
+
+            $("#closeWin").click(function () {
+                window.parent.$("#ownerDetails").data("kendoWindow").close();
+            });
+
+            function queryData() {
+                $('#houseGrid').data('kendoGrid').dataSource.page(1);
+            }
+
+            $("#saveGrid").click(function () {
+                $("#page-content").kendoValidator();
+                if (newViewModel.model.bpName == '' || newViewModel.model.bpName == null) {
+                    kendo.ui.showInfoDialog({
+                        message: '业主名称不能为空'
+                    })
+                } else if (newViewModel.model.idType == '' || newViewModel.model.idType == null) {
+                    kendo.ui.showInfoDialog({
+                        message: '证件类型不能为空'
+                    })
+                } else if (newViewModel.model.idType == '' || newViewModel.model.idType == null) {
+                    kendo.ui.showInfoDialog({
+                        message: '证件类型不能为空'
+                    })
+                } else if (newViewModel.model.idNo == '' || newViewModel.model.idNo == null) {
+                    kendo.ui.showInfoDialog({
+                        message: '证件号不能为空'
+                    })
+                } else if (newViewModel.model.mobile == '' || newViewModel.model.mobile == null) {
+                    kendo.ui.showInfoDialog({
+                        message: '手机号不能为空'
+                    })
+                } else {
+                    newViewModel.model.__status = isedit ? 'update' : 'add';
+                    Hap.submitForm({
+                        url: '${base.contextPath}/csp/bp/general/submit',
+                        formModel: newViewModel.model,
+                        success: function (data) {
+                            window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+                            window.parent.$("#ownerDetails").data("kendoWindow").close();
+                        }
+                    });
+                }
+            });
+        </script>
+
+</body>

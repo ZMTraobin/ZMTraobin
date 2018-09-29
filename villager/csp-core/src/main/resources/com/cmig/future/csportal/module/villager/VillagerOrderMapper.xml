@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.order.mapper.VillagerOrderMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.order.dto.VillagerOrder">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="APP_USER_ID" property="appUserId" jdbcType="VARCHAR" />
+        <result column="ORDER_NUMBER" property="orderNumber" jdbcType="VARCHAR" />
+        <result column="ORDER_AMOUNT" property="orderAmount" jdbcType="DECIMAL" />
+        <result column="DISCOUNT_AMOUNT" property="discountAmount" jdbcType="DECIMAL" />
+        <result column="INTEGRAL_AMOUNT" property="integralAmount" jdbcType="DECIMAL" />
+        <result column="PAYABLE_AMOUNT" property="payableAmount" jdbcType="DECIMAL" />
+        <result column="PAID_AMOUNT" property="paidAmount" jdbcType="DECIMAL" />
+        <result column="TIME_EXPIRE" property="timeExpire" jdbcType="DATE" />
+        <result column="TIME_PAID" property="timePaid" jdbcType="DATE" />
+        <result column="TIME_SEND" property="timeSend" jdbcType="DATE" />
+        <result column="TIME_SETTLE" property="timeSettle" jdbcType="DATE" />
+        <result column="GOOD_ID" property="goodId" jdbcType="VARCHAR" />
+        <result column="GOOD_CODE" property="goodCode" jdbcType="VARCHAR" />
+        <result column="GOOD_NUM" property="goodNum" jdbcType="DECIMAL" />
+        <result column="CLIENT_IP" property="clientIp" jdbcType="VARCHAR" />
+        <result column="PAY_STATUS" property="payStatus" jdbcType="VARCHAR" />
+        <result column="ORDER_STATUS" property="orderStatus" jdbcType="VARCHAR" />
+        <result column="ORDER_TYPE" property="orderType" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="orderColumns">
+        a.ID	 AS 	"id",
+        a.APP_USER_ID	 AS 	"appUserId",
+        a.ORDER_NUMBER	 AS 	"orderNumber",
+        a.ORDER_AMOUNT	 AS 	"orderAmount",
+        a.DISCOUNT_AMOUNT	 AS 	"discountAmount",
+        a.INTEGRAL_AMOUNT	 AS 	"integralAmount",
+        a.PAYABLE_AMOUNT	 AS 	"payableAmount",
+        a.PAID_AMOUNT	 AS 	"paidAmount",
+        a.TIME_EXPIRE	 AS 	"timeExpire",
+        a.TIME_PAID	 AS 	"timePaid",
+        a.TIME_SEND	 AS 	"timeSend",
+        a.TIME_SETTLE	 AS 	"timeSettle",
+        a.CLIENT_IP	 AS 	"clientIp",
+        a.GOOD_ID AS 	"goodId",
+        A.GOOD_NUM  AS 	"goodNum",
+        a.PAY_STATUS	 AS 	"payStatus",
+        a.ORDER_STATUS	 AS 	"orderStatus",
+        a.ORDER_TYPE	 AS 	"orderType",
+        a.DESCRIPTION	 AS 	"description",
+        a.CREATED_BY as "createdBy",
+		a.CREATION_DATE as "creationDate",
+		a.LAST_UPDATED_BY as "lastUpdatedBy",
+		a.LAST_UPDATE_DATE as "lastUpdateDate"
+    </sql>
+
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.villager.order.dto.VillagerOrder">
+        select
+        g.GOOD_CATEGORY as "good.goodCategory",
+        g.GOOD_SKU as "good.goodSku",
+        g.GOOD_NAME as "good.goodName",
+        g.PRICE as "good.price",
+        g.UNIT as "good.unit",
+        u.mobile,
+        u.user_name as "userName",
+        <include refid="orderColumns"/>
+        from csp_villager_order a
+        left join csp_villager_good g on a.GOOD_ID=g.ID
+        left join csp_ljh_app_user u on a.app_user_id=u.id
+    </select>
+</mapper>

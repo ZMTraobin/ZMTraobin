@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.community.mapper.BaseCommunityMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.community.dto.BaseCommunity">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE" />
+        <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+        <result column="AREA_ID" property="areaId" jdbcType="VARCHAR" />
+        <result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+        <result column="AREA" property="area" jdbcType="VARCHAR" />
+        <result column="USE_AREA" property="useArea" jdbcType="VARCHAR" />
+        <result column="SECURITY_UNIT" property="securityUnit" jdbcType="VARCHAR" />
+        <result column="GREEN_AREA" property="greenArea" jdbcType="VARCHAR" />
+        <result column="FLOOR_NUM" property="floorNum" jdbcType="DECIMAL" />
+        <result column="CONSTRUCTION_UNIT" property="constructionUnit" jdbcType="VARCHAR" />
+        <result column="CITY_ID" property="cityId" jdbcType="VARCHAR" />
+        <result column="PARTITIONL" property="partitionl" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_NAME" property="communityName" jdbcType="VARCHAR" />
+        <result column="COMPANY_ID" property="companyId" jdbcType="VARCHAR" />
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR" />
+        <result column="LATITUDE" property="latitude" jdbcType="DECIMAL" />
+        <result column="LONGITUDE" property="longitude" jdbcType="DECIMAL" />
+        <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+        <result column="OFFICE_ID" property="officeId" jdbcType="VARCHAR" />
+        <result column="OFFICE_NAME" property="officeName" jdbcType="VARCHAR" />
+        <result column="PARTITIONL_ID" property="partitionlId" jdbcType="VARCHAR" />
+        <result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+        <result column="WORKING_TIME" property="workingTime" jdbcType="VARCHAR" />
+        <result column="CHECKIN_TIME" property="checkinTime" jdbcType="DATE" />
+        <result column="PROPERTY_MANAGEMENT_AREA" property="propertyManagementArea" jdbcType="VARCHAR" />
+        <result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+        <result column="TWO_CODE" property="twoCode" jdbcType="VARCHAR" />
+        <result column="GROUPPHONE" property="groupphone" jdbcType="VARCHAR" />
+        <result column="PRINTTEMPLATEFAMILY" property="printtemplatefamily" jdbcType="VARCHAR" />
+        <result column="PRINTTEMPLATEPUBLIC" property="printtemplatepublic" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM_ID" property="sourceSystemId" jdbcType="VARCHAR" />
+        <result column="SERVER_URL" property="serverUrl" jdbcType="VARCHAR" />
+        <result column="IS_REMOTE_AUTHEN" property="isRemoteAuthen" jdbcType="VARCHAR" />
+        <result column="IS_ATTENTION" property="isCurrentAttention" jdbcType="VARCHAR" />
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+        <result column="UNABLE_FLAG" property="unableFlag" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_CODE" property="communityCode" jdbcType="VARCHAR" />
+        <result column="RESIDENT_MANAGER" property="residentManager" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+    <sql id="communityColumns">
+        a.ID AS "id",
+        a.CITY_NAME AS "cityName",
+        a.PARTITIONL AS "partitionl",
+        a.PARTITIONL_ID AS "partitionlId",
+        a.COMMUNITY_NAME AS "communityName",
+        a.AREA AS "area",
+        a.USE_AREA AS "useArea",
+        a.SECURITY_UNIT AS "securityUnit",
+        a.GREEN_AREA AS "greenArea",
+        a.FLOOR_NUM AS "floorNum",
+        a.CONSTRUCTION_UNIT AS "constructionUnit",
+        a.CITY_ID AS "cityId",
+        a.OFFICE_ID AS "officeId",
+        a.OFFICE_NAME AS "officeName",
+        a.COMPANY_ID AS "companyId",
+        a.COMPANY_NAME AS "companyName",
+        a.DEL_FLAG AS "delFlag",
+        a.LATITUDE AS "latitude",
+        a.LONGITUDE AS "longitude",
+        a.PHONE AS "phone",
+        a.WORKING_TIME AS "workingTime",
+        a.CHECKIN_TIME AS "checkinTime",
+        a.PROPERTY_MANAGEMENT_AREA AS "propertyManagementArea",
+        a.ADDRESS AS "address",
+        a.TWO_CODE AS "twoCode",
+        a.GROUPPHONE AS "groupPhone",
+        a.PRINTTEMPLATEFAMILY AS "printTemplateFamily",
+        a.PRINTTEMPLATEPUBLIC AS "printTemplatePublic",
+        a.SOURCE_SYSTEM AS "sourceSystem",
+        a.SOURCE_SYSTEM_ID AS "sourceSystemId",
+        a.SERVER_URL AS "serverUrl",
+        a.IS_REMOTE_AUTHEN AS "isRemoteAuthen",
+        a.CREATION_DATE AS "creationDate",
+        a.LAST_UPDATE_DATE AS "lastUpdateDate",
+        a.UNABLE_FLAG AS "unableFlag",
+        a.COMMUNITY_CODE AS "communityCode",
+        a.RESIDENT_MANAGER AS "residentManager"
+    </sql>
+
+    <select id="findUserCommunityList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_ljh_base_community a
+        inner join csp_ljh_mgt_user_community b  ON a.ID = b.COMMUNITY_ID
+        WHERE a.DEL_FLAG =#{DEL_FLAG_NORMAL}
+        and b.DEL_FLAG =#{DEL_FLAG_NORMAL}
+        and b.MGT_USER_ID=#{userId}
+        and a.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+    </select>
+
+    <insert id="insertCommunity" parameterType="com.cmig.future.csportal.module.properties.community.dto.BaseCommunity">
+        INSERT INTO csp_ljh_base_community(
+            ID,
+            OFFICE_ID,
+            OFFICE_NAME,
+            COMMUNITY_NAME,
+            COMPANY_ID,
+            COMPANY_NAME,
+            SOURCE_SYSTEM,
+            SOURCE_SYSTEM_ID,
+            SERVER_URL,
+            IS_REMOTE_AUTHEN,
+            DEL_FLAG,
+            <if test="phone != null and phone != '' ">
+                PHONE,
+            </if>
+            UNABLE_FLAG
+        )
+        VALUES (
+            #{id},
+            #{officeId},
+            #{officeName},
+            #{communityName},
+            #{companyId},
+            #{companyName},
+            #{sourceSystem},
+            #{sourceSystemId},
+            #{serverUrl},
+            #{isRemoteAuthen},
+            #{delFlag},
+            <if test="phone != null and phone != '' ">
+                #{phone},
+            </if>
+            #{UNABLE_FLAG_NORMAL}
+
+        )
+    </insert>
+
+    <update id="updateCommunity">
+        UPDATE csp_ljh_base_community SET
+        <if test="companyId != null and companyId != '' ">
+            COMPANY_ID= #{companyId},
+        </if>
+        <if test="companyName != null and companyName != '' ">
+            COMPANY_NAME = #{companyName},
+        </if>
+        <if test="communityName != null and communityName != '' ">
+            COMMUNITY_NAME = #{communityName},
+        </if>
+        <if test="communityCode != null and communityCode != '' ">
+            COMMUNITY_CODE = #{communityCode},
+        </if>
+        <if test="officeId != null and officeId != '' ">
+            OFFICE_ID = #{officeId},
+        </if>
+        <if test="officeName != null and officeName != '' ">
+            OFFICE_NAME = #{officeName},
+        </if>
+        <if test="cityId != null and cityId != '' ">
+            CITY_ID = #{cityId},
+        </if>
+
+        <if test="cityName != null and cityName != '' ">
+            CITY_NAME = #{cityName},
+        </if>
+        <if test="area != null and area != '' ">
+            AREA = #{area},
+        </if>
+        <if test="useArea != null and useArea != '' ">
+            USE_AREA = #{useArea},
+        </if>
+        <if test="greenArea != null and greenArea != '' ">
+            GREEN_AREA = #{greenArea},
+        </if>
+        <if test="floorNum != null and floorNum != '' ">
+            FLOOR_NUM = #{floorNum},
+        </if>
+        <if test="latitude != null and latitude != '' ">
+            LATITUDE = #{latitude},
+        </if>
+        <if test="longitude != null and longitude != '' ">
+            LONGITUDE = #{longitude},
+        </if>
+        <if test="workingTime != null and workingTime != '' ">
+            WORKING_TIME = #{workingTime},
+        </if>
+        <if test="phone != null and phone != '' ">
+            PHONE = #{phone},
+        </if>
+        <if test="groupphone != null and groupphone != '' ">
+            GROUPPHONE = #{groupphone},
+        </if>
+        <if test="address != null and address != '' ">
+            ADDRESS = #{address},
+        </if>
+        <if test="printtemplatefamily != null and printtemplatefamily != '' ">
+            PRINTTEMPLATEFAMILY = #{printtemplatefamily},
+        </if>
+        <if test="printtemplatepublic != null and printtemplatepublic != '' ">
+            PRINTTEMPLATEPUBLIC = #{printtemplatepublic},
+        </if>
+        <if test="serverUrl != null and serverUrl != '' ">
+            SERVER_URL = #{serverUrl},
+        </if>
+        <if test="sourceSystem != null and sourceSystem != '' ">
+            SOURCE_SYSTEM = #{sourceSystem},
+        </if>
+        <if test="sourceSystemId != null and sourceSystemId != '' ">
+            SOURCE_SYSTEM_ID = #{sourceSystemId},
+        </if>
+        <if test="isRemoteAuthen != null and isRemoteAuthen != '' ">
+            IS_REMOTE_AUTHEN = #{isRemoteAuthen},
+        </if>
+        <if test="unableFlag != null and unableFlag != '' ">
+            UNABLE_FLAG = #{unableFlag},
+        </if>
+            OBJECT_VERSION_NUMBER = OBJECT_VERSION_NUMBER+1,
+            LAST_UPDATE_DATE = CURRENT_TIMESTAMP
+
+        WHERE ID = #{id}
+    </update>
+
+    <!--根据源系統ID和源系統代碼查詢項目-->
+    <select id="getBySourceSystemId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_ljh_base_community a
+        <!--<include refid="communityJoins" />-->
+        WHERE
+        a.DEL_FLAG =#{DEL_FLAG_NORMAL}
+        <if test="sourceSystem != null and sourceSystem != '' ">
+          and  a.SOURCE_SYSTEM=#{sourceSystem}
+        </if>
+        <if test="sourceSystemId != null and sourceSystemId != '' ">
+          and a.SOURCE_SYSTEM_ID=#{sourceSystemId}
+        </if>
+    </select>
+
+    <!--根据小区名查询小区 -->
+    <select id="findCommunityListByName" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_ljh_base_community a
+        <where>
+            a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+            AND	a.COMMUNITY_NAME=#{communityName}
+            <!--<if test="userId != null and userId != ''">
+                AND  NOT EXISTS (SELECT 1 FROM ATTENTION_COMMUNITY_USER ACU WHERE a.id=ACU.COMMUNITY_ID
+                AND ACU.DEL_FLAG = 0
+                AND ACU.USER_ID = #{userId})
+            </if>-->
+        </where>
+        and a.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        ORDER BY CONVERT( a.city_name USING gbk ) COLLATE gbk_chinese_ci ASC,
+        CONVERT( a.COMMUNITY_NAME USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+
+    <select id="findByCommunityName" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_ljh_base_community a
+        <where>
+            a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+            <if test="companyId != null and companyId != ''">
+                AND a.COMPANY_ID =#{companyId}
+            </if>
+            <if test="communityName != null and communityName != ''">
+                AND a.COMMUNITY_NAME = #{communityName}
+            </if>
+            and a.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        </where>
+        ORDER BY CONVERT( a.COMMUNITY_NAME USING gbk ) COLLATE gbk_chinese_ci
+        ASC
+    </select>
+
+    <!--软删除-->
+    <update id="deleteCommunity">
+        UPDATE csp_ljh_base_community SET
+        DEL_FLAG =#{DEL_FLAG_DELETE}
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 根据小区名模糊查询小区 -->
+    <select id="findCommunityByLikeCommunityName" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_ljh_base_community a
+        <where>
+            a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+            AND	 a.COMMUNITY_NAME LIKE CONCAT(CONCAT('%',#{communityName}),'%')
+            <!--<if test="userId != null and userId != ''">
+                AND  NOT EXISTS (SELECT 1 FROM csp_ljh_attention_community_user ACU WHERE a.id=ACU.COMMUNITY_ID
+                AND ACU.DEL_FLAG = 0
+                AND ACU.USER_ID = #{userId})
+            </if>-->
+            and a.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        </where>
+        ORDER BY CONVERT( a.city_name USING gbk ) COLLATE gbk_chinese_ci ASC,
+        CONVERT( a.COMMUNITY_NAME USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+
+    <!-- 根据经纬度查询附近的小区 -->
+    <select id="findCommunityByLngLat" resultMap="BaseResultMap">
+        SELECT
+        a.ID AS "id",
+        a.COMMUNITY_NAME AS "communityName",
+        a.ADDRESS AS "address",
+        a.LATITUDE AS "latitude",
+        a.LONGITUDE AS "longitude",
+        a.SOURCE_SYSTEM AS "sourceSystem",
+        a.SOURCE_SYSTEM_ID AS "sourceSystemId",
+        a.SERVER_URL AS "serverUrl",
+        a.IS_REMOTE_AUTHEN AS "isRemoteAuthen",
+        a.CREATION_DATE AS "creationDate",
+        a.LAST_UPDATE_DATE AS "lastUpdateDate",
+        a.UNABLE_FLAG AS "unableFlag",
+        a.RESIDENT_MANAGER AS "residentManager",
+        a.COMMUNITY_CODE AS "communityCode",
+        ROUND(
+        6378.138 * 2 * ASIN(
+        SQRT(
+        POW( SIN((#{latitude} * PI() / 180-  a.LATITUDE * PI() / 180) / 2),2)
+        + COS(#{latitude} * PI() / 180) * COS( a.LATITUDE * PI() / 180) *
+        POW( SIN((#{longitude} * PI() / 180- a.LONGITUDE * PI() / 180) / 2), 2)
+        )
+        ),2
+        ) AS distance
+        FROM
+        csp_ljh_base_community a
+        WHERE a.LONGITUDE IS NOT NULL  AND a.LATITUDE IS NOT NULL
+        AND a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        and a.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        ORDER BY distance ASC
+        LIMIT 1
+    </select>
+    
+    <select id="getCommunityList" resultMap="BaseResultMap">
+      SELECT bc.ID AS Id,bc.CITY_NAME AS 	cityName,bc.COMMUNITY_NAME AS communityName,bc.COMPANY_NAME AS companyName
+      FROM csp_ljh_sys_user_community  suc
+      left outer join csp_ljh_base_community bc on bc.ID = suc.COMMUNITY_ID
+      <where>
+          suc.SYS_USER_ID = #{request.userId,jdbcType=DECIMAL}
+          and bc.DEL_FLAG = #{DEL_FLAG_NORMAL}
+          <if test="communityName != null and communityName != ''">
+              AND bc.COMMUNITY_NAME like concat('%',concat(#{communityName,jdbcType=VARCHAR},'%'))
+          </if>
+          <if test="cityName != null and cityName != ''">
+              AND bc.CITY_NAME like concat('%',concat(#{cityName,jdbcType=VARCHAR},'%'))
+          </if>
+          <if test="companyName != null and companyName != ''">
+              AND bc.COMPANY_NAME like concat('%',concat(#{companyName,jdbcType=VARCHAR},'%'))
+          </if>
+          <if test="companyId != null and companyId != ''">
+              AND bc.COMPANY_ID =#{companyId}
+          </if>
+          <if test="id != null and id != ''">
+              AND bc.ID =#{id}
+          </if>
+          and bc.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+      </where>
+        ORDER BY bc.ID ASC
+    </select>
+    
+    <select id="getCommunityListLov" resultMap="BaseResultMap">
+      SELECT bc.ID AS Id,bc.CITY_NAME AS 	cityName,bc.COMMUNITY_NAME AS communityName,bc.COMPANY_NAME AS companyName,
+        bc.COMMUNITY_CODE  AS communityCode
+      FROM csp_ljh_base_community  bc 
+      <where>
+              bc.DEL_FLAG = #{DEL_FLAG_NORMAL}
+          <if test="communityName != null and communityName != ''">
+              AND bc.COMMUNITY_NAME like concat('%',concat(#{communityName,jdbcType=VARCHAR},'%'))
+          </if>
+          <if test="cityName != null and cityName != ''">
+              AND bc.CITY_NAME like concat('%',concat(#{cityName,jdbcType=VARCHAR},'%'))
+          </if>
+          <if test="companyName != null and companyName != ''">
+              AND bc.COMPANY_NAME like concat('%',concat(#{companyName,jdbcType=VARCHAR},'%'))
+          </if>
+          <if test="companyId != null and companyId != ''">
+              AND bc.COMPANY_ID =#{companyId}
+          </if>
+          <if test="id != null and id != ''">
+              AND bc.ID =#{id}
+          </if>
+          and bc.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+      </where>
+        ORDER BY bc.ID ASC
+    </select>
+
+    <select id="getCompanyList" resultMap="BaseResultMap">
+        SELECT DISTINCT ID as id,COMPANY_ID AS companyId,COMPANY_NAME AS companyName
+        FROM csp_ljh_base_community
+        <where>
+            DEL_FLAG = #{DEL_FLAG_NORMAL}
+            <if test="communityName != null and communityName != ''">
+                AND COMMUNITY_NAME like concat('%',concat(#{communityName,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="cityName != null and cityName != ''">
+                AND CITY_NAME like concat('%',concat(#{cityName,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="companyName != null and companyName != ''">
+                AND COMPANY_NAME like concat('%',concat(#{companyName,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="companyId != null and companyId != ''">
+                AND COMPANY_ID =#{companyId}
+            </if>
+            <if test="id != null and id != ''">
+                AND ID =#{id}
+            </if>
+            and UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        </where>
+        ORDER BY CONVERT( COMPANY_NAME USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+
+    <select id="selectCommunity" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_ljh_base_community a
+        WHERE
+        a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        AND EXISTS (SELECT 1 FROM csp_ljh_sys_user_community suc WHERE a.ID = suc.COMMUNITY_ID
+        AND suc.SYS_USER_ID = #{request.userId,jdbcType=DECIMAL})
+        <if test="cityName != null and cityName != ''">
+            AND a.CITY_NAME like concat('%',concat(#{cityName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="communityName != null and communityName != ''">
+            AND a.COMMUNITY_NAME like concat('%',concat(#{communityName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="communityCode != null and communityCode != ''">
+            AND a.COMMUNITY_CODE like concat('%',concat(#{communityCode,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="companyName != null and companyName != ''">
+            AND a.COMPANY_NAME like concat('%',concat(#{companyName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="companyId != null and companyId != ''">
+            AND a.COMPANY_ID =#{companyId}
+        </if>
+        <if test="serverUrl != null and serverUrl != ''">
+            AND a.SERVER_URL like concat('%',concat(#{serverUrl,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="unableFlag != null and unableFlag != ''">
+            AND a.UNABLE_FLAG =#{unableFlag}
+        </if>
+        ORDER BY CONVERT( CITY_NAME USING gbk ) COLLATE gbk_chinese_ci,
+        CONVERT( COMPANY_NAME USING gbk ) COLLATE gbk_chinese_ci,
+        CONVERT( COMMUNITY_NAME USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        0 AS "isCurrentAttention",
+        'N' AS "isAttention",
+        <include refid="communityColumns" />
+        FROM csp_ljh_base_community a
+        WHERE
+        a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        <if test="cityId != null and cityId != ''">
+            AND a.CITY_ID = #{cityId}
+        </if>
+        <if test="cityName != null and cityName != ''">
+            AND a.CITY_NAME like concat('%',concat(#{cityName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="communityName != null and communityName != ''">
+            AND a.COMMUNITY_NAME like concat('%',concat(#{communityName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="companyName != null and companyName != ''">
+            AND a.COMPANY_NAME like concat('%',concat(#{companyName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="companyId != null and companyId != ''">
+            AND a.COMPANY_ID =#{companyId}
+        </if>
+        <!--<if test="userId != null and userId != ''">
+            AND  NOT EXISTS (SELECT 1 FROM csp_ljh_attention_community_user ACU WHERE a.id=ACU.COMMUNITY_ID
+            AND ACU.DEL_FLAG = 0
+            AND ACU.USER_ID = #{userId})
+        </if>-->
+        and a.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        ORDER BY CONVERT( CITY_NAME USING gbk ) COLLATE gbk_chinese_ci,
+        CONVERT( COMPANY_NAME USING gbk ) COLLATE gbk_chinese_ci,
+        CONVERT( COMMUNITY_NAME USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_ljh_base_community a
+        WHERE
+        a.ID = #{id}
+    </select>
+
+    <select id="findListByCommunityCode" resultMap="BaseResultMap">
+        SELECT
+        <include refid="communityColumns" />
+        FROM csp_ljh_base_community a
+        WHERE
+        a.COMMUNITY_CODE = #{communityCode}
+        AND a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+    </select>
+    
+    <select id="isBind" resultMap="BaseResultMap">
+        select a.*
+        from csp_ljh_base_community a
+          where a.id = #{id}
+           and a.id not in (
+          (select community_id from csp_ljh_neighbor_topic where DEL_FLAG='0' )
+             )
+           and a.id not in (
+          (select community_id from csp_ljh_mgt_user_community where DEL_FLAG='0' )
+             )
+           and a.id not in (
+          (select community_id from csp_mgt_house)
+            )
+           and a.id not in (
+          (select community_id from csp_mgt_structure)
+            )
+           and a.id not in (
+          (select community_id from csp_mgt_structure_version)
+            )
+    </select>
+    
+    <select id="isDefault" resultMap="BaseResultMap">
+        select a.*
+        from csp_ljh_base_community a
+          where a.id = #{id} 
+           and a.community_code = 'DEFAULT'
+    </select>
+</mapper>

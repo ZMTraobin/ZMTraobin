@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>房屋节点</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+		<link rel="stylesheet" type="text/css" href="css/userCreateRepairList.css" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			.beChecked{
+				background-color:#FFF !important;
+				color:#fff ;
+				box-shadow:0px 0px 0px 1px #0074C2 inset;
+			}
+			.beChecked>div{color:#fff ;}
+			
+			/*样式修改*/
+			.mui-bar-nav~.mui-content {
+			    padding-bottom: 50px;
+			}
+			.mui-content{background: #fff!important;}
+			.mui-card {
+			    margin: 0;
+			    border: none;
+			    border-radius: 0;
+			}
+			/*ul*/
+			.mui-grid-view.mui-grid-9 {
+			    padding: 5px;
+			    border-top: none;
+			    border-left: none;
+			    background-color: #fff;
+			}
+			/*li*/
+			.mui-card .mui-table-view .mui-table-view-cell:first-child, .mui-card .mui-table-view .mui-table-view-divider:first-child {
+			    border-top-left-radius: 0;
+			    border-top-right-radius: 0;
+			}
+			.mui-card .mui-table-view .mui-table-view-cell:last-child, .mui-card .mui-table-view .mui-table-view-divider:last-child {
+			    border-bottom-right-radius: 0;
+			    border-bottom-left-radius: 0;
+			}
+			
+			.mui-grid-view.mui-grid-9 .mui-table-view-cell {
+			    padding: 5px 5px;
+			    /*border: 1px solid #eee;*/
+			    border: none;
+			    
+			}
+			.mui-grid-view.mui-grid-9 .mui-table-view-cell.mui-active {
+			    background-color: #fff;
+			    
+			}
+			
+			/*li span img*/
+			.mui-grid-view.mui-grid-9 .mui-media .mui-icon img{
+				width: 100%;
+			}
+			
+			.house-checked{font-size: 0; position: absolute; top: 8px; right: 8px; width: 16px; display: none;}
+			.house-checked img{width: 100%;}
+			
+			/*li div*/			
+			.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+			    margin-top: 0; 
+			}
+			
+			/*底部按钮条*/
+			.mui-bar-tab { display: -webkit-flex; display: flex; -webkit-justify-content: space-around;
+    justify-content: space-around;}
+    		
+    		.mui-btn, button, input[type=button], input[type=reset], input[type=submit] {
+			    height: 30px;
+			    width: 30%;
+			    margin-top: 10px;
+			    border: none;
+			    color: #fff;
+			    border-radius: 0;
+			    border-top-left-radius: 0;
+			    border-top-right-radius: 0;
+			    border-bottom-right-radius: 0;
+			    border-bottom-left-radius: 0;
+			    background-color: #0972da;
+			}
+    		
+    		.mui-btn.mui-active:enabled, .mui-btn:enabled:active, button.mui-active:enabled, button:enabled:active, input[type=button].mui-active:enabled, input[type=button]:enabled:active, input[type=reset].mui-active:enabled, input[type=reset]:enabled:active, input[type=submit].mui-active:enabled, input[type=submit]:enabled:active {
+			    color: #fff;
+			    background-color: #0563c1;
+			}
+			
+			/*房屋信息下边字体超长显示省略*/
+			.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+			    line-height: normal;
+			    height: auto;
+			    text-overflow: ellipsis;
+			    overflow: hidden;
+			    white-space: nowrap;
+			    color: #333;
+			}
+			#checkNodeUl{
+				padding-bottom: 50px;
+			}
+    		
+		</style>
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/public.js"></script>
+		<script>
+			mui.init();
+		</script>
+	</head>
+
+	<body>
+
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-icon mui-pull-left" onclick="checkNodeBack()"><img src="img/icon-back.png" style="height: 24px;" /></a>
+	<h1 class="mui-title">房屋节点</h1>
+</header>
+<div class="mui-content">
+    <ul class="mui-table-view mui-hidden" style="margin-bottom:15px;">
+        <li class="mui-table-view-cell">cared
+            <div id="M_Toggle_Grid_Carded" class="mui-switch mui-active">
+                <div class="mui-switch-handle"></div>
+            </div>
+        </li>
+    </ul>
+    <div class="mui-card">
+        <ul class="mui-table-view mui-grid-view mui-grid-9" id="checkNodeUl">
+        	
+        	<!--<li id="'+data.result.cascade_nodes[i].id+'" class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3" onclick=checkPoint("'+data.result.cascade_nodes[i].id+'","'+data.result.cascade_nodes[i].structure_name+'","'+data.result.cascade_nodes[i].property_number+'")>
+        	<span class="mui-icon "><img src="img/zmjj_house_icon.png"/></span>
+        	<span class="house-checked" ><img src="img/zmjj_house_select.png"/></span>
+        	<div class="mui-media-body">'+data.result.cascade_nodes[i].structure_name+'</div></li>-->
+        	
+        </ul> 
+    </div>
+	<!--<center>
+		<input type="button" onclick="priNode()" value="上一级" class="mui-btn mui-btn-primary mui-btn-block myButton"></input>
+		<input type="button" onclick="nextNode()" value="下一级" class="mui-btn mui-btn-primary mui-btn-block myButton mui-hidden" id="nextNode"></input>
+		<input type="button"  onclick="confimNode()" value="确认" class="mui-btn mui-btn-primary mui-btn-block myButton"></input>
+	</center>-->
+</div>
+<nav id="nav" class="mui-bar mui-bar-tab" style="-webkit-box-shadow: none; box-shadow: none;background: #efeff4;">
+    <input type="button" onclick="priNode()" value="上一级" class=""></input>
+	<!--<input type="button" onclick="nextNode()" value="下一级" class="" id="nextNode"></input>-->
+	<input type="button"  onclick="confimNode()" value="完成" class="mui-hidden" id="confimNode"></input>
+</nav>
+<!--<script src="js/WebViewJavascriptBridge.js"></script>
+<script src="js/wdNative.js"></script>-->
+
+<script>
+    var content = document.querySelector('.mui-content');
+    var toggle = document.getElementById('M_Toggle_Grid_Carded');
+    var card = document.querySelector('.mui-card');
+    var grid = document.querySelector('.mui-grid-view');
+    var checkNodeArray = new Array();
+    var checkNode = null ;
+    var checkNodeName = null ;
+    var checkNodeCode = null ;
+    var hasChild = false ;
+
+    toggle.addEventListener('toggle', function(event) {
+        var isActive = event.detail.isActive;
+        //alert(isActive);
+        if (isActive) {
+            card.appendChild(grid);
+            card.style.display = '';
+        } else {
+            content.appendChild(grid);
+            card.style.display = 'none';
+        }
+    });
+    
+    //设置$(".mui-content")高度
+	var windowHeight = window.screen.height;
+	jQuery(".mui-content").css("height",windowHeight-55);
+    
+    var pp_parent_id = null ;
+	var dataArray = null ;
+	var isCheckNodeFlage = null ;
+//	localStorage.communityId = 'f2ed18abdcdf4d419bf3f11ffd9edefa';
+	
+	var getRepairNode = function(communityId,parent_id,isCheckFlage){
+		isCheckNodeFlage = isCheckFlage;
+		if(isCheckNodeFlage == null ){
+			jQuery("#checkNodeUl").html('');
+		}
+
+		//初始房子节点为空时，赋值为0
+//		if (parent_id == undefined) {
+//			parent_id = 0;
+//		}
+		
+		pp_parent_id = parent_id ;
+		mui.ajax(localStorage.http_service1 + 'user/structure/list', {
+//			activityFunName:"structures_cascade_nodes",// 这个activity的调用方法名称activityFunName
+			data:{
+					communityId:communityId,
+					parentViewId:parent_id
+				},
+			dataType:'json',//服务器返回json格式数据
+			type:'post',//HTTP请求类型
+			timeout:10000,//超时时间设置为10秒；
+//			headers:getHeaders(),	  
+			success:function(data){
+				console.log(JSON.stringify(data))
+				closePpage(data.status)
+				//服务器返回响应，根据响应结果，分析是否登录成功；
+				if(data.status == 1){
+
+					if(data.length > 0){
+						//没数据就没子集
+//						document.getElementById("nextNode").classList.add("mui-hidden");
+						document.getElementById("confimNode").classList.remove("mui-hidden");
+						hasChild = false ;
+						
+					}else{ //有数据就有子集
+						
+						if(isCheckNodeFlage == null ){
+							var html = '';
+							for (var i= 0 ;  i< data.data.length  ; i++) {
+								var html = '<li id="'+data.data[i].structureId+'" class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3" onclick=checkPoint("'+data.data[i].structureId+'","'+data.data[i].structureName+'","'+data.data[i].houseId+'")>';
+	            				html += '<span class="mui-icon "><img src="img/zmjj_house_icon.png"/></span>';
+	            				html += '<span class="house-checked" ><img src="img/zmjj_house_select.png"/></span>';
+	            				html += '<div class="mui-media-body">'+data.data[i].structureName+'</div></li>';
+								jQuery("#checkNodeUl").append(html);
+							}
+//							document.getElementById("nextNode").classList.remove("mui-hidden");
+							document.getElementById("confimNode").classList.add("mui-hidden");
+							hasChild = true ;
+						}else{
+							if( data.data != null && data.data.length > 0 ){
+
+//								document.getElementById("nextNode").classList.remove("mui-hidden");
+								document.getElementById("confimNode").classList.add("mui-hidden");
+								hasChild = true ;
+							}else{
+
+//								document.getElementById("nextNode").classList.add("mui-hidden");
+								document.getElementById("confimNode").classList.remove("mui-hidden");
+								hasChild = false ;
+							}
+						}
+					}
+				}
+			},
+			error:function(xhr,type,errorThrown){
+				//异常处理；
+				console.log(type);
+			}
+		});
+
+	}
+		getRepairNode(localStorage.communityId,0);
+				
+		function checkNodeBack(){
+//			checkNode = null ;
+//			checkNodeName = null ;
+//			checkNodeCode = null ;
+//			localStorage.checkNode = checkNode ;
+//			localStorage.checkNodeName = checkNodeName;
+//			localStorage.checkNodeCode = checkNodeCode ;
+			
+			localStorage.checkNode = null ;
+			localStorage.checkNodeName = null ;
+			localStorage.checkNodeCode = null ;
+			localStorage.checkNode = checkNode ;
+			localStorage.checkNodeName = checkNodeName;
+			localStorage.checkNodeCode = checkNodeCode ;
+			
+			//跳转到页面
+			mui.openWindow({
+			    url: 'related-property.html', 
+			    id:'related-property',
+			    show:{
+			      autoShow:false,
+			      aniShow:'slide-in-right', //slide-in-right//页面显示动画，默认为”slide-in-right“；
+			      duration:200
+			    }
+			  });
+		}
+		
+		var checkNameTemp = null ; //临时name
+		function checkPoint(id,name,code){
+			jQuery("#"+id).find(".house-checked").show();
+			jQuery("#"+id).siblings().find(".house-checked").hide();
+			
+			
+			if(id == checkNode){
+				return;
+			}
+			checkNode = id ;
+			checkNameTemp = name ;
+			
+			/* 点击节点的时候不再拼接数据，在完成按钮去拼接数据
+			if(checkNodeName != null && checkNodeName != '' ){
+				checkNodeName += " "+name ;   //名字关联 例如 后现代城  1号楼
+			}else{
+				checkNodeName = name ;
+			}
+			*/
+			
+			checkNodeCode = code ;
+			
+			getRepairNode(localStorage.communityId,checkNode,true);
+			
+			//见时间间隔，等getRepairNode()
+			setTimeout(function() {
+				if (hasChild == true) {
+					nextNode()
+				}
+			},450)
+		}
+		
+		function nextNode(){
+			if(hasChild != true){
+//				mui.toast("已经是最后一层节点")
+				return;
+			}
+			if(checkNodeArray.length > 0 ){
+				if(checkNodeArray[checkNodeArray.length-1].checkNode == checkNode ){
+					mui.toast("请选择节点")
+				}else{
+					var obj = checkNodeArray[checkNodeArray.length-1] ;
+					if(obj != null ){
+						checkNodeName = obj.name+checkNameTemp ;
+					}else{
+						checkNodeName = checkNameTemp ;
+					}
+					var obj = new Object();
+					obj.checkNode = checkNode;
+					obj.name = checkNodeName;
+					obj.code = checkNodeCode ;
+					obj.html = document.getElementById("checkNodeUl").innerHTML;
+					obj.hasChild = hasChild ;
+					checkNodeArray.push(obj);
+					getRepairNode(localStorage.communityId,checkNode);
+				}
+			}else{
+				if(checkNode == null || checkNode == ''){
+					mui.toast("请选择节点")
+				}else{
+					if(obj != null ){
+						checkNodeName = obj.name+checkNameTemp ;
+					}else{
+						checkNodeName = checkNameTemp ;
+					}
+					var obj = new Object();
+					obj.checkNode = checkNode;
+					obj.name = checkNodeName;
+					obj.code = checkNodeCode ;
+					obj.html = document.getElementById("checkNodeUl").innerHTML;
+					obj.hasChild = hasChild ;
+					checkNodeArray.push(obj);
+					getRepairNode(localStorage.communityId,checkNode);
+				}
+			}
+			
+		}
+		
+		function priNode(){
+			if(checkNodeArray.length > 0 ){
+				var obj = checkNodeArray[checkNodeArray.length-1] ;
+				document.getElementById("checkNodeUl").innerHTML = obj.html;
+				checkNode = obj.checkNode;
+				checkNodeName.name = obj.name;
+				checkNodeCode = obj.code ;
+				checkNodeArray.splice(checkNodeArray.length-1,1);
+				if( obj.hasChild ){
+//					document.getElementById("nextNode").classList.remove("mui-hidden");
+					document.getElementById("confimNode").classList.add("mui-hidden");
+					hasChild = true ;
+				}else{
+//					document.getElementById("nextNode").classList.add("mui-hidden");
+					document.getElementById("confimNode").classList.remove("mui-hidden");
+					hasChild = false ;
+				}
+			}else{
+				mui.toast("已经是根节点")
+			}
+			
+		}
+		
+		function confimNode(){
+			//console.log("aa"+checkNodeCode+"bb")
+//			if( checkNode == null || checkNode == '' ){
+//				mui.toast("请选择房屋节点");
+//				return ;
+//			}
+			if( checkNodeCode == null || checkNodeCode == '' || checkNodeCode == 'null' ){
+				mui.toast("请选择正确的房屋节点");
+				return ;
+			}
+			if(checkNodeName != null && checkNodeName != '' ){
+                checkNodeName +=  " "+checkNameTemp ;
+            }else{
+                checkNodeName = checkNameTemp ;
+            }
+			localStorage.checkNode = checkNode ; 	//传回的本地存储参数 编号 
+			localStorage.checkNodeName = checkNodeName;	//传回的本地存储参数 名称
+			localStorage.checkNodeCode = checkNodeCode;	//传回的本地存储参数 编码
+			//跳转到页面
+			mui.openWindow({ //跳转页面 
+			    url: 'related-property.html', 
+			    id:'related-property',
+//			    data:{
+//					checkNode:checkNode,
+//					checkNodeName:checkNodeName,
+//					checkNodeCode:checkNodeCode
+//				},
+			    show:{
+			      autoShow:false,
+			      aniShow:'slide-in-right', //slide-in-right//页面显示动画，默认为”slide-in-right“；
+			      duration:200
+			    }
+			  });
+		}
+		
+</script>
+</body>
+</html>

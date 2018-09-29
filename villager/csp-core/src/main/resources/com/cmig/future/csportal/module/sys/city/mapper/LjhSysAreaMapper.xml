@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.sys.city.mapper.LjhSysAreaMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.sys.city.dto.LjhSysArea">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+        <result column="PARENT_IDS" property="parentIds" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="SORT" property="sort" jdbcType="DECIMAL" />
+        <result column="CODE" property="code" jdbcType="VARCHAR" />
+        <result column="TYPE" property="type" jdbcType="VARCHAR" />
+        <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <!--城市列表(只显示市)-->
+    <select id="cityList" resultMap="BaseResultMap">
+        SELECT id ,name
+        FROM csp_ljh_sys_area city
+        <where>
+            city.TYPE = '3'
+            <if test="id != null and id != ''">
+                and city.ID = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="name != null and name != ''">
+                and city.NAME like concat('%',concat(#{name,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+        ORDER BY id
+    </select>
+
+    <!--根据城市id查询城市名称-->
+    <select id="queryCityNameById" resultMap="BaseResultMap">
+        SELECT  name
+        FROM csp_ljh_sys_area
+        WHERE id=#{id}
+    </select>
+    <!--根据类型获取城市列表-->
+    <select id="getListByType" resultMap="BaseResultMap">
+        SELECT a.* FROM csp_ljh_sys_area a
+        where a.TYPE IN  ('3') order by sort asc
+    </select>
+
+    <!-- 查询存在小区的城市列表 -->
+    <select id="findCityWithCommunity" resultMap="BaseResultMap">
+        SELECT a.id,a.code,a.name,a.type,a.remarks,a.sort
+        FROM csp_ljh_sys_area a
+        <where>
+            a.TYPE = '3'
+            AND EXISTS  ( SELECT 1 FROM  csp_ljh_base_community BC WHERE a.ID=BC.CITY_ID and BC.DEL_FLAG='0' and  BC.UNABLE_FLAG='0' )
+            <if test="code != null and code != ''">
+                and a.CODE like concat('%',concat(#{code,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="name != null and name != ''">
+                and a.NAME like concat('%',concat(#{name,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+        ORDER BY a.TYPE,CONVERT( a.name USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+
+    <select id="findAreaList" resultMap="BaseResultMap">
+        SELECT a.id,a.code,a.name,a.type,a.remarks,a.sort
+        FROM csp_ljh_sys_area a
+        <where>
+            1=1
+            <if test="type != null and type != ''">
+                and a.TYPE=#{type}
+            </if>
+            <if test="code != null and code != ''">
+                and a.CODE like concat('%',concat(#{code,jdbcType=VARCHAR},'%'))
+            </if>
+            <if test="name != null and name != ''">
+                and a.NAME like concat('%',concat(#{name,jdbcType=VARCHAR},'%'))
+            </if>
+        </where>
+        ORDER BY a.TYPE,CONVERT( a.name USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+</mapper>

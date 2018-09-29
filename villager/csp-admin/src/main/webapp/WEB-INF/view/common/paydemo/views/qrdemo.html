@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>MiniCheckout</title>
+    <link rel="stylesheet" href="css/pinus.css">
+    <script src="jquery-1.9.1.min.js"></script>
+</head>
+<body>
+<header>
+    <div class="h_content">
+        <span></span>
+    </div>
+</header>
+<body>
+<form id="orderInfo"  method="post"  >
+    <section class="block">
+        <div class="content2">
+            <div class="app">
+                <div align="center" style="font-size:20px;color:#38a9ac;">扫码支付页面</div>
+                <div class="text_amount">
+                    支付渠道：<input type="text" id="channel" name="channel" value="wx" />
+                </div>
+                <div class="text_amount">
+                    商户号：<input type="text" id="merchantNo" name="merchantNo" value="商户0001" />
+                </div>
+                <div class="text_amount">
+                    支付成功跳转地址：<input type="text" id="successUrl" name="successUrl" value="" />
+                </div>
+                <div class="text_amount">
+                    订单总金额(元)：<input type="text" id="amount" name="amount" value="0.01" />
+                </div>
+                <div class="text_amount" style="display: none">
+                    <input type="hidden" id="orderAmount" name="orderAmount" value="1" />
+                </div>
+                <div class="ch" style="display: none" >
+                    <span class="up" onclick="wap_pay('alipay_pc_direct')">支付宝电脑网站支付 </span>
+                    <span class="up" onclick="wap_pay('upacp_pc')">银联网关支付</span>
+                </div>
+                <div align="center" >
+                    <button id="pay">支付</button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</form>
+</body>
+<script>
+
+    var serverUrl="http://10.16.75.214:8383/csp-api";
+    //var serverUrl="http://csportal.cm-dev.cn";
+
+   $(document).ready(function(){
+        $("#successUrl").val("http://hshop-uat.zmsq.net/wap/mgt/zhangtao_demo/qrdemo.html");
+
+        $("#pay").click(function(){
+            var amount = $('#amount').val() * 100;
+            $('#orderAmount').val(amount);
+
+            //参数签名
+            $.ajax({
+                url: serverUrl+'/user/noorder/pingpp/createCharge',
+                async:false,
+                type : "POST",
+                dataType : "json",
+                data : $('#orderInfo').serialize(),// 要提交的表单
+                success: function (args) {
+                    console.log(args);
+
+                }
+            });
+            return false;
+        });
+
+       $("#amount").change(function(){
+           $('#orderAmount').val($('#amount').val()*100);
+       });
+
+
+    });
+
+</script>
+</body>
+</html>

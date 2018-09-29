@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.sys.apilog.mapper.SysLogMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.sys.apilog.dto.SysLog">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="APP_USER_ID" property="appUserId" jdbcType="VARCHAR" />
+        <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+        <result column="REMOTE_ADDR" property="remoteAddr" jdbcType="VARCHAR" />
+        <result column="USER_AGENT" property="userAgent" jdbcType="VARCHAR" />
+        <result column="REQUEST_URI" property="requestUri" jdbcType="VARCHAR" />
+        <result column="METHOD" property="method" jdbcType="VARCHAR" />
+        <result column="PARAMS" property="params" jdbcType="VARCHAR" />
+        <result column="EXCEPTION" property="exception" jdbcType="VARCHAR" />
+        <result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+        <result column="DEVICE_TYPE" property="deviceType" jdbcType="VARCHAR" />
+        <result column="DEVICE_MODEL" property="deviceModel" jdbcType="VARCHAR" />
+        <result column="REMOTE_IP" property="remoteIp" jdbcType="VARCHAR" />
+        <result column="SYSTEM_VERSION" property="systemVersion" jdbcType="VARCHAR" />
+        <result column="MAC_ADDRESS" property="macAddress" jdbcType="VARCHAR" />
+        <result column="IMEI" property="imei" jdbcType="VARCHAR" />
+        <result column="RESP_TIME" property="respTime" jdbcType="DECIMAL" />
+        <result column="LOCATION" property="location" jdbcType="VARCHAR" />
+        <result column="NETTYPE" property="nettype" jdbcType="VARCHAR" />
+        <result column="DEVOPERATORS" property="devoperators" jdbcType="VARCHAR" />
+        <result column="EQUIPMENT_MODEL" property="equipmentModel" jdbcType="VARCHAR" />
+        <result column="APP_VERSION" property="appVersion" jdbcType="VARCHAR" />
+
+        <result column="OBJECT_VERSION_NUMBER" property="objectVersionNumber" jdbcType="DECIMAL" />
+        <result column="REQUEST_ID" property="requestId" jdbcType="DECIMAL" />
+        <result column="PROGRAM_ID" property="programId" jdbcType="DECIMAL" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE" />
+        <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <delete id="deleteSysLogBeforeOneMonth">
+        DELETE FROM  csp_ljh_sys_log
+        WHERE  CREATE_TIME &lt; DATE_SUB(NOW(),INTERVAL 1 MONTH )
+    </delete>
+</mapper>

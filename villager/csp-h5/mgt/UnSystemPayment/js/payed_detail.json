@@ -1,0 +1,37 @@
+{
+    "result": {
+        "order_id": "dd65f3320d1493176129",
+        "receipt_code": "A01SK201704240018",
+        "pay_type": "支付宝",
+        "payer": "test",
+        "pay_date": "2017-04-26 00:00:00",
+        "project_name": "汤臣豪庭(dev)",
+        "property_name": "广兰路50弄1幢6号3层301室",
+        "items": [
+            {
+                "fee_name": "物业管理费",
+                "period_list": "2017:01,01",
+                "quantity": 137.45,
+                "price": "0.34",
+                "fee_total_amount": "81.4",
+                "discount": 0,
+                "fee_receipt_amount": "-81.4"
+            },
+            {
+                "fee_name": "车位管理费-临时",
+                "period_list": "2017:04",
+                "quantity": 137.45,
+                "price": "2.33",
+                "fee_total_amount": "320.26",
+                "discount": 0,
+                "fee_receipt_amount": "-320.26"
+            }
+        ],
+        "total_amount": 401.66,
+        "receipt_amount": -401.66,
+        "discount_amount": 0,
+        "zero_amount": 0,
+        "free_amount": 0
+    },
+    "status": 200
+}

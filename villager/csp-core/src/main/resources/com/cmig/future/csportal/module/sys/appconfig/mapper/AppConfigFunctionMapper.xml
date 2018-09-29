@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.sys.appconfig.mapper.AppConfigFunctionMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigFunction">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="FUNCTION_REMARK" property="functionRemark" jdbcType="DATE" />
+        <result column="FUNCTION_CODE" property="functionCode" jdbcType="VARCHAR" />
+        <result column="FUNCTION_NAME" property="functionName" jdbcType="VARCHAR" />
+        <result column="FUNCTION_TYPE" property="functionType" jdbcType="VARCHAR" />
+        <result column="FUNCTION_SORT" property="functionSort" jdbcType="VARCHAR" />
+        <result column="FUNCTION_URL" property="functionUrl" jdbcType="VARCHAR" />
+        <result column="FUNCTION_FLAG" property="functionFlag" jdbcType="VARCHAR" />
+        <result column="FUNCTION_ADD_TYPE" property="functionAddType" jdbcType="VARCHAR" />
+        <result column="FUNCTION_IMG" property="functionImg" jdbcType="VARCHAR" />
+        <result column="FUNCTION_STATUS" property="functionStatus" jdbcType="VARCHAR" />
+        <result column="LOGIN_STATUS" property="loginStatus" jdbcType="VARCHAR" />
+        <result column="RELEVANCE_STATUS" property="relevanceStatus" jdbcType="VARCHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+
+    </resultMap>
+     <sql id="appConfigFunctionColumns">
+         ID,
+         DEL_FLAG,
+         FUNCTION_CODE,
+         FUNCTION_NAME,
+         FUNCTION_REMARK,
+         FUNCTION_TYPE,
+         FUNCTION_SORT,
+         FUNCTION_URL,
+         FUNCTION_FLAG,
+         FUNCTION_ADD_TYPE,
+         FUNCTION_IMG,
+         FUNCTION_STATUS,
+         LOGIN_STATUS,
+         RELEVANCE_STATUS,
+         CREATED_BY
+     </sql>
+
+    <!--分页查询业主端的数据-->
+
+    <select id="selectOwner" parameterType="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigFunction" resultMap="BaseResultMap">
+        select
+        <include refid="appConfigFunctionColumns"/>
+        from csp_ljh_app_config_function
+        where FUNCTION_FLAG = #{functionFlag}
+    </select>
+
+
+    <!--分页查询物业的数据-->
+    <select id="selectMC" parameterType="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigFunction" resultMap="BaseResultMap">
+        select
+        <include refid="appConfigFunctionColumns"/>
+        from csp_ljh_app_config_function
+        where FUNCTION_FLAG = #{functionFlag}
+    </select>
+
+    <!--根据配置id查询业主端配置的的详细信息也就是查看功能-->
+    <select id="selectAppConfigById" parameterType="String" resultMap="BaseResultMap">
+          SELECT
+          a.ID AS id,
+          a.FUNCTION_NAME AS functionName,
+          a.FUNCTION_REMARK AS "functionRemark",
+          a.FUNCTION_TYPE AS functionType,
+          a.FUNCTION_IMG AS functionImg,
+          a.FUNCTION_SORT as functionSort,
+          a.FUNCTION_URL AS functionUrl
+          FROM csp_ljh_app_config_function  a
+          INNER JOIN csp_ljh_app_community_function b
+          ON b.`FID`=a.`ID`
+          INNER JOIN csp_ljh_app_config_community c
+          ON b.`CID`=c.`ID` WHERE c.`ID`=#{id}
+          AND c.`CONFIG_FLAG`='owner' AND a.FUNCTION_STATUS='on'
+          AND b.`DEL_FLAG`='0'
+    </select>
+
+    <!--根据配置id查询物业端配置的的详细信息也就是查看功能-->
+    <select id="selectAppConfigByIdPropertyMC" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        a.ID AS id,
+        a.FUNCTION_NAME AS functionName,
+        a.FUNCTION_TYPE AS functionType,
+        a.FUNCTION_IMG AS functionImg,
+        a.FUNCTION_SORT as functionSort,
+        a.FUNCTION_URL AS functionUrl
+        FROM csp_ljh_app_config_function  a
+        INNER JOIN csp_ljh_app_community_function b
+        ON b.`FID`=a.`ID`
+        INNER JOIN csp_ljh_app_config_community c
+        ON b.`CID`=c.`ID` WHERE c.`ID`=#{id}
+        AND c.`CONFIG_FLAG`='propertyMC' AND a.FUNCTION_STATUS='on'
+        AND b.`DEL_FLAG`='0'
+        order by b.NUMBER
+    </select>
+
+
+
+    <!--根据小区配置Id，查询小区业主端配置了哪些功能-->
+    <select id="getCommunityConfig" parameterType="String" resultMap="BaseResultMap">
+          SELECT
+          a.ID as id,
+          a.FUNCTION_NAME as functionName
+          FROM csp_ljh_app_config_function  a
+          INNER JOIN csp_ljh_app_community_function b
+          ON b.`FID`=a.`ID`
+          INNER JOIN csp_ljh_app_config_community c
+          ON b.`CID`=c.`ID` WHERE c.`ID`=#{id}
+          AND a.`FUNCTION_FLAG`='owner' AND a.FUNCTION_STATUS='on'
+          AND b.`DEL_FLAG`='0'
+          GROUP BY a.`FUNCTION_NAME`
+          order by b.NUMBER
+    </select>
+
+    <!--根据小区配置Id，查询小区物业端配置了哪些功能-->
+    <select id="getCommunityConfigMC" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        a.ID as id,
+        a.FUNCTION_NAME as functionName
+        FROM csp_ljh_app_config_function  a
+        INNER JOIN csp_ljh_app_community_function b
+        ON b.`FID`=a.`ID`
+        INNER JOIN csp_ljh_app_config_community c
+        ON b.`CID`=c.`ID` WHERE c.`ID`=#{id}
+        AND a.`FUNCTION_FLAG`='propertyMC' AND a.FUNCTION_STATUS='on'
+        AND b.`DEL_FLAG`='0'
+        GROUP BY a.`FUNCTION_NAME`
+        order by b.NUMBER
+    </select>
+
+    <!--查询业主端小区之外的其他功能-->
+    <select id="findOtherCommuntiyConfig" parameterType="String" resultMap="BaseResultMap">
+             SELECT
+             a.ID AS id,
+             a.FUNCTION_NAME AS functionName
+             FROM csp_ljh_app_config_function a
+             WHERE a.ID NOT IN
+             (SELECT f.FID FROM csp_v_query_fid f WHERE f.CID=#{id})
+              and a.FUNCTION_FLAG='owner' and a.FUNCTION_STATUS='on'
+    </select>
+
+    <!--查询物业端小区之外的其他功能-->
+    <select id="findOtherCommuntiyConfigMC" parameterType="String" resultMap="BaseResultMap">
+        SELECT
+        a.ID AS id,
+        a.FUNCTION_NAME AS functionName
+        FROM csp_ljh_app_config_function a
+        WHERE a.ID NOT IN
+        (SELECT f.FID FROM csp_v_query_fid f WHERE f.CID=#{id})
+              and a.FUNCTION_FLAG='propertyMC' and a.FUNCTION_STATUS='on'
+    </select>
+
+
+
+    <sql id="findList_appConfigFunctionColumns">
+        a.id AS "id",
+        a.del_flag AS "delFlag",
+        a.function_code AS "functionCode",
+        a.function_name AS "functionName",
+        a.function_remark AS "functionRemark",
+        a.function_type AS "functionType",
+        a.function_sort AS "functionSort",
+        a.function_url AS "functionUrl",
+        a.function_flag AS "functionFlag",
+        a.function_add_type AS "functionAddType",
+        a.function_img AS "functionImg",
+        a.function_status AS "functionStatus",
+        a.login_status AS "loginStatus",
+        a.relevance_status AS "relevanceStatus"
+    </sql>
+
+    <sql id="appConfigFunctionJoins" >
+        LEFT JOIN csp_v_app_config_function f ON f.fid = a.id
+    </sql>
+
+    <select id="findList" parameterType="com.cmig.future.csportal.module.sys.appconfig.dto.AppConfigFunction" resultMap="BaseResultMap">
+        SELECT
+        <if test="communityId != null and communityId != ''">
+            f.number AS "functionNumber",
+            f.cfid AS "cfid",
+        </if>
+        <include refid="findList_appConfigFunctionColumns"/>
+        FROM csp_ljh_app_config_function a
+        <if test="communityId != null and communityId != ''">
+            <include refid="appConfigFunctionJoins"/>
+        </if>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="functionStatus != null and functionStatus != ''">
+                AND a.function_status = #{functionStatus}
+            </if>
+            <if test="functionFlag != null and functionFlag != ''">
+                AND a.function_flag = #{functionFlag}
+            </if>
+            <if test="functionSort != null and functionSort != ''">
+                AND a.function_sort = #{functionSort}
+            </if>
+            <if test="functionType != null and functionType != ''">
+                AND a.function_type = #{functionType}
+            </if>
+            <if test="communityId != null and communityId != ''">
+                AND f.COMMUNITY_ID = #{communityId}
+            </if>
+            <if test="functionName!=null and functionName!='' ">
+                and a.function_name LIKE
+                <if test="dbName == 'oracle'">'%'||#{functionName}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{functionName}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{functionName},'%')</if>
+            </if>
+
+        </where>
+
+        <if test="communityId != null and communityId != ''">
+            ORDER BY f.number ASC
+        </if>
+
+    </select>
+
+
+</mapper>

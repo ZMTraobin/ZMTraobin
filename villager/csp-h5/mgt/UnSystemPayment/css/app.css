@@ -1,0 +1,304 @@
+/*
+ *这是单独为hello mui准备的个性化css，可以覆盖标准mui的css定义；
+ * 在实际项目开发时，建议为App单独写一个css文件，从而实现项目的自定义皮肤功能；
+ * 
+ * */
+
+.mui-plus.mui-android header.mui-bar {
+	display: none;
+}
+
+.mui-plus.mui-android .mui-bar-nav~.mui-content {
+	padding: 0;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	font-family: "微软雅黑", "microsoft yahei";
+}
+
+.mui-bar {
+	background: -webkit-gradient(linear, 0 0, 100% 0, from(#fefefe), to(#fff));
+	background: -moz-linear-gradient(#285fdd, #4e8bf0);
+	background: -o-linear-gradient(#285fdd, #4e8bf0);
+	background: linear-gradient(left center, #285fdd, #4e8bf0);
+}
+
+#header>a {
+	color: #ff553d;
+}
+
+header>a {
+	color: #fff;
+}
+
+.mui-title {
+	color: #353535;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.mui-input-row label {
+	width: auto !important;
+}
+
+.mui-input-row label~input,
+.mui-input-row label~select,
+.mui-input-row label~textarea {
+	float: left;
+}
+
+input[type=search] {
+	width: 100% !important;
+	text-align: left;
+	background: #fff;
+	border: 1px solid #ccc;
+}
+
+.mui-input-group h6 {
+	padding: 0px 15px;
+}
+
+.mui-content {
+	background: transparent !important;
+}
+
+.file {
+	width: 100px;
+	height: 100px;
+	position: relative;
+	display: inline-block;
+	background: #fff;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	overflow: hidden;
+	color: #CCC;
+	text-decoration: none;
+	text-indent: 0;
+	font-size: 100px;
+	line-height: 100px;
+	text-align: center;
+}
+
+.file input {
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	font-size: 20px;
+	right: 0;
+	top: 0;
+	opacity: 0;
+}
+
+.file:hover {
+	background: #fff;
+	border-color: #ccc;
+	color: #ccc;
+	text-decoration: none;
+}
+
+.submit-button input {
+	width: 50%;
+	height: 50px;
+	background: #df2c12;
+}
+
+.coverPic {
+	width: 100px;
+	height: 100px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: transparent !important;
+	z-index: 11;
+	display: none;
+}
+
+.deletePic {
+	width: 20px;
+	height: 20px;
+	line-height: 20px;
+	position: absolute;
+	z-index: 15;
+	top: 5px;
+	right: 5px;
+	transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	background: #333333;
+	border-radius: 50%;
+	color: #fff;
+	text-align: center;
+	font-weight: bold;
+	display: none;
+}
+
+
+/*staff*/
+
+.nav {
+	width: 100%;
+	height: 40px;
+	margin: 45px auto 0px auto;
+}
+
+.nav>ul>li {
+	width: 33.3%;
+	height: 40px;
+	line-height: 40px;
+	float: left;
+	display: inline;
+}
+.nav>ul>li>a {
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	font-size: 14px;
+	display: inline-block;
+	color: #fff;
+	text-align: center;
+}
+
+.a-ative {
+	border-bottom: 4px solid #fff;
+}
+
+.myButton {
+	width: 30%;
+	margin: 15px auto;
+	padding: 15px !important;
+	color: #fff !important;
+	float: none !important;
+	background: #049be6 !important;
+	border: 0px !important;
+}
+
+
+/*materiel*/
+
+
+/*materielList*/
+
+.swipeBlock {
+	position: relative;
+	/*overflow: hidden;*/
+	border: 0px;
+}
+
+.swipeBlockContent {
+	width: 100%;
+	position: relative;
+	overflow: hidden;
+	padding: 10px;
+	border-bottom: 1px solid #ccc;
+	z-index: 2;
+	background:#fff;
+}
+
+.swipeBlock a {
+	display: block;
+	width: 70px;
+	height: 125px;
+	line-height: 125px;
+	text-align: center;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	font-family: "times new roman";
+	font-size: 16px;
+	font-weight: bold;
+	border: 1px solid orangered;
+	color: #fff;
+	background:orangered;
+	overflow: hidden;
+	z-index: 1;
+	cursor: pointer;
+}
+
+.recommended-search-words {
+	width: 100%;
+	position: relative;
+	overflow: hidden;
+	padding: 10px 0px;
+}
+
+.recommended-search-words a {
+	color: #606970;
+	font-size: 14px;
+	border: 1px solid #007AFF;
+	padding: 5px 5px;
+	margin: 5px 2px;
+	display: inline-block;
+}
+
+/*materielCart*/
+.mui-muibox-position {
+	display: block;
+	width: 130px;
+	text-align: center;
+	position: absolute;
+	right: 10px;
+	top: 20%;
+	font-size: 32px;
+	color: #3d3d3d;
+	z-index: 3;
+	cursor: pointer;
+}
+.materiel-count-price {
+	display: block;
+	width: 150px;
+	text-align: center;
+	position: absolute;
+	right: 10px;
+	top: 60%;
+	font-size: 16px;
+	color: #3d3d3d;
+	z-index: 3;
+}
+
+.mui-h4 {
+	color: #3d3d3d;
+	font-weight: normal;
+}
+
+.editMateriel {
+	position: absolute;
+	right: 10px;
+	top: 30%;
+}
+
+.edit {
+	color: #FFF;
+	font-size: 16px;
+	font-weight: 300;
+}
+
+.add-materiel {
+	width: 24px;
+	height: 24px;
+	line-height: 20px;
+	text-align: center;
+	display: inline-block;
+	margin-left: 10px;
+	color: #FFF;
+	font-size: 16px;
+	border: 2px solid #FFF;
+	border-radius: 50%;
+}
+.count{
+	float: right;
+	margin-top: 5px;
+}
+.iconColor{color:#ff553d;}
+.fontColor-353535{color:#353535;}
+.slideTab{width:33%;}
+.fl{float:left;}
+.fr{float:right;}
+.sctext{color:#A7A7A7;font-size:12px;}
+.mui-btn-F0F0F0{background-color:#F0F0F0;}
+.mar-t{margin-top:5px;}
+body{color:#646464;}
+.mui-icon-back{color:#353535;}

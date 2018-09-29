@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.operate.cms.mapper.ArticleDataMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.operate.cms.dto.ArticleData">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="COPYFROM" property="copyfrom" jdbcType="VARCHAR" />
+		<result column="RELATION" property="relation" jdbcType="VARCHAR" />
+		<result column="ALLOW_COMMENT" property="allowComment"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+
+</mapper>

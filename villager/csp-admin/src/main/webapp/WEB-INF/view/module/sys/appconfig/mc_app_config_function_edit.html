@@ -1,0 +1,243 @@
+<!-- * description: 配置维护界面 * version: 1.0 *
+        author:qingliang.zeng@hand-china.com * * -->
+    <#include "../../../include/header.html"/>
+
+        <body style="padding: 10px;" >
+        <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+        <script src="${base.contextPath}/common/code?appfunctiontype=APP_FUNCTION_TYPE" type="text/javascript"></script>
+        <script src="${base.contextPath}/common/code?appfunctionsort=APP_CONFIG_FUNCTION_SORT" type="text/javascript"></script>
+        <script src="${base.contextPath}/common/code?yesOrNo=APPCONFIGYESNO" type="text/javascript"></script>
+        <div id="content-container">
+            <div id="page-content">
+                <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">功能类目</label>
+                                <div class="col-xs-6">
+                                    <input style="width: 100%" required type="text" id="functionSort" name="functionSort"
+                                           data-bind="value:model.functionSort" class="k-textbox"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="display: none" >
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">功能类型</label>
+                                <div class="col-xs-6">
+                                    <input required type="text"  style="width: 100%" id="functionType" name="functionType" data-bind="value:model.functionType" class="k-textbox k-state-disabled">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">功能图标</label>
+                                <div class="col-xs-6">
+                                    <input  id="functionImg" type="hidden" name="functionImg" data-bind="value:model.functionImg">
+                                    <div class="cmig_img_upload_div"
+                                         data-id="functionImg"
+                                         data-readonly=false
+                                         data-minWidth=78
+                                         data-minHeight=70
+                                         data-showWidth=78
+                                         data-showHeight=70
+                                         data-maxNum=1
+                                         data-checkImageWidthHeightFlag=true
+                                         data-maxSize=1
+                                         data-required=true
+                                         data-callBakFun="modelBindFunctionImg"
+                                    ><input type="hidden" name="fastdfsImageServer" data-bind="value:model.fastdfsImageServer">
+                                    </div>
+                                </div>
+                                <div class="col-xs-3" >
+                                    <span data-for="notifyUrl" class=".k-invalid-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">是否检验登陆</label>
+                                <div class="col-xs-6" id="loginStatus">
+                                </div>
+                                <div class="col-xs-3" >
+                                    <span data-for="serverIp" class=".k-invalid-msg"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">功能名称</label>
+                                <div class="col-xs-6">
+                                    <input required type="text" style="width: 100%" id="functionName" name="functionName" data-bind="value:model.functionName" class="k-textbox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">功能备注</label>
+                                <div class="col-xs-6">
+                                    <input type="text" style="width: 100%" id="functionRemark" name="functionRemark" data-bind="value:model.functionRemark" class="k-textbox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">访问地址</label>
+                                <div class="col-xs-6">
+                                    <input required type="text" style="width: 100%" id="functionUrl" name="functionUrl" data-bind="value:model.functionUrl" class="k-textbox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <br>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <div class="col-sm-12 text-center">
+                                <span class="btn btn-success" data-bind="click:save" type="submit"><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="text/javascript">
+
+            var isedit = '${RequestParameters.isedit!0}' == '1';
+            var viewModel = kendo.observable({
+                model: {},
+                source: yesOrNo,
+                save:function(e){
+                    var url ;
+                    if (isedit)
+                        url = '${base.contextPath}/csp/ljh/app/config/function/updatePropertyMC';
+                    else
+                        url = '${base.contextPath}/csp/ljh/app/config/function/addPropertyMC';
+                    var validator = $("#mainform").data("kendoValidator");
+                    if (true||validator.validate()) {
+                        Hap.submitForm({
+                            url           : url,
+                            formModel     : viewModel.model,
+                            asArray       : false,
+                            success       : function (data) {
+                                kendo.ui.showInfoDialog({
+                                    title:'提示信息',
+                                    message:'保存成功!'
+                                }).done(function(e){
+                                    window.parent.$("#editAppMC").data("kendoWindow").close();
+                                    window.parent.$('#propertyMCGrid').data('kendoGrid').dataSource.page(1);
+                                });
+                            }
+                        });
+                    }
+                },
+                closeWin :function(e){
+                    //关闭该window
+                    window.parent.$("#editAppMC").data("kendoWindow").close();
+                }
+            });
+
+            var container = $("#mainform");
+            kendo.init(container);
+            container.kendoValidator({
+                messages: {
+                    required: "必填项"
+                },
+            });
+
+
+            //是否检验登陆
+            var loginStatuss = $("input[name='loginStatus']");
+            $("#loginStatus").delegate("input[name='loginStatus']","change",function(){
+                var vals=$('input:radio[name="loginStatus"]:checked').val();
+                $("#changeLoginStatus").val(vals);
+                viewModel.set("model.loginStatus",vals);
+            });
+
+
+            kendo.bind($('#page-content'), viewModel);
+
+            /**
+             * 类目
+             */
+            $("#functionSort").kendoDropDownList({
+                valuePrimitive:true,
+                dataTextField: "meaning",
+                dataValueField: "value",
+                dataSource: appfunctionsort
+            });
+
+            /**
+             * 功能类型
+             */
+            $("#functionType").kendoDropDownList({
+                valuePrimitive:true,
+                dataTextField: "meaning",
+                dataValueField: "value",
+                dataSource: appfunctiontype
+            });
+
+
+            //初始化form表单
+            $.ajax({
+                url: '${base.contextPath}/csp/ljh/app/config/function/get',
+                type : "GET",
+                dataType : "json",
+                contentType : "application/json",
+                data : {id:'${RequestParameters.id!0}'},
+                success: function (args) {
+                    var profile = args.dto||{};
+                    for(var i in profile){
+                        if(i=="loginStatus"){
+                            for(var j = 0;j<viewModel.source.length;j++){
+                                if(profile[i]==viewModel.source[j].value){
+                                    $("input[id='"+viewModel.source[j].value+"']").attr("checked",true);
+                                }
+                            }
+                        }
+                        viewModel.set("model."+i,profile[i]);
+                    }
+                }
+            });
+
+            function showRadio(){
+                var loginStatushtml = '';
+                for(var i=0;i<viewModel.source.length;i++){
+                    var temp=viewModel.source[i].value;
+                    if(temp=="true"){
+                        loginStatushtml+='<input name="loginStatus" checked  type="radio" id="'+viewModel.source[i].value+'" value="'+viewModel.source[i].value+'"/>';
+                    }else{
+                        loginStatushtml+='<input name="loginStatus"  type="radio" id="'+viewModel.source[i].value+'" value="'+viewModel.source[i].value+'"/>';
+                    }
+                    loginStatushtml+='<span class="info" style="margin-left:10px;font-weight:bold;">'+viewModel.source[i].meaning+'</span>';
+                }
+                $("#loginStatus").html(loginStatushtml);
+            }
+
+
+            function modelBindFunctionImg(){
+                viewModel.set("model.functionImg",$("#functionImg").val());
+            }
+            $(document).ready(function(){
+                showRadio();
+            });
+        </script>
+
+        </body>
+        </html>

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<#include "../../include/header.html">
+<style>
+.box {
+	margin-top: 20px;
+	padding-left: 30px;
+	padding-right: 60px;
+}
+
+.advertising {
+/* 	padding-left: 30px;
+	padding-right: 60px; */
+	border: 1px solid #ccc;
+	padding-left: 20px;
+	padding-bottom:20px;
+}
+
+.head {
+	font-size: 12px;
+	height: 40px;
+	line-height: 40px;
+}
+
+.crossBarWrap {
+	overflow: hidden;
+}
+
+.slide {
+	overflow: hidden;
+}
+
+.popUp{
+	overflow: hidden;
+}
+
+.already {
+	width: 350px;
+	height: 200px;
+	float: left;
+	border: 1px solid #ccc;
+}
+
+select {
+	width: 350px;
+}
+
+.controller {
+	width: 80px;
+	height: 200px;
+	float: left;
+}
+
+.controller button {
+	background-color: #fff;
+	outline: none;
+	border: none;
+	border: 1px solid #ccc;
+	width: 60px;
+	height: 29px;
+	font-size: 14px;
+	text-align: center;
+	line-height: 30px;
+	margin-bottom: 27px;
+	margin-left: 10px;
+}
+
+.controller .iconfont {
+	font-size: 14px;
+}
+
+.wait {
+	width: 350px;
+	height: 200px;
+	border: 1px solid #ccc;
+	float: left;
+}
+
+.removed {
+	margin-bottom: 0;
+}
+
+.title {
+	display: inline-block;
+	width: 350px;
+	background-color: #ddd;
+	font-size: 14px;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	color:#333;
+}
+
+/* .save {
+	width: 800px;
+	margin-top: 40px;
+	margin-bottom: 20px;
+}
+
+.save button {
+	outline: none;
+	border: 1px solid #ccc;
+	background-color: blue;
+	width: 60px;
+	height: 24px;
+	color: #fff;
+	margin-left: 388px;
+} */
+</style>
+<body>
+		<div class="col-sm-12" style="margin-top: 30px;margin-left:14px;">
+			<div style="float: left;">
+				<label> <span class="btn btn-success"
+					style="float: left" onclick="saveData()" type="submit"><i
+						class="fa fa-save"></i>保存</span>
+			    </label>
+			</div>
+		</div>
+	<div class="col-sm-12 box">
+		<div class="advertising">
+			<div class="head">横栏广告:</div>
+			<div class="crossBarWrap">
+				<div class="crossBar">
+					<div class="already">
+						<div class="title">已上线</div>
+						<select style="height: 159px;"  multiple="multiple" id="crossAlready">
+						</select>
+					</div>
+					<div class="controller" id="controllerOne">
+						<button class="add">
+							<span class="iconfont icon-zuojiantou"></span>添加
+						</button>
+						<button class="down">
+							<span class="iconfont icon-xiayi"></span>下移
+						</button>
+						<button class="up">
+							<span class="iconfont icon-shangyi"></span>上移
+						</button>
+						<button class="removed">
+							<span class="iconfont icon-youjiantou"></span>移除
+						</button>
+					</div>
+					<div class="wait">
+						<div class="title">待上线</div>
+						<select style="height:159px;" multiple="multiple" id="crossWait">
+						</select>
+						<select style="height:159px;" multiple="multiple" id="crossDropOut">
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="head">轮播滚动广告位:</div>
+			<div class="slideWrap">
+				<div class="slide">
+					<div class="already">
+						<div class="title">已上线</div>
+						<select style="height:159px;" multiple="multiple" id="slideAlready">
+						</select>
+					</div>
+					<div class="controller" id="controllerTwo">
+						<button class="add">
+							<span class="iconfont icon-zuojiantou"></span>添加
+						</button>
+						<button class="down">
+							<span class="iconfont icon-xiayi"></span>下移
+						</button>
+						<button class="up">
+							<span class="iconfont icon-shangyi"></span>上移
+						</button>
+						<button class="removed">
+							<span class="iconfont icon-zuojiantou"></span>移除
+						</button>
+					</div>
+					<div class="wait">
+						<div class="title">待上线</div>
+						<select style="height:159px;" multiple="multiple" id="slideWait"></select>
+						<select style="height:159px;" multiple="multiple" id="slideDorpOut"></select>
+					</div>
+				</div>
+			</div>
+			<div class="head">弹窗广告位:</div>
+			<div class="popUpWrap">
+				<div class="popUp">
+					<div class="already">
+						<div class="title">已上线</div>
+						<select style="height:159px;" multiple="multiple" id="popUpAlready">
+						</select>
+					</div>
+					<div class="controller" id="controllerThree">
+						<button class="add">
+							<span class="iconfont icon-zuojiantou"></span>添加
+						</button>
+						<button class="down">
+							<span class="iconfont icon-xiayi"></span>下移
+						</button>
+						<button class="up">
+							<span class="iconfont icon-shangyi"></span>上移
+						</button>
+						<button class="removed">
+							<span class="iconfont icon-zuojiantou"></span>移除
+						</button>
+					</div>
+					<div class="wait">
+						<div class="title">待上线</div>
+						<select style="height:159px;" multiple="multiple" id="popUpWait"></select>
+						<select style="height:159px;" multiple="multiple" id="popUpDorpOut"></select>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+    
+	function queryAdvSort(){
+		$.ajax({
+            type   : 'GET',
+            url    : '${base.contextPath}/app/adv/get/newsort',
+            dataType : "json",
+            contentType : "application/json",
+            data   : "",
+            success: function (data) {
+            	if(data.success){
+            		var offlineList = data.rows[0].offline;
+            		var onlineList = data.rows[0].online;
+            		if(offlineList && offlineList.length){
+            			for (var i = 0; i < offlineList.length; i++) {
+            				if(offlineList[i].type == 1 || offlineList[i].type == 3 || offlineList[i].type == 4){
+            					var oListName;
+            					if(1 == offlineList[i].type){
+            						oListName = "单图广告";
+            					}else if(3 == offlineList[i].type){
+            						oListName = "左一右二广告";
+            					}else if(4 == offlineList[i].type){
+            						oListName = "单行三图广告";
+            					}
+            					$("#crossWait").append('<option value="'+offlineList[i].groupId+'" type="'+offlineList[i].type+'">'+offlineList[i].title+'('+oListName+')'+'</option>'); 
+            				} else if(offlineList[i].type == 2){
+            					$("#slideWait").append('<option value="'+offlineList[i].groupId+'" type="'+offlineList[i].type+'">'+offlineList[i].title+'(轮播广告)'+'</option>'); 
+            				} else if(offlineList[i].type == 5){
+            					$("#popUpWait").append('<option value="'+offlineList[i].groupId+'" type="'+offlineList[i].type+'">'+offlineList[i].title+'(弹窗广告)'+'</option>'); 
+            				}        				 
+						}
+            		}
+            		
+            		if(onlineList && onlineList.length){
+            			for (var i = 0; i < onlineList.length; i++) {
+            				if(onlineList[i].type == 1 || onlineList[i].type == 3 || onlineList[i].type == 4){
+            					var oListName;
+            					if(onlineList[i].type == 1){
+            						oListName = "单图广告";
+            					}else if(onlineList[i].type == 3){
+            						oListName = "左一右二广告";
+            					}else if(onlineList[i].type == 4){
+            						oListName = "单行三图广告";
+            					}
+            					$("#crossAlready").append('<option value="'+onlineList[i].groupId+'" type="'+onlineList[i].type+'">'+onlineList[i].title+'('+oListName+')'+'</option>'); 
+            				} else if(onlineList[i].type == 2){
+            					$("#slideAlready").append('<option value="'+onlineList[i].groupId+'" type="'+onlineList[i].type+'">'+onlineList[i].title+'(轮播广告)'+'</option>');
+            				} else if(onlineList[i].type == 5){
+            					$("#popUpAlready").append('<option value="'+onlineList[i].groupId+'" type="'+onlineList[i].type+'">'+onlineList[i].title+'(弹窗广告)'+'</option>');
+            				} 
+						}
+            		}
+            	}	
+            }
+        });
+	}
+	
+    $(function() {
+        var crossWait = $("#crossWait");
+        var crossAlready = $("#crossAlready");
+        var crossDropOut =$("#crossWait")//横栏待上线移除
+        
+        var slideWait = $("#slideWait");
+        var slideAlready = $("#slideAlready");
+        var slideDropOut =$("#slideWait")//轮播待上线移除
+        
+        var popUpWait = $("#popUpWait");
+        var popUpAlready = $("#popUpAlready");
+        var popUpDropOut =$("#popUpWait")//弹窗上线移除
+        
+        var crossAdd = $("#controllerOne .add");
+        var crossDown = $("#controllerOne .down");
+        var crossUp = $("#controllerOne .up");
+        var crossRemove = $("#controllerOne .removed");
+        
+        var slideAdd = $("#controllerTwo .add");
+        var slideDown = $("#controllerTwo .down");
+        var slideUp = $("#controllerTwo .up");
+        var slideRemove = $("#controllerTwo .removed");
+        
+        var popUpAdd = $("#controllerThree .add");
+        var popUpDown = $("#controllerThree .down");
+        var popUpUp = $("#controllerThree .up");
+        var popUpRemove = $("#controllerThree .removed");
+        
+        queryAdvSort();  
+        
+        crossAdd.click(function() {//横栏添加
+            move(crossWait.children(), $("#crossAlready"));
+        });
+        slideAdd.click(function() {//轮播添加
+            move(slideWait.children(), $("#slideAlready"));
+        });
+        popUpAdd.click(function() {//弹窗添加
+            move(popUpWait.children(), $("#popUpAlready"));
+        });
+        crossRemove.click(function() {
+        	remove(crossDropOut.children(), $("#crossDropOut"));
+            remove(crossAlready.children(), $("#crossWait"));  
+        });
+        slideRemove.click(function() {
+        	remove(slideDropOut.children(), $("#slideDorpOut"));
+            remove(slideAlready.children(), $("#slideWait"));
+        });
+        popUpRemove.click(function() {
+        	remove(popUpDropOut.children(), $("#popUpDorpOut"));
+            remove(popUpAlready.children(), $("#popUpWait"));
+        });
+        crossUp.click(function() {
+            moveUp(crossAlready);
+        });
+        slideUp.click(function() {
+            moveUp(slideAlready);
+        });
+        popUpUp.click(function() {
+            moveUp(popUpAlready);
+        });
+        crossDown.click(function() {
+            moveDown(crossAlready);
+        });
+        slideDown.click(function(){
+        	moveDown(slideAlready);
+        });
+        popUpDown.click(function(){
+        	moveDown(popUpAlready);
+        });
+        //清空之前选中的广告
+        change(crossWait);
+        change(crossAlready);
+        change(slideWait);
+        change(slideAlready);
+        change(popUpWait);
+        change(popUpAlready);
+        function change(el){
+            el.focus(function(){
+                el.parent().siblings().children("select").each(function(index,value){
+                    $(value).children().each(function(i,v){
+                        $(v).prop("selected","");
+                    })
+                })
+            })
+        }
+        function moveUp(list) {
+            var sl = list.children("option:selected");
+            if(sl.get(0).index!=0){
+            	for (var i = 0; i <=sl.length-1; i++) {
+            	$(sl.get(i)).insertBefore($(sl.get(i)).prev("option"));
+            	}
+            }
+        };
+
+        function moveDown(list) {
+            var sl = list.children("option:selected");
+            if(sl.get(sl.length-1).index!=list.children("option").length-1){
+            	for (var i = sl.length-1; i >=0; i--) {
+            	$(sl.get(i)).insertAfter($(sl.get(i)).next("option"));
+            	}
+            }
+            
+        };
+        function move(list, dom) {
+            list.each(function(index, value) {
+                if (value.selected == true) {
+                    value.remove();
+                    dom.append(value);
+                }
+            })
+        };
+        //点击移除方法
+        function remove(list,dom){
+    		var idss = [];
+        	var flag =false;
+        	if(list.length){
+        		list.each(function(index, value) {
+                    if (value.selected == true) {
+                    	flag =true;
+                        //value.remove();
+                        dom.append(value);
+                    }
+                });
+        	}
+        	if(flag){
+            	if(dom.children()){
+            		dom.children().each(function(index, value) {
+                        if(value.selected == true){
+                        	idss.push({"advId":value.value});
+                        }
+                    })
+            	}
+            	/* if(idss&&idss.length){
+            		removeAdv(idss);
+            	} */
+    		}
+        }
+    })
+    
+    function saveData(){
+        	var advInfo =[];
+        	if($("#crossAlready option").length){
+        		$("#crossAlready").children().each(function(index,value) {
+            		 var tyep=$(value).attr("type");
+            		 advInfo.push({"groupId":value.value,"sort":index+1,"status":4,"type":tyep}) 
+                })
+        	}
+        	if($("#slideAlready option").length){
+	            $("#slideAlready").children().each(function(index, slideVal) {	            	
+	            	 var tyep=$(slideVal).attr("type");
+            		 advInfo.push({"groupId":slideVal.value,"sort":index+1,"status":4,"type":tyep})
+	            })
+        	}
+        	if($("#popUpAlready option").length){
+	            $("#popUpAlready").children().each(function(index, popUpVal) {	            	
+	            	 var tyep=$(popUpVal).attr("type");
+            		 advInfo.push({"groupId":popUpVal.value,"sort":index+1,"status":4,"type":tyep})
+	            })
+        	}
+        	if($("#crossWait option").length){
+	            $("#crossWait").children().each(function(index, crossVal) {	            	
+	            	 var tyep=$(crossVal).attr("type");
+            		 advInfo.push({"groupId":crossVal.value,"sort":index+1,"status":3,"type":tyep})
+	            })
+        	}
+        	if($("#slideWait option").length){
+	            $("#slideWait").children().each(function(index, slideVal) {	            	
+	            	 var tyep=$(slideVal).attr("type");
+            		 advInfo.push({"groupId":slideVal.value,"sort":index+1,"status":3,"type":tyep})
+	            })
+        	}
+        	if($("#popUpWait option").length){
+	            $("#popUpWait").children().each(function(index, popUpVal) {	            	
+	            	 var tyep=$(popUpVal).attr("type");
+            		 advInfo.push({"groupId":popUpVal.value,"sort":index+1,"status":3,"type":tyep})
+	            })
+        	}
+        	if($("#crossDropOut option").length){
+	            $("#crossDropOut").children().each(function(index, crossDropVal) {	            	
+	            	 var tyep=$(crossDropVal).attr("type");
+            		 advInfo.push({"groupId":crossDropVal.value,"sort":0,"status":5,"type":tyep})
+	            })
+        	}
+        	if($("#slideDorpOut option").length){
+	            $("#slideDorpOut").children().each(function(index, slideDorpVal) {	            	
+	            	 var tyep=$(slideDorpVal).attr("type");
+            		 advInfo.push({"groupId":slideDorpVal.value,"sort":0,"status":5,"type":tyep})
+	            })
+        	}
+        	if($("#popUpDorpOut option").length){
+	            $("#popUpDorpOut").children().each(function(index, popUpDorpVal) {	            	
+	            	 var tyep=$(popUpDorpVal).attr("type");
+            		 advInfo.push({"groupId":popUpDorpVal.value,"sort":0,"status":5,"type":tyep})
+	            })
+        	}
+        	$.ajax({
+                url : '${base.contextPath}/app/adv/submit/newsort',
+                type : "post",
+                dataType : "json",
+                contentType : "application/json",
+                data :kendo.stringify(advInfo),
+                success : function(args) {
+         			if(args.success){
+         		    	  kendo.ui.showInfoDialog({
+         		    	        title:$l('hap.prompt'),
+         		    	        message:$l('hap.tip.success')
+         		    	  })
+         		      }else{
+         		    	kendo.ui.showInfoDialog({
+      		    	        title:$l('hap.prompt'),
+      		    	        message:$l(args)
+      		    	    })
+      	   		  	  }
+      	   		}
+            });
+         }
+    </script>
+
+</body>
+</html>

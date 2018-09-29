@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.operate.neighbor.mapper.LjhNeighborTopicImageMapper">
+    <sql id="nhTopicImageColumns">
+		a.id AS "id",
+		a.del_flag AS "delFlag",
+		<!-- a.CREATED_BY AS "createId.id",
+		a.LAST_UPDATED_BY AS "updateId.id",
+		a.CREATION_DATE AS "createTime",
+		a.LAST_UPDATE_DATE AS "updateTime", -->
+		a.topic_id AS "topicId",
+		a.url AS "url"
+	</sql>
+	<select id="findList" resultType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicImage">
+		SELECT 
+			<include refid="nhTopicImageColumns"/>
+		FROM csp_ljh_neighbor_topic_image a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="topicId != null and topicId != ''">
+			AND a.topic_id = #{topicId}
+			</if> 
+		</where>
+		ORDER BY a.creation_date ASC
+		<!-- <choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				
+			</otherwise>
+		</choose> -->
+	</select>
+	
+	<update id="delete"> 
+		UPDATE csp_ljh_neighbor_topic_image SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
+		<if test="id != null and id != ''">
+			AND id = #{id}
+		</if>
+		<if test="topicId != null and topicId != ''">
+			AND topic_id = #{topicId}
+		</if>
+	</update>
+
+    <select id="findListByTopicList" resultType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicImage">
+        SELECT
+        <include refid="nhTopicImageColumns"/>
+        FROM csp_ljh_neighbor_topic_image a
+        <where>
+            a.del_flag = '0'
+            and a.topic_id in
+            <foreach collection="list" item="entry" index="index" open="(" close=")" separator=",">
+                #{entry.id}
+            </foreach>
+        </where>
+        ORDER BY a.creation_date ASC
+    </select>
+
+</mapper>

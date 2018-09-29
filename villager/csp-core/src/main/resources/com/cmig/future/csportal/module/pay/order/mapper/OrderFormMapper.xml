@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.pay.order.mapper.OrderFormMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.pay.order.dto.OrderForm">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="CHARGE_ID" property="chargeId" jdbcType="VARCHAR" />
+        <result column="APP_USER_ID" property="appUserId" jdbcType="VARCHAR" />
+        <result column="ORDER_NUMBER" property="orderNumber" jdbcType="VARCHAR" />
+        <result column="PAY_CHANNEL" property="payChannel" jdbcType="VARCHAR" />
+        <result column="CURRENCY" property="currency" jdbcType="VARCHAR" />
+        <result column="ORDER_AMOUNT" property="orderAmount" jdbcType="DECIMAL" />
+        <result column="DISCOUNT_AMOUNT" property="discountAmount" jdbcType="DECIMAL" />
+        <result column="INTEGRAL_AMOUNT" property="integralAmount" jdbcType="DECIMAL" />
+        <result column="PAYABLE_AMOUNT" property="payableAmount" jdbcType="DECIMAL" />
+        <result column="PAID_AMOUNT" property="paidAmount" jdbcType="DECIMAL" />
+        <result column="TIME_EXPIRE" property="timeExpire" jdbcType="DATE" />
+        <result column="TIME_PAID" property="timePaid" jdbcType="DATE" />
+        <result column="TIME_SETTLE" property="timeSettle" jdbcType="DATE" />
+        <result column="SUBJECT" property="subject" jdbcType="VARCHAR" />
+        <result column="BODY" property="body" jdbcType="VARCHAR" />
+        <result column="TRANSEQ" property="transeq" jdbcType="VARCHAR" />
+        <result column="FRONT_URL" property="frontUrl" jdbcType="VARCHAR" />
+        <result column="BACK_URL" property="backUrl" jdbcType="VARCHAR" />
+        <result column="CLIENT_IP" property="clientIp" jdbcType="VARCHAR" />
+        <result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+        <result column="SOURCE_ORDER_NUMBER" property="sourceOrderNumber" jdbcType="VARCHAR" />
+        <result column="PAY_STATUS" property="payStatus" jdbcType="VARCHAR" />
+        <result column="ORDER_STATUS" property="orderStatus" jdbcType="VARCHAR" />
+        <result column="ORDER_TYPE" property="orderType" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="MERCHANT_NO" property="merchantNo" jdbcType="VARCHAR" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE" />
+        <result column="HAS_REFUNDS" property="hasRefunds" jdbcType="VARCHAR" />
+        
+        <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+        <result column="HOUSE_NAME" property="houseName" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_NAME" property="communityName" jdbcType="VARCHAR" />
+        <result column="CHANNEL_NAME" property="channelName" jdbcType="VARCHAR" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="orderFormColumns">
+        a.ID	 AS 	"id",
+        a.CHARGE_ID	 AS 	"chargeId",
+        a.APP_USER_ID	 AS 	"AppUserId",
+        a.ORDER_NUMBER	 AS 	"orderNumber",
+        a.PAY_CHANNEL	 AS 	"payChannel",
+        a.CURRENCY	 AS 	"currency",
+        a.ORDER_AMOUNT	 AS 	"orderAmount",
+        a.DISCOUNT_AMOUNT	 AS 	"discountAmount",
+        a.INTEGRAL_AMOUNT	 AS 	"integralAmount",
+        a.PAYABLE_AMOUNT	 AS 	"payableAmount",
+        a.PAID_AMOUNT	 AS 	"paidAmount",
+        a.TIME_EXPIRE	 AS 	"timeExpire",
+        a.TIME_PAID	 AS 	"timePaid",
+        a.TIME_SETTLE	 AS 	"timeSettle",
+        a.SUBJECT	 AS 	"subject",
+        a.BODY	 AS 	"body",
+        a.TRANSEQ	 AS 	"transeq",
+        a.FRONT_URL	 AS 	"frontUrl",
+        a.BACK_URL	 AS 	"backUrl",
+        a.CLIENT_IP	 AS 	"clientIp",
+        a.APP_ID	 AS 	"appId",
+        a.SOURCE_SYSTEM	 AS 	"sourceSystem",
+        a.SOURCE_ORDER_NUMBER	 AS 	"sourceOrderNumber",
+        a.PAY_STATUS	 AS 	"payStatus",
+        a.ORDER_STATUS	 AS 	"orderStatus",
+        a.ORDER_TYPE	 AS 	"orderType",
+        a.DESCRIPTION	 AS 	"description",
+        a.MERCHANT_NO AS "merchantNo",
+        a.CREATED_BY as "createdBy",
+		a.CREATION_DATE as "creationDate",
+		a.LAST_UPDATED_BY as "lastUpdatedBy",
+		a.LAST_UPDATE_DATE as "lastUpdateDate"
+    </sql>
+
+    <select id="findByOrderNumber" resultMap="BaseResultMap">
+        SELECT
+        <include refid="orderFormColumns" />
+        FROM csp_order_form a
+        WHERE a.ORDER_NUMBER =#{orderNumber}
+    </select>
+
+
+    <select id="findBySourceOrderNumber" resultMap="BaseResultMap">
+        SELECT
+        <include refid="orderFormColumns" />
+        FROM csp_order_form a
+        WHERE a.APP_ID =#{appId}
+              and a.SOURCE_ORDER_NUMBER =#{sourceOrderNumber}
+    </select>
+
+    <select id="select" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.pay.order.dto.OrderForm">
+        SELECT 
+        <include refid="orderFormColumns"/>,
+        if ((select count(*) from csp_order_form_refund ofr where ofr.ORDER_ID = a.id) > 0,'Y','N') AS "hasRefunds"
+        from csp_order_form a
+        <where>
+            <if test="orderNumber!=null and orderNumber!=''">
+                AND upper(a.order_number) LIKE concat('%', concat(upper(#{orderNumber,jdbcType=VARCHAR}), '%'))
+            </if>
+            <if test="payChannel!=null and payChannel!=''">
+                AND upper(a.pay_channel) LIKE concat('%', concat(upper(#{payChannel,jdbcType=VARCHAR}), '%'))
+            </if>
+            <if test="subject!=null and subject!='' ">
+                AND upper(a.subject) LIKE concat('%', concat(upper(#{subject,jdbcType=VARCHAR}), '%'))
+            </if>
+            <if test="sourceSystem !=null and sourceSystem!='' ">
+                AND a.SOURCE_SYSTEM = #{sourceSystem,jdbcType=VARCHAR}
+            </if>
+            <if test="sourceOrderNumber !=null  and sourceOrderNumber!='' ">
+                AND upper(a.source_order_number) LIKE concat('%', concat(upper(#{sourceOrderNumber,jdbcType=VARCHAR}), '%'))
+            </if>
+            <if test="payStatus!=null and payStatus!='' ">
+                AND a.PAY_STATUS = #{payStatus}
+            </if>
+            <if test="merchantNo!=null and merchantNo!='' ">
+                AND a.MERCHANT_NO = #{merchantNo}
+            </if>
+
+            <if test="orderStatus!=null and orderStatus!='' ">
+                AND a.ORDER_STATUS = #{orderStatus}
+            </if>
+            <if test="orderType!=null and orderType!='' ">
+                AND a.ORDER_TYPE = #{orderType}
+            </if>
+
+            <if test='hasRefunds !=null and hasRefunds=="Y"'>
+                AND (select count(*) from csp_order_form_refund ofr where ofr.ORDER_ID = a.id) > 0
+            </if>
+            <if test='hasRefunds !=null and hasRefunds=="N"'>
+                AND (select count(*) from csp_order_form_refund ofr where ofr.ORDER_ID = a.id) = 0
+            </if>
+            <if test="startDate!=null">
+                AND a.TIME_PAID &gt;=  #{startDate}
+                AND a.TIME_PAID is not null
+            </if>
+            <if test="endDate!=null">
+                AND a.TIME_PAID &lt;=  #{endDate}
+                AND a.TIME_PAID is not null
+            </if>
+        </where>
+        order by a.creation_date DESC
+    </select>
+    
+    <select id="getByUserId" resultType="com.cmig.future.csportal.module.properties.payment.receivable.dto.MgtReceivableDetail">
+         select  rd.RECEIVABLE_ID as "receivableId",
+          rd.EXPENDITURE as "expenditure",
+       (select cvb.DESCRIPTION from sys_code_value_b cvb,sys_code_b cb 
+        where cb.`CODE` = 'MGT.EXPENDITURE_TYPE' 
+        and cvb.CODE_ID = cb.CODE_ID 
+        and cvb.`VALUE` = rd.EXPENDITURE) as 'expenditureDesc',
+       rd.PRICE_AMOUT as "priceAmout",
+       rd.AREA as "area",
+       rd.TOTAL_AMOUNT as "totalAmount",
+       rd.DISCOUNT_AMOUNT as "discountAmount",
+       rd.BREAK_CONTRACT_AMOUNT as "break_contractAmount",
+       rd.RECEIVABLE_AMOUNT as "receivableAmount",
+       rd.SOURCE_SYSTEM as "sourceSystem",
+       rd.PERIOD_NAME as "periodName"
+       from csp_mgt_receivable_detail rd  
+       left outer join  csp_order_form_line l on rd.RECEIVABLE_ID = l.LINE_ID
+       left outer join csp_order_form f on f.ID = l.ORDER_ID
+       where f.app_user_id = #{appUserId}
+       and f.order_type = 'mgtPayment'
+    </select>
+    
+    <select id="getAllByUserId" resultMap="BaseResultMap">
+         select 
+         <include refid="orderFormColumns"/>
+         from csp_order_form a
+         where a.app_user_id = #{appUserId}
+         and a.PAY_STATUS = 'Y'
+         order by a.time_paid desc
+    </select>
+    
+    <select id="selectOderDetail" resultMap="BaseResultMap">
+        select 
+        <include refid="orderFormColumns"/>,
+(select distinct g.bp_name from csp_bp_general g, csp_bp_house_map m, csp_bp_owner o 
+where g.bp_id = o.bp_id 
+and o.BP_OWNER_ID = m.BP_EXT_ID
+and m.APP_USER_ID = a.APP_USER_ID) as user_name,
+(select distinct h.HOUSE_FULL_NAME from csp_order_form_line l,csp_mgt_receivable_detail d, csp_mgt_house h 
+where h.HOUSE_ID = d.BUILDING_ID and d.RECEIVABLE_ID = l.RECEIVABLE_ID and l.ORDER_ID = a.id) as house_name,
+(select distinct c.COMMUNITY_NAME from csp_order_form_line l,csp_mgt_receivable_detail d, csp_mgt_house h, csp_ljh_base_community c
+where h.HOUSE_ID = d.BUILDING_ID and d.RECEIVABLE_ID = l.RECEIVABLE_ID and l.ORDER_ID = a.id and c.id = h.COMMUNITY_ID) as COMMUNITY_NAME,
+(select v.DESCRIPTION from sys_code_b b,sys_code_value_b v 
+where b.code = 'PAY.CHANNEL' and b.code_id = v.code_id and v.value = a.PAY_CHANNEL) as channel_name
+from csp_order_form a
+where a.id = #{id}
+    </select>
+
+
+    <select id="getCancelOrdersForJob" resultMap="BaseResultMap">
+        select
+        <include refid="orderFormColumns"/>
+        from csp_order_form a
+        where a.pay_status='N' and a.time_expire &lt; now()
+    </select>
+
+    <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.pay.order.dto.OrderForm">
+        select
+        <include refid="orderFormColumns"/>,
+        u.mobile
+        from csp_order_form a
+        left outer join csp_ljh_app_user u on u.id = a.app_user_id
+        <where>
+            <if test="orderNumber!=null and orderNumber!='' ">
+                AND upper(a.order_number) LIKE concat('%', concat(upper(#{orderNumber,jdbcType=VARCHAR}), '%'))
+            </if>
+            <if test="payChannel!=null and payChannel!='' ">
+                AND upper(a.pay_channel) LIKE concat('%', concat(upper(#{payChannel,jdbcType=VARCHAR}), '%'))
+            </if>
+            <if test="subject!=null and subject!='' ">
+                AND upper(a.subject) LIKE concat('%', concat(upper(#{subject,jdbcType=VARCHAR}), '%'))
+            </if>
+            <if test="mobile!=null and mobile!='' ">
+                AND upper(u.mobile) LIKE concat('%', concat(upper(#{mobile,jdbcType=VARCHAR}), '%'))
+            </if>
+            <if test="sourceSystem !=null and sourceSystem!='' ">
+                AND a.SOURCE_SYSTEM = #{sourceSystem,jdbcType=VARCHAR}
+            </if>
+            <if test="sourceOrderNumber !=null and sourceOrderNumber!='' ">
+                AND upper(a.source_order_number) LIKE concat('%', concat(upper(#{sourceOrderNumber,jdbcType=VARCHAR}), '%'))
+            </if>
+            <if test="payStatus!=null and payStatus!='' ">
+                AND a.PAY_STATUS = #{payStatus}
+            </if>
+            <if test="merchantNo!=null and merchantNo!='' ">
+                AND a.MERCHANT_NO = #{merchantNo}
+            </if>
+            <if test="orderStatus!=null and orderStatus!='' ">
+                AND a.ORDER_STATUS = #{orderStatus}
+            </if>
+            <if test="orderType!=null and orderType!='' ">
+                AND a.ORDER_TYPE = #{orderType}
+            </if>
+            <if test='hasRefunds !=null and hasRefunds=="Y"'>
+                AND (select count(*) from csp_order_form_refund ofr where ofr.ORDER_ID = a.id) > 0
+            </if>
+            <if test='hasRefunds !=null and hasRefunds=="N"'>
+                AND (select count(*) from csp_order_form_refund ofr where ofr.ORDER_ID = a.id) = 0
+            </if>
+            <if test="startDate!=null">
+                AND a.TIME_PAID &gt;=  #{startDate}
+                AND a.TIME_PAID is not null
+            </if>
+            <if test="endDate!=null">
+                AND a.TIME_PAID &lt;=  #{endDate}
+                AND a.TIME_PAID is not null
+            </if>
+        </where>
+        order by a.creation_date DESC
+    </select>
+
+    <select id="getLifePaidList" resultMap="BaseResultMap">
+        select
+        b.PRODUCT_TYPE	 as "lifePayBill.productType",
+        b.PRODUCT_ID	 as "lifePayBill.productId",
+        b.BILL_ID	 as "lifePayBill.billId",
+        b.BILL_ORG_ID	 as "lifePayBill.billOrgId",
+        b.BILL_ORG_NAME	 as "lifePayBill.billOrgName",
+        b.BILL_NO	 as "lifePayBill.billNo",
+        b.BILL_MONTH	 as "lifePayBill.billMonth",
+        b.BILL_AMT	 as "lifePayBill.billAmt",
+        b.BILL_RECORD_TIMES	 as "lifePayBill.billRecordTimes",
+        b.SEARCH_TYPE	 as "lifePayBill.searchType",
+        b.BARCODE	 as "lifePayBill.barcode",
+        b.DOOR_CODE	 as "lifePayBill.doorCode",
+        b.BILL_ADDR	 as "lifePayBill.billAddr",
+        b.BILL_OWNER	 as "lifePayBill.billOwner",
+        b.OVERDUE_FEE	 as "lifePayBill.overdueFee",
+        b.IS_INSURANCE	 as "lifePayBill.isInsurance",
+        b.BILL_STATUS	 as "lifePayBill.billStatus",
+        b.THIRD_ORDER_NO	 as "lifePayBill.thirdOrderNo",
+        b.ORDER_NOTIFY_TIME	 as "lifePayBill.orderNotifyTime",
+        b.ORDER_NOTIFY_STATUS	 as "lifePayBill.orderNotifyStatus",
+        <include refid="orderFormColumns"/>
+        from csp_order_form a,csp_order_form_line l, csp_life_pay_bill b
+        where
+        a.id=l.order_id
+        and l.RECEIVABLE_ID=b.id
+        and a.app_user_id = #{appUserId}
+        and a.PAY_STATUS = 'Y'
+        and a.order_type like 'lifePay_%'
+        order by a.time_paid desc
+    </select>
+
+</mapper>

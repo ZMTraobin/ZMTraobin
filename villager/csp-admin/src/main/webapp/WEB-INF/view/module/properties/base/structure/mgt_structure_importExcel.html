@@ -1,0 +1,184 @@
+<#include "../../../../include/header.html"/>
+<script type="text/javascript">
+    var attchDataArray = [];//上传文件集合
+    var mSize = 20;//文件大小,单位M
+    var fileCount = 1;//文件个数
+    var saveUrl = "${base.contextPath}/common/mgtStructure/excel/import";
+    var removeUrl = "${base.contextPath}/common/mgtStructure/excel/delete";
+    var id = '${RequestParameters.id!0}';//建筑结构版本id
+    var communityId = '${RequestParameters.communityId!0}';//项目id
+    var paramStr = "?mSize="+mSize+"&versionId="+id+"&communityId="+communityId;
+    var viewModel = kendo.observable({
+        model: {},
+        createFunction: function () {
+            $('#Grid').data('kendoGrid').addRow();
+        },
+        saveFunction: function () {
+            $('#Grid').data('kendoGrid').saveChanges();
+        },
+        queryResource: function (e) {
+            $('#Grid').data('kendoGrid').dataSource.page(1);
+        }
+    });
+</script>
+<body>
+<div id="editWin" style="clear: both" ></div>
+<div id="page-content">
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+        <form class="form-horizontal" id="mainform" enctype="application/json;charset=UTF-8">
+        <div class="col-xs-12" id="excel_url" style="display: block;">
+            <div class="form-group">
+                <div class="row" style="margin-bottom: 10px;">
+                    <#include "../../../base/sys_import_excel.html"/>
+                    <script>$("#tipName").html("上传Excel(xls文件)：");
+                    $("#files_tip").html("* 单个文件不能超过20M(必填)");</script>
+                </div>
+            </div>
+        </div>
+        </form>
+        <div class="col-xs-12" style="display: block;" id="div_tip">
+            <div class="form-group">
+                <label class="col-sm-1"></label>
+                <div class="col-sm-10" style="margin-bottom: 10px;">
+                    <fieldset>
+                        <legend style="display: block;">
+                            <label style="color:red;">操作提示：</label>
+                            <a id="templateDownLoad" href="#"><img src="${base.contextPath}/resources/images/ico28.gif" align="absmiddle" border="0">下载模板</a>
+                        </legend>
+                        1、上传数据前，请先下载数据模板。<br>
+                        2、下载后，请严格按照模板所规定的格式进行填写，格式不符可能会造成数据无法成功上传。<br>
+                        3、数据填写并保存后，请选择对应数据文件并点击上传按钮完成操作。<br>
+                        4、目前支持文件格式为xls、xlsx，不可擅自更改模板文件名后缀，否则影响数据上传。<br>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
+    <div style="clear:both">
+        <div id="tip" style="display: none">
+            <div class="col-xs-12" style="display: block;">
+                <div class="form-group">
+                    <label class="col-sm-1"></label>
+                    <div class="col-sm-8" style="margin-bottom: 10px;">
+                        <label id="tip_msg" style="color: #208e22;font-size: 15px;"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="Grid" style="display: none"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var BaseUrl = _basePath;
+
+    function hidden(){
+        $("#Grid").css({"display":"none"});
+        $("#tip").css({"display":"none"});
+        $("#div_tip").css({"display":"block"});
+    }
+
+    function showSuccess(){
+        $("#tip_msg").html("成功导入数据："+attchDataArray[0].list_length+" 条！");
+        $("#Grid").css({"display":"none"});
+        $("#tip").css({"display":""});
+        $("#div_tip").css({"display":"none"});
+    }
+
+    function showError(){
+        $("#tip").css({"display":"none"});
+        $("#div_tip").css({"display":"none"});
+        $("#uploadExcel").find(".k-upload-pct").html("");//隐藏100%
+        var excelErrorList = attchDataArray[0].excelErrorList;
+        var list = [];
+        for(var i = 0;i < excelErrorList.length;i++){
+            var obj = {};
+            //obj["column"] = excelErrorList[i].column;
+            obj["errorMessage"] = excelErrorList[i].errorMessage;
+            obj["row"] = excelErrorList[i].row;
+            obj["sheetName"] = excelErrorList[i].sheetName;
+            obj["title"] = excelErrorList[i].title;
+            list.push(obj);
+        }
+        $("#tip").css({"display":"none"});
+        $("#Grid").css({"display":""});
+        $("#Grid").kendoGrid({
+            dataSource: {
+                data: list,
+                pageSize: 10
+            },
+            height: '100%',
+            resizable: true,
+            scrollable: true,
+            navigatable: false,
+            //selectable: 'multiple, rowbox',
+            pageable: {
+                pageSizes: [5, 10, 20, 50],
+                refresh: true,
+                buttonCount: 5
+            },
+            columns: [
+                {
+                    field: "sheetName",
+                    title: '工作表名',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style  : "text-align: center"
+                    },
+                    width: 120
+                },
+                {
+                    field: "row",
+                    title: '行数',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style  : "text-align: center"
+                    },
+                    attributes: {style: "text-align:right"},
+                    width: 100
+                },
+                {
+                    field: "title",
+                    title: '列名',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style  : "text-align: center"
+                    },
+                    width: 120
+                },
+                {
+                    field: "errorMessage",
+                    title: '错误信息',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style  : "text-align: center"
+                    },
+                    attributes: {style: "color:red"},
+                    width: 150
+                },
+            ],
+            editable: false
+        });
+        Hap.autoResizeGrid("#Grid");
+    }
+
+    $("#templateDownLoad").click(function(){
+        var form = $("<form>");   //定义一个form表单
+        form.attr('style','display:none');   //在form表单中添加查询参数
+        form.attr('target','');
+        form.attr('method','post');
+        form.attr('action',"${base.contextPath}/common/mgtStructure/excel/import/template");
+
+        var input1 = $('<input>');
+        input1.attr('type','hidden');
+        input1.attr('name','exportPostTime');
+        input1.attr('value','');
+
+        $('body').append(form);  //将表单放置在web中
+        form.append(input1);   //将查询参数控件提交到表单上
+        form.submit();   //表单提交
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.pay.order.mapper.OrderFormLineMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.pay.order.dto.OrderFormLine">
+        <result column="LINE_ID" property="lineId" jdbcType="DECIMAL" />
+        <result column="ORDER_ID" property="orderId" jdbcType="DECIMAL" />
+        <result column="RECEIVABLE_ID" property="receivableId" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <select id="findByOrderId" resultMap="BaseResultMap">
+        select
+         a.LINE_ID as "lineId",
+         a.ORDER_ID as "orderId",
+         a.RECEIVABLE_ID as "receivableId"
+         from csp_order_form_line a
+        where a.order_id=#{orderId}
+    </select>
+
+</mapper>

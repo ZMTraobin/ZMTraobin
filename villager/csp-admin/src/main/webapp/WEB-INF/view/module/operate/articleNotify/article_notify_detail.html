@@ -1,0 +1,133 @@
+<!-- * description: 通知公告详情 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../include/header.html"/>
+    <style>
+        .down_a{
+            height: 36px;
+            padding-top: 8px;
+            padding-left: 8px;
+            border-bottom: 1px solid #ccc;
+            font-size: 14px;
+            font-family: 微软雅黑;
+        }
+    </style>
+<script type="text/javascript" src="${base.contextPath}/lib/ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+    var content;
+    var articleNotifyAddTabviewModel = kendo.observable({
+        articleNotifyModel: {},
+    });
+</script>
+<body>
+<div id="content-container">
+    <div class="panel" id="page-content" style="padding: 0px;border:none;box-shadow: none;">
+    <form class="form-horizontal" id="mainform" enctype="application/json;charset=UTF-8">
+        <div class="panel-body">
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">标题:</label>
+                        <div class="col-sm-8">
+                            <input required id="title" type="text" style="width: 100%" data-bind="value:articleNotifyModel.title" class="k-textbox k-state-disabled" disabled="true">
+                            <script>kendo.bind($('#title'), articleNotifyAddTabviewModel);</script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">正文(最大2W字符):</label>
+                        <input type="hidden" id="id" data-bind="value:articleNotifyModel.id"/>
+                        <script>kendo.bind($('#id'), articleNotifyAddTabviewModel);</script>
+                        <div class="col-sm-8">
+                            <textarea id="editor" disabled="disabled" data-bind="value:articleNotifyModel.content" ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 10px;margin-top: 10px;">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" style="text-align: right">附件:</label>
+                        <div class="col-sm-8" id="downList">
+                            <div style="border-top: 1px solid;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" class="col-sm-12">
+                <div align="center">
+                    <span class="btn btn-default" id="back" type="button">返回</span>
+                </div>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //返回按钮
+    $("#back").click(function(){
+        var articleNotifyDetails =  window.parent.$("#editWin").data("kendoWindow");
+        articleNotifyDetails.close();
+    });
+
+    $(document).ready(function() {
+
+        //根据id查询通知公告
+        $.ajax({
+            url: "${base.contextPath}/articleNotify/queryArticleNotifyById",
+            type: "post",
+            dataType: "json",
+            data : {id:'${RequestParameters.id!0}'},
+            async: false,
+            success: function (args) {
+                var profile = args.dto||{};
+                for(var i in profile){
+                    articleNotifyAddTabviewModel.set("articleNotifyModel."+i,profile[i]);
+                }
+            }
+        });
+
+        //根据id查询附件
+        $.ajax({
+            url: "${base.contextPath}/articleNotify/querySysAttachmentByObjectId",
+            type: "post",
+            dataType: "json",
+            data : {objectId:'${RequestParameters.id!0}'},
+            async: false,
+            success: function (args) {
+                var datas = args.rows || {};
+                var down_div = $("#downList");
+                var html = "";
+                if(datas.length == 0){
+                    $("#downList").find("div").eq(0).css("display","none");
+                }
+                for(var i=0; i < datas.length;i++){
+                    var data = datas[i];
+                    //var filePath = "http://172.26.128.56/"+data["filePath"];
+                    var fileName = data["fileName"];
+                    var id = data["id"];
+                    var path = "${base.contextPath}/sysAttachment/download?id="+id;
+                    html += "<div class='down_a'><a style='color: #38f;' href="+path+">"+fileName+"</a></div>";
+                }
+                down_div.append(html);
+            }
+        });
+
+        //富文本编辑框
+        content = CKEDITOR.replace('editor',{
+            removeButtons : 'Underline,Subscript,Superscript,Source,About',
+            height : '280px',
+            weight : '400px',
+            language:'zh-cn'
+        });
+        content.setData(articleNotifyAddTabviewModel.articleNotifyModel.content);
+    });
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.family.mapper.LandInfoMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.family.dto.LandInfo">
+        <result column="id" property="id" jdbcType="DECIMAL" />
+        <result column="family_code" property="familyCode" jdbcType="VARCHAR" />
+        <result column="land_area" property="landArea" jdbcType="VARCHAR" />
+        <result column="land_price" property="landPrice" jdbcType="VARCHAR" />
+        <result column="main_crop" property="mainCrop" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <!-- 根据家庭编码查询 -->
+	<select id="selectByFamilyCode" resultMap="BaseResultMap">
+		SELECT
+			*
+		FROM
+			xl_land_info a
+		WHERE
+			a.family_code = #{encodeStr}
+	</select>	
+	
+	<!-- 根据家庭编码更新 -->
+	<update id="updateByFamilyCode" >
+		UPDATE
+		 	xl_land_info 
+		set
+		 	land_area = #{1},land_price=#{2},main_crop=#{3}
+		where
+			family_code=#{0}
+	</update>	
+
+</mapper>

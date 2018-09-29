@@ -1,0 +1,171 @@
+    <#include "../../../include/header.html"/>
+        <body style="padding: 10px;">
+        <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+        <script src="${base.contextPath}/common/code?hrEmployeeGender=HR.EMPLOYEE_GENDER"
+                type="text/javascript"></script>
+        <script src="${base.contextPath}/common/code?openAppStatus=OPEN.APP_STATUS" type="text/javascript"></script>
+        <!--功能类目-->
+        <script src="${base.contextPath}/common/code?appConfigFunctionSort=APP_CONFIG_FUNCTION_SORT" type="text/javascript"></script>
+        <div id="content-container">
+            <div id="page-content">
+                <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                    <div class="row">
+                        <div class="col-xs-20">
+                            <div class="form-group">
+                                <label class="col-xs-2  control-label">物业公司：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="comPanyName" name="comPanyName"
+                                           value="" disabled="disabled" class="k-textbox"/>
+                                </div>
+                                <label class="col-xs-2  control-label">项目名称：</label>
+                                <div class="col-xs-3">
+                                    <input style="width: 100%" required type="text" id="communityName" name="communityName"
+                                           value="" disabled="disabled" class="k-textbox"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <div class="col-sm-12 text-center">
+                                <span class="btn btn-success" data-bind="click:close" type="submit"><i class="fa fa-save"
+                                                                                                      style="margin-right:3px;"></i>关闭</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="propertyMCAppConfigGrid"></div>
+
+        <script type="text/javascript">
+
+            //var isedit = '${RequestParameters.isedit!0}' == '1';
+
+            var companyName = '${RequestParameters.comPanyName!""}';
+            var communityName = '${RequestParameters.communityName!""}';
+            $("#comPanyName").val(decodeURI(companyName));
+            $("#communityName").val(decodeURI(communityName));
+
+            window.viewModel = kendo.observable({
+                model: {},
+                close: function (e) {
+                    window.parent.$("#propertyMCdetail").data("kendoWindow").close();
+                }
+            });
+
+            kendo.bind($('#page-content'), viewModel);
+
+            //初始化form表单
+            $.ajax({
+                url: '${base.contextPath}/csp/ljh/app/config/community/detailProperty',
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                data: {id: '${RequestParameters.id!0}'},
+                success: function (args) {
+                    var profile = args.dto || {};
+                    for (var i in profile) {
+                        viewModel.set("model." + i, profile[i]);
+                    }
+                }
+            });
+            $(document).ready(function () {
+
+            });
+            //业主端app配置开通的功能
+            var BaseUrl = _basePath;
+            dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: BaseUrl + "/csp/ljh/app/config/community/queryAppListPropertyMC?id=${RequestParameters.id!0}",
+                        type: "POST",
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, type) {
+                        if (type !== "read" && options.models) {
+                            var datas = Hap.prepareSubmitParameter(options, type)
+                            return kendo.stringify(datas);
+                        } else if (type === "read") {
+                            var a = viewModel.model.toJSON();
+                            return Hap.prepareQueryParameter(viewModel.model.toJSON(), options)
+                        }
+                    }
+                },
+                batch: true,
+                serverPaging: true,
+                pageSize: 10,
+                schema: {
+                    data: 'rows',
+                    total: 'total',
+                    model: {
+                        id: "id",
+                        fields: {}
+                    }
+                }
+            });
+            $("#propertyMCAppConfigGrid").kendoGrid({
+                dataSource: dataSource,
+                //height: '500',
+                resizable: true,
+                scrollable: true,
+                navigatable: false,
+                selectable: 'multiple',
+                pageable: {
+                    pageSizes: [5, 10, 20, 50],
+                    refresh: true,
+                    buttonCount: 5
+                },
+                columns: [
+                    {
+                        field: "functionName",
+                        title: '功能名称',
+                        width: 80
+                    },
+                    {
+                        field: "functionType",
+                        title: '类目',
+                        width: 80,
+                        template: function(dataItem){
+                            var v = dataItem.functionSort;
+                            $.each(appConfigFunctionSort,function(i,n){
+                                if((n.value||'').toLowerCase() == (v||'').toLowerCase()){
+                                    v = n.meaning;
+                                    return v;
+                                }
+                            })
+                            return v;
+                        }
+                    },
+                    {
+                        field: "functionImg",
+                        title: '前端显示图片',
+                        width: 80,
+                        template: function (dataItem) {
+                            if (null != dataItem.functionImg && "" != dataItem.functionImg) {
+                                var src = dataItem.fastdfsImageServer + dataItem.functionImg;
+                                return "<img src=\"" + src + "\" style='max-width:30 px;max-height:30px;'>";
+                            } else {
+                                return "";
+                            }
+
+                        }
+                    },
+                    {
+                        field: "functionUrl",
+                        title: "访问地址",
+                        width: 140
+                    },
+                    {
+                        field: "functionRemark",
+                        title: "功能备注",
+                        width: 140
+                    }
+
+                ],
+                editable: false
+            });
+        </script>
+        </body>
+        </html>

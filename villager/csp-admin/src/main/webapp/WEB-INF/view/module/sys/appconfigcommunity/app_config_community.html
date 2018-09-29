@@ -1,0 +1,563 @@
+<#include "../../../include/header.html"/>
+    <style>
+        .caozuo_btn{
+            display: inline-block;
+            min-width: 24px;
+            margin-right: 1px;
+            padding: 0 12px;
+            line-height: 22px;
+            color: #fff;
+            background: #6fb3e0;
+            font-size: 12px;
+            margin-top: 1px;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+        }
+    </style>
+
+    <script src="${base.contextPath}/common/code?communityName=CSP.COMMUNITYNAME"
+            type="text/javascript"></script>
+
+    <script src="${base.contextPath}/common/code?companyName=CSP.COMPANYNAME"
+            type="text/javascript"></script>
+
+<!--定义lov
+<script src="${base.contextPath}/common/code?companyName=	MGT_COMPANY_LOV" type="text/javascript">
+
+</script>
+-->
+
+
+
+    <script type="text/javascript">
+        /**
+         * 业主端viewModel
+         */
+        var ownerviewModel = kendo.observable({
+            model: {},
+            //  companyName:companyName,
+            communityName:communityName,
+
+            createFunction: function () {
+                $('#ownerGrid').data('kendoGrid').addRow();
+            },
+            saveFunction: function () {
+                $('#ownerGrid').data('kendoGrid').saveChanges();
+            },
+            queryResource: function (e) {
+                $('#ownerGrid').data('kendoGrid').dataSource.page(1);
+            }
+        });
+        /**
+         * 物业端的viewModel
+         */
+        var propertyMCviewModel = kendo.observable({
+            model: {},
+            //companyName:companyName,
+            communityName:communityName,
+            createFunction: function () {
+                $('#propertyMCGrid').data('kendoGrid').addRow();
+            },
+            saveFunction: function () {
+                $('#propertyMCGrid').data('kendoGrid').saveChanges();
+            },
+            queryResourceMC: function (e) {
+                $('#propertyMCGrid').data('kendoGrid').dataSource.page(1);
+            }
+        });
+    </script>
+    <body>
+    <!--业主端详细信息-->
+    <div id="ownerdetail" style="clear: both" ></div>
+    <div id="propertyMCdetail" style="clear: both" ></div>
+    <div id="categoryWin" style="clear: both" ></div>
+    <div id="propertyMCWin"  style="clear: both"></div>
+    <div class="col-sm-12" style="margin-top: 10px;">
+
+        <div id="tabstrip">
+            <ul>
+                <li id="ownertab">中民居家</li>
+                <li id="propertyMCtab">中民物管</li>
+            </ul>
+            <div id="page-content">
+                <div class="panel" id="owner" style="padding: 0px;border:none;box-shadow: none;">
+                    <form class="form-horizontal" id="myForm">
+                        <div class="panel-body">
+                            <div class="pull-left" style="padding-bottom:10px;">
+                                <span class="btn btn-primary" style="float:left;width:70px;margin-right:5px;padding:3px 0!important;" onclick="batchAdd()" type="button">批量配置</span>
+                                <span class="btn btn-primary" style="float:left;width:70px;margin-right:5px;padding:3px 0!important;" onclick="batchDelete()" type="button">批量移除</span>
+                            </div>
+
+                            <div class="pull-right"  style="padding-bottom:10px;">
+                                <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='物业公司' data-bind="value:model.comPanyName" class="k-textbox">
+                                <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='小区' data-bind="value:model.communityName" class="k-textbox">
+                                <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:queryResource" type="submit"><@spring.message "hap.query"/></span>
+                                <div style="clear:both"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <script>kendo.bind($('#owner'), ownerviewModel);</script>
+
+                <div style="clear: both;">
+                    <div id="ownerGrid"></div>
+                </div>
+            </div>
+            <div id="page-content-out">
+                <div class="panel" id="propertyMC" style="padding: 0px;border:none;box-shadow: none;">
+                    <form class="form-horizontal" id="myForm2">
+                        <div class="panel-body">
+
+                            <div class="pull-left" style="padding-bottom:10px;">
+                                <span class="btn btn-primary" style="float:left;width:70px;margin-right:5px;padding:3px 0!important;" onclick="batchAddMC()" type="button">批量配置</span>
+                                <span class="btn btn-primary" style="float:left;width:70px;margin-right:5px;padding:3px 0!important;" onclick="batchDeleteMC()" type="button">批量移除</span>
+                            </div>
+
+                            <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+                                <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='物业公司' data-bind="value:model.comPanyName" class="k-textbox">
+                                <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='小区' data-bind="value:model.communityName" class="k-textbox">
+                                <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:queryResourceMC" type="submit"><@spring.message "hap.query"/></span>
+                                <div style="clear:both"></div>
+
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                <script>kendo.bind($('#propertyMC'), propertyMCviewModel);</script>
+                <div style="clear: both;">
+                    <div id="propertyMCGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        var tabToActivate = $("#ownertab");
+        var tabstrip =  $("#tabstrip").kendoTabStrip({
+                    animation: {
+                        close: {
+                            duration: 200,
+                            effects: "fadeOut"
+                        },
+                        open: {
+                            duration: 200,
+                            effects: "fadeIn"
+                        }
+                    },
+                    show:function(e){
+                        if(e.item.id == "ownertab"){
+                            Hap.autoResizeGrid("#ownerGrid");
+                        }else if(e.item.id=="propertyMCtab"){
+                            Hap.autoResizeGrid("#propertyMCGrid");
+                        }
+                    }
+                }
+        ).data("kendoTabStrip");
+        tabstrip.activateTab(tabToActivate);
+
+        var BaseUrl = _basePath;
+        //业主端的datasource
+        ownerdataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: BaseUrl + "/csp/ljh/app/config/community/queryOwner",
+                    type: "POST",
+                    dataType: "json"
+                },
+                parameterMap: function (options, type) {
+                    if (type !== "read" && options.models) {
+                        var datas = Hap.prepareSubmitParameter(options, type)
+                        return kendo.stringify(datas);
+                    } else if (type === "read") {
+                        return Hap.prepareQueryParameter(ownerviewModel.model.toJSON(), options)
+                    }
+                }
+            },
+            batch: true,
+            serverPaging: true,
+            pageSize: 10,
+            schema: {
+                data: 'rows',
+                total: 'total',
+                model: {
+                    id: "id",
+                    fields: {}
+                }
+            }
+        });
+        //业主端的grid
+        $("#ownerGrid").kendoGrid({
+            dataSource: ownerdataSource,
+            height: 500,
+            resizable: true,
+            scrollable: true,
+            navigatable: false,
+            selectable: 'multiple, rowbox',
+            pageable: {
+                pageSizes: [5, 10, 20, 50],
+                refresh: true,
+                buttonCount: 5
+            },
+            columns: [
+                {
+                    field: "comPanyName",
+                    title: '物业公司',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    width: 120
+                },
+                {
+                    field: "communityName",
+                    title: '项目名称',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    width: 120
+                },
+                {
+                    field: "functionNames",
+                    title: '已开通功能',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    width: 120
+                },
+                {
+                    field: "",
+                    title: '操作',
+                    width: 180,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style  : "text-align: center"
+                    },
+                    template : function (rowdata) {
+                        return '<div style="text-align:center;"><a class="caozuo_btn" href="#" onclick="detailOwner(\''+rowdata.id+'\',\''+rowdata.comPanyName+'\',\''+rowdata.communityName+'\')">查看</a>&nbsp;&nbsp;' +
+                                    '<a class="caozuo_btn" href="#" onclick="editOwner(\''+rowdata.id+'\',\''+rowdata.comPanyName+'\',\''+rowdata.communityName+'\')">修改</a></div>';
+                    },
+                },
+            ],
+            editable: false
+        });
+        //物业端的datasource
+        propertyMCdataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: BaseUrl + "/csp/ljh/app/config/community/queryPropertyMC",
+                    type: "POST",
+                    dataType: "json"
+                },
+                parameterMap: function (options, type) {
+                    if (type !== "read" && options.models) {
+                        var datas = Hap.prepareSubmitParameter(options, type)
+                        return kendo.stringify(datas);
+                    } else if (type === "read") {
+                        return Hap.prepareQueryParameter(propertyMCviewModel.model.toJSON(), options)
+                    }
+                }
+            },
+            batch: true,
+            serverPaging: true,
+            pageSize: 10,
+            schema: {
+                data: 'rows',
+                total: 'total',
+                model: {
+                    id: "id",
+                    fields: {}
+                }
+            }
+        });
+        //物业端的grid
+        $("#propertyMCGrid").kendoGrid({
+            dataSource: propertyMCdataSource,
+            height: '100%',
+            resizable: true,
+            scrollable: true,
+            navigatable: false,
+            selectable: 'multiple, rowbox',
+            pageable: {
+                pageSizes: [5, 10, 20, 50],
+                refresh: true,
+                buttonCount: 5
+            },
+            columns: [
+                {
+                    field: "comPanyName",
+                    title: '物业公司名称',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    width: 120
+                },
+                {
+                    field: "communityName",
+                    title: '项目名称',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    width: 120
+                },
+                {
+                    field: "functionNames",
+                    title: '已开通功能',
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    width: 120
+                },
+                {
+                    field: "",
+                    title: '操作',
+                    width: 180,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style  : "text-align: center"
+                    },
+                    template : function (rowdata) {
+                        return '<div style="text-align:center;"><a class="caozuo_btn" href="#" onclick="propertyMCdetail(\''+rowdata.id+'\',\''+rowdata.comPanyName+'\',\''+rowdata.communityName+'\')">查看</a>&nbsp;&nbsp;' +
+                                '<a class="caozuo_btn" href="#" onclick="editPropertyMC(\''+rowdata.id+'\',\''+rowdata.comPanyName+'\',\''+rowdata.communityName+'\')">修改</a></div>';
+                    },
+                },
+            ],
+            editable: false
+        });
+
+        <!--查询详细的物业端的信息-->
+        function propertyMCdetail(id,companyName,communityName) {
+            var url = 'app_config_community_detailMC.html';
+            var val = encodeURI(companyName);
+            val = encodeURI(val);
+            var communityName = encodeURI(encodeURI(communityName));
+            if (id) {
+                url = url + '?isedit=1&id=' + id+"&comPanyName="+val+"&communityName="+communityName;
+            }
+            var detailWin = $("#propertyMCdetail").kendoWindow({
+                actions: ["Maximize", "Minimize", "Close"],
+                width: 850,
+                height: 500,
+                title: '详情',
+                content: url,
+                scrollable: false,
+                resizable: false,
+                iframe: true,
+                visible: false,
+                modal: true,
+                close: function () {
+                    //window 关闭  刷新 本页面的  Grid
+                    $('#propertyMCGrid').data('kendoGrid').dataSource.page(1);
+                }
+            }).data("kendoWindow");
+            detailWin.center().open();
+        }
+        <!--查询详细的业主端的信息-->
+        function detailOwner(id,comPanyName,communityName) {
+            var url = 'app_config_community_detailowner.html';
+            var val = encodeURI(comPanyName);
+            val = encodeURI(val);
+            var communityName = encodeURI(encodeURI(communityName));
+            if (id) {
+                url = url + '?isedit=1&id=' + id+"&comPanyName="+val+"&communityName="+communityName;
+            }
+            var detailWin = $("#ownerdetail").kendoWindow({
+                actions: ["Maximize", "Minimize", "Close"],
+                width: 850,
+                height: 500,
+                title: '详情',
+                content: url,
+                scrollable: false,
+                resizable: false,
+                iframe: true,
+                visible: false,
+                modal: true,
+                close: function () {
+                    //window 关闭  刷新 本页面的  Grid
+                    $('#ownerGrid').data('kendoGrid').dataSource.page(1);
+                }
+            }).data("kendoWindow");
+            detailWin.center().open();
+        }
+        //跳转到业主端编辑编辑界面
+        function editOwner(id,comPanyName,communityName) {
+            console.log(id);
+            var url = 'app_config_community_edit.html';
+            var val = encodeURI(comPanyName);
+            val = encodeURI(val);
+            var communityName = encodeURI(encodeURI(communityName));
+            if (id) {
+                url = url + '?isedit=1&id=' + id+"&comPanyName="+val+"&communityName="+communityName;
+            }
+            var detailWin = $("#categoryWin").kendoWindow({
+                actions: ["Maximize", "Minimize", "Close"],
+                width: 750,
+                height: 450,
+                content: url,
+                scrollable: false,
+                resizable: false,
+                iframe: true,
+                visible: false,
+                modal: true,
+                close: function () {
+                    //window 关闭  刷新 本页面的  Grid
+                    $('#ownerGrid').data('kendoGrid').dataSource.page(1);
+                }
+            }).data("kendoWindow");
+            detailWin.center().open();
+        }
+            //跳转到物业端编辑编辑界面
+            function editPropertyMC(id,comPanyName,communityName) {
+                console.log(id);
+                var url = 'app_config_community_edit_propertymc.html';
+                var val = encodeURI(encodeURI(comPanyName));
+                var communityName = encodeURI(encodeURI(communityName));
+                if (id) {
+                    url = url + '?isedit=1&id=' + id + "&comPanyName=" + val + "&communityName=" + communityName;
+                }
+                var detailWin = $("#propertyMCWin").kendoWindow({
+                    actions: ["Maximize", "Minimize", "Close"],
+                    width: 750,
+                    height: 450,
+                    content: url,
+                    scrollable: false,
+                    resizable: false,
+                    iframe: true,
+                    visible: false,
+                    modal: true,
+                    close: function () {
+                        //window 关闭刷新 本页面的  Grid
+                        $('#propertyMCGrid').data('kendoGrid').dataSource.page(1);
+                    }
+                }).data("kendoWindow");
+                detailWin.center().open();
+            }
+
+            function batchAdd(){
+                var row = $("#ownerGrid").data("kendoGrid").selectedDataItems(); //获取选中行对象
+                if(row.length<=0){
+                    alert("请选择记录");
+                    return ;
+                }
+
+                var url = 'app_config_community_batch_edit.html?isedit=1';
+                var detailWin = $("#categoryWin").kendoWindow({
+                    actions: ["Maximize", "Minimize", "Close"],
+                    width: 750,
+                    height: 450,
+                    content: url,
+                    scrollable: false,
+                    resizable: false,
+                    iframe: true,
+                    visible: false,
+                    modal: true,
+                    close: function () {
+                        //window 关闭  刷新 本页面的  Grid
+                        $('#ownerGrid').data('kendoGrid').dataSource.page(1);
+                    }
+                }).data("kendoWindow");
+                detailWin.center().open();
+            }
+
+            function batchDelete(){
+                var row = $("#ownerGrid").data("kendoGrid").selectedDataItems(); //获取选中行对象
+                if(row.length>0){
+                    kendo.ui.showConfirmDialog({
+                        title: $l('hap.tip.info'),
+                        message: $l('确定批量移除快捷服务配置？')
+                    }).done(function (event) {
+                        if (event.button == 'OK') {
+                            var cids="";
+                            for(var i=0;i<row.length;i++){
+                                cids+=row[i].id+",";
+                            }
+                            cids=cids.substring(0,cids.length-1);
+                            $.ajax({
+                                url: '${base.contextPath}/csp/ljh/app/config/function/batchDeleteByCid?appConfigCommunityId='+cids,
+                                type: "POST",
+                                dataType: "json",
+                                contentType: "application/json",
+                                success: function (args) {
+                                    kendo.ui.showInfoDialog({
+                                        title: '提示信息',
+                                        message: '移除成功!'
+                                    }).done(function (e) {
+                                        $('#ownerGrid').data('kendoGrid').dataSource.page(1);
+                                    });
+                                }
+                            });
+                        }
+                    })
+
+                }else{
+                    alert("请选择记录");
+                }
+            }
+
+        function batchAddMC(){
+            var row = $("#propertyMCGrid").data("kendoGrid").selectedDataItems(); //获取选中行对象
+            if(row.length<=0){
+                alert("请选择记录");
+                return ;
+            }
+            var url = 'app_config_community_batch_edit_mc.html?isedit=1';
+            var detailWin = $("#propertyMCWin").kendoWindow({
+                actions: ["Maximize", "Minimize", "Close"],
+                width: 750,
+                height: 450,
+                content: url,
+                scrollable: false,
+                resizable: false,
+                iframe: true,
+                visible: false,
+                modal: true,
+                close: function () {
+                    //window 关闭  刷新 本页面的  Grid
+                    $('#propertyMCGrid').data('kendoGrid').dataSource.page(1);
+                }
+            }).data("kendoWindow");
+            detailWin.center().open();
+        }
+
+        function batchDeleteMC(){
+            var row = $("#propertyMCGrid").data("kendoGrid").selectedDataItems(); //获取选中行对象
+            if(row.length>0){
+                kendo.ui.showConfirmDialog({
+                    title: $l('hap.tip.info'),
+                    message: $l('确定批量移除快捷服务配置？')
+                }).done(function (event) {
+                    if (event.button == 'OK') {
+                        var cids="";
+                        for(var i=0;i<row.length;i++){
+                            cids+=row[i].id+",";
+                        }
+                        cids=cids.substring(0,cids.length-1);
+                        $.ajax({
+                            url: '${base.contextPath}/csp/ljh/app/config/function/batchDeleteByCid?appConfigCommunityId='+cids,
+                            type: "POST",
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (args) {
+                                kendo.ui.showInfoDialog({
+                                    title: '提示信息',
+                                    message: '移除成功!'
+                                }).done(function (e) {
+                                    $('#propertyMCGrid').data('kendoGrid').dataSource.page(1);
+                                });
+                            }
+                        });
+                    }
+                })
+
+            }else{
+                alert("请选择记录");
+            }
+        }
+    </script>
+    </body>
+    </html>

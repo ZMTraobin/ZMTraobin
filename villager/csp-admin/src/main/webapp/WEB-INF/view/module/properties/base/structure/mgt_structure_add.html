@@ -1,0 +1,358 @@
+<!-- * description: 建筑结构新增 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../../include/header.html"/>
+<style>
+    .tabstrip{
+        border-top: 1.5px solid silver;
+        font-size: 13px;
+        color: black;
+        font-family: '微软雅黑';
+        padding-top: 10px;
+    }
+</style>
+<body>
+<div id="content-container">
+    <div id="page-content">
+        <div id="content" class="col-sm-12">
+            <div id="tabstrip">
+                <ul>
+                    <li id="baseInfoTab">新建结构</li>
+                    <li id="houseTab">绑定实体</li>
+                </ul>
+                <div id="baseInfoTab-content" class="row tabstrip" style="">
+                    <div class="panel" id="baseInfo" style="padding: 0px;border:none;box-shadow: none;">
+                        <form class="form-horizontal" id="myForm" enctype="application/json;charset=UTF-8">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="form-group">
+                                            <label class="col-xs-2  control-label" style="text-align: right">父结构：</label>
+                                            <div class="col-xs-4">
+                                                <input required type="text" style="width: 100%" id="parentStructureId" name="parentStructureId" data-bind="value:model.structureParentFullName" class="k-textbox k-state-disabled" readonly/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="form-group">
+                                            <label class="col-xs-2  control-label" style="text-align: right">结构编码：</label>
+                                            <div class="col-xs-4">
+                                                <input required type="text" style="width: 100%" id="structureCode" name="structureCode" data-bind="value:model.structureCode" class="k-textbox" maxlength="50"/>
+                                            </div>
+                                            <label class="col-xs-2  control-label" style="text-align: right">节点名称：</label>
+                                            <div class="col-xs-4">
+                                                <input required type="text" style="width: 100%" id="structureName" name="structureName" data-bind="value:model.structureName" class="k-textbox" maxlength="50"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="form-group">
+                                            <label class="col-xs-2  control-label" style="text-align: right">建筑名称：</label>
+                                            <div class="col-xs-4">
+                                                <input required type="text" style="width: 100%" id="structureFullName" name="structureFullName" data-bind="value:model.structureFullName" class="k-textbox" maxlength="50"/>
+                                            </div>
+                                            <label class="col-xs-2  control-label" style="text-align: right">房屋实体：</label>
+                                            <div class="col-xs-4">
+                                                <input type="text" style="width: 100%" id="houseId" name="houseId" data-bind="value:model.houseId,text:model.houseFullName" class="k-textbox" />
+                                                <script>
+                                                </script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <div class="col-sm-12 text-center">
+                                        <span class="btn btn-success" id="save" type="submit">
+                                            <i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                                        <span id="back" class="btn btn-primary" style="" onclick="back()">返回</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="houseTab-content" class="row tabstrip" style="">
+                    <div class="panel" id="houseInfo" style="padding: 0px;border:none;box-shadow: none;">
+                        <form class="form-horizontal" id="myForm2" enctype="application/json;charset=UTF-8">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="form-group">
+                                            <label class="col-xs-2  control-label" style="text-align: right">房屋实体：</label>
+                                            <div class="col-xs-4">
+                                                <input required type="text" style="width: 100%" id="houseId1" name="houseId" data-bind="value:model.houseId,text:model.houseFullName" class="k-textbox" />
+                                                <script>
+                                                </script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <div class="col-sm-12 text-center">
+                                        <span class="btn btn-success" id="save1" type="submit">
+                                            <i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                                        <span id="back1" class="btn btn-primary" style="" onclick="back()">返回</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    var pid = '${RequestParameters.pid!0}';
+    var versionId = '${RequestParameters.versionId!0}';
+    var communityId = '${RequestParameters.communityId!0}';
+    var fullName = '${RequestParameters.fullName!0}';
+    //console.log(pid,versionId,communityId,fullName);
+    var baseInfo = kendo.observable({
+        model: {},
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin").data("kendoWindow").close();
+        }
+    });
+    var houseInfo = kendo.observable({
+        model: {},
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin").data("kendoWindow").close();
+        }
+    });
+
+    if(fullName != 0){
+        baseInfo.model.set('parentStructureId',pid);
+        baseInfo.model.set('structureParentFullName',fullName);
+    }
+    //LOV
+    /*$("#parentStructureId").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "MGT_PARENT_STRUCTURE_LOV")});
+    $($("input[name='parentStructureId_input']").next()).css("margin-top","0px");
+    $($("input[name='parentStructureId_input']").next().next().find("span")).css("margin-left","-7px");*/
+
+    $("#houseId,#houseId1").kendoLov($.extend(<@lov "MGT_HOUSE_LOV"/>,
+                                                            {
+                                                                textField: 'houseFullName',valueField:'houseId',model:baseInfo.model
+                                                            },{
+                                                                query: function (e) {
+                                                                    e.param['communityId'] = communityId;
+                                                                },
+                                                                select: function(e){
+                                                                    baseInfo.model.set('houseId',e.item.houseId);
+                                                                    baseInfo.model.set('houseFullName',e.item.houseFullName);
+                                                                }
+                                                            }));
+    $($("input[name='houseId_input']").next()).css("margin-top","0px");
+    $($("input[name='houseId_input']").next().next().find("span")).css("margin-left","-7px");
+
+    //绑定初始化
+    var container = $("#myForm");
+    var container2 = $("#myForm2");
+    kendo.init(container);
+    kendo.init(container2);
+    //必填验证
+    container.kendoValidator({
+        messages: {
+            required: "必填项"
+        },
+    });
+    container2.kendoValidator({
+        messages: {
+            required: "必填项"
+        },
+    });
+    kendo.bind($('#baseInfo'), baseInfo);
+    kendo.bind($('#houseInfo'), houseInfo);
+
+    var url = '${base.contextPath}/csp/mgt/structure/saveOrUpdate';
+    var validator = $("#myForm").data("kendoValidator");
+    var validator2 = $("#myForm2").data("kendoValidator");
+
+    //验证标识符
+    var isOK = true;
+    //编码格式验证
+    function validator_code(str) {
+        var patrn=/^([A-Z]{1,}[0-9]{0,})(\-[A-Z0-9]{1,}){0,}$/;//编码格式
+        if (!patrn.test(str)) {
+            kendo.ui.showInfoDialog({
+                message:'结构编码格式不正确'
+            });
+            isOK = false;
+        }else{
+            isOK = true;
+        }
+    }
+
+    $("#save1").click(function(){
+        $("#houseInfo").kendoValidator();
+        houseInfo.model.__status = isedit ? 'update' : 'add';
+        var houseId = houseInfo.model.houseId;
+        var url = '${base.contextPath}/csp/structure/building/map/saveOrUpdate?isedit='+"add";
+        if (validator2.validate()) {
+            var jsonArray = {
+                structureId: pid,
+                buildingId:houseId
+            };
+            console.log(jsonArray);
+            $.ajax({
+                url: url,
+                async: false,
+                type: "post",
+                data: jsonArray,
+                dataType: "json",
+                success: function (data) {
+                    //console.log(data);
+                    var message = '保存成功!';
+                    if(!data.success){
+                        message = data.message;
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: message
+                        });
+                    }else{
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: message
+                        }).done(function (e) {
+                            if(pid == 0){
+                                window.parent.$("#editWin").data("kendoWindow").close();
+                                var grid = window.parent.$('#Grid').data('kendoGrid');
+                                grid.dataSource.page(grid.dataSource._page);
+                            }else{
+                                window.parent.$("#editWin").data("kendoWindow").close();
+                            }
+                        });
+                    }
+                },
+                error: function (data) {
+                    kendo.ui.showErrorDialog({
+                        message: data.message
+                    });
+                }
+            });
+        }
+    });
+
+    $("#save").click(function(){
+        $("#baseInfo").kendoValidator();
+        baseInfo.model.__status = isedit ? 'update' : 'add';
+        baseInfo.model.structureType="CN02";
+        var houseId = baseInfo.model.houseId || "";
+        var url = '${base.contextPath}/csp/mgt/structure/saveOrUpdate?isedit='+"add&houseId="+houseId;
+        if (validator.validate()) {
+            var structureId = baseInfo.model.structureId;
+            //var versionId = baseInfo.model.versionId;
+            var parentStructureId = baseInfo.model.parentStructureId;
+            var structureName = baseInfo.model.structureName;
+            //var communityId = baseInfo.model.communityId;
+            var structureCode = baseInfo.model.structureCode;
+            var structureNickName = baseInfo.model.structureNickName;
+            var structureFullName = baseInfo.model.structureFullName;
+            var structureType = baseInfo.model.structureType;
+            var businessType = baseInfo.model.businessType;
+            var structureParentFullName = baseInfo.model.structureParentFullName;
+            validator_code(structureCode);
+            if(!isOK){
+                return;
+            }
+            var jsonArray = {
+                structureId: structureId,
+                versionId: versionId,
+                parentStructureId: parentStructureId,
+                structureName: structureName,
+                communityId: communityId,
+                structureCode: structureCode,
+                structureNickName: structureNickName,
+                structureFullName: structureFullName,
+                structureType: structureType,
+                businessType: businessType,
+                structureParentFullName: structureParentFullName
+            };
+            console.log(jsonArray);
+            $.ajax({
+                url: url,
+                async: false,
+                type: "post",
+                data: jsonArray,
+                dataType: "json",
+                success: function (data) {
+                    //console.log(data);
+                    var message = '保存成功!';
+                    if(!data.success){
+                        message = data.message;
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: message
+                        });
+                    }else {
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: message
+                        }).done(function (e) {
+                            if (pid == 0) {
+                                window.parent.$("#editWin").data("kendoWindow").close();
+                                var grid = window.parent.$('#Grid').data('kendoGrid');
+                                grid.dataSource.page(grid.dataSource._page);
+                            } else {
+                                window.parent.$("#editWin").data("kendoWindow").close();
+                            }
+                        });
+                    }
+                },
+                error: function (data) {
+                    kendo.ui.showErrorDialog({
+                        message: data.message
+                    });
+                }
+            });
+        }
+    });
+
+    $(document).ready(function(){
+
+    });
+
+    function back(){
+        var details =  window.parent.$("#editWin").data("kendoWindow");
+        details.close();
+    }
+
+    var tabToActivate = $("#baseInfoTab");
+    var tabstrip =  $("#tabstrip").kendoTabStrip({
+                animation: {
+                    close: {
+                        duration: 200,
+                        effects: "fadeOut"
+                    },
+                    open: {
+                        duration: 200,
+                        effects: "fadeIn"
+                    }
+                },
+                show:function(e){
+                    if(e.item.id == "baseInfoTab"){
+
+                    }else if(e.item.id=="houseTab"){
+
+                    }
+                }
+            }
+    ).data("kendoTabStrip");
+    tabstrip.activateTab(tabToActivate);
+</script>
+</body>
+</html>

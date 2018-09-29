@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.pay.account.mapper.AccountReceivableMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.pay.account.dto.AccountReceivable">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="COMPANY_ID" property="companyId" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="MERCHANT_NUMBER" property="merchantNumber" jdbcType="VARCHAR" />
+        <result column="EXPENDITURE" property="expenditure" jdbcType="VARCHAR" />
+        <result column="ENABLE_FLAG" property="enableFlag" jdbcType="VARCHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="accountReceivableColumns">
+        a.ID AS "id",
+        a.COMPANY_ID As "companyId",
+        a.COMMUNITY_ID As "communityId",
+        a.MERCHANT_NUMBER As "merchantNumber",
+        a.EXPENDITURE As "expenditure",
+        a.ENABLE_FLAG As "enableFlag",
+        b.COMMUNITY_NAME AS "communityName",
+        b.COMPANY_NAME AS "companyName"
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap">
+        SELECT
+        <include refid="accountReceivableColumns" />
+        FROM csp_account_receivable a
+        left join csp_ljh_base_community b  ON a.COMMUNITY_ID = b.ID and b.DEL_FLAG =#{DEL_FLAG_NORMAL}
+        WHERE a.DEL_FLAG =#{DEL_FLAG_NORMAL}
+        and a.ID=#{id}
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="accountReceivableColumns" />
+        FROM csp_account_receivable a
+        left join csp_ljh_base_community b  ON a.COMMUNITY_ID = b.ID and b.DEL_FLAG =#{DEL_FLAG_NORMAL}
+        WHERE a.DEL_FLAG =#{DEL_FLAG_NORMAL}
+        <if test="companyName != null and companyName != ''">
+            AND b.COMPANY_NAME like concat('%',concat(#{companyName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="cityName != null and cityName != ''">
+            AND b.CITY_NAME like concat('%',concat(#{cityName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="communityName != null and communityName != ''">
+            AND b.COMMUNITY_NAME like concat('%',concat(#{communityName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="companyId != null and companyId != ''">
+            AND a.COMPANY_ID =#{companyId}
+        </if>
+        <if test="communityId != null and communityId != ''">
+            AND a.COMMUNITY_ID =#{communityId}
+        </if>
+        <if test="merchantNumber != null and merchantNumber != ''">
+            AND a.MERCHANT_NUMBER like concat('%',concat(#{merchantNumber,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="expenditure != null and expenditure != ''">
+            AND a.EXPENDITURE =#{expenditure}
+        </if>
+        <if test="enableFlag != null and enableFlag != ''">
+            AND a.ENABLE_FLAG =#{enableFlag}
+        </if>
+
+    </select>
+
+
+    <!--软删除-->
+    <update id="deleteAccountReceivable">
+        UPDATE csp_account_receivable SET
+        DEL_FLAG =#{DEL_FLAG_DELETE}
+        WHERE ID = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,108 @@
+<#--
+* description: 商品图片配置界面
+*
+-->
+<#include "../../../include/header.html">
+<body>
+<script type="text/javascript" src="${base.contextPath}/lib/ckeditor/ckeditor.js"></script>
+<script>
+    var newViewModel = kendo.observable({
+        model: {}
+    });
+    $.ajax({
+        url    : '${base.contextPath}/csp/villager/good/queryById?id=${RequestParameters.id!0}',
+        async: false,
+        success: function (args) {
+            var a0 = args.rows[0] || {};
+            for (var k in a0) {
+                newViewModel.model.set(k, a0[k]);
+            }
+        }
+    });
+
+</script>
+<div id="page-content" >
+    <form class="form-horizontal" >
+        <div class="row" >
+            <div class="col-sm-12" >
+                <div class="form-group">
+                    <label class="col-sm-1 control-label" style="text-align: right;font-size: medium;"><div id="goodName" data-bind="html:model.goodName"></div></label>
+                    <script>
+                        kendo.bind($('#goodName'), newViewModel);
+                    </script>
+                    <div class="col-sm-11">
+
+                        <input type="hidden" id="id" name="id" >
+                        <script>
+                            kendo.bind($('#id'), newViewModel);
+                        </script>
+
+
+                        <input  id="goodImage" type="hidden" name="goodImage" data-bind="value:model.goodImage">
+                        <script>kendo.bind($('#goodImage'), newViewModel);</script>
+                        <div id="goodImageDiv"
+                             class="cmig_img_upload_div"
+                             data-id="goodImage"
+                             data-readonly=false
+                             data-minWidth=100
+                             data-minHeight=100
+                             data-showWidth=100
+                             data-showHeight=100
+                             data-maxNum=6
+                             data-checkImageWidthHeightFlag=false
+                             data-maxSize=2
+                             data-required=true
+                             data-callBakFun="modelBindFunctionImg"
+                        ><input type="hidden" id="fastdfsImageServer" name="fastdfsImageServer" data-bind="value:model.fastdfsImageServer">
+                            <script>kendo.bind($('#fastdfsImageServer'), newViewModel);</script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="text-right" style="bottom: 20px;position: fixed; right: 85px; float: left; background: #fff;">
+            <span class="btn btn-success" id="saveGrid" type="submit"><@spring.message "hap.save"/></span>
+            <span class="btn btn-success" id="closeWin" type="button"><@spring.message "hap.cancel"/></span>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function() {
+    });
+
+    $("#saveGrid").click(function () {
+        console.info(newViewModel.model);
+        if(newViewModel.model.goodImage==''||newViewModel.model.goodImage==null){
+            kendo.ui.showInfoDialog({
+                message:'配图不能为空'
+            })
+        }else {
+            newViewModel.model.__status = 'update';
+            Hap.submitForm({
+                url: '${base.contextPath}/csp/villager/good/submit',
+                formModel: newViewModel.model,
+                success: function (data) {
+                    if(data.success==false){
+                        kendo.ui.showErrorDialog({
+                            message:data.message
+                        });
+                    }else{
+                        window.parent.$("#GridDetail").data("kendoWindow").close();
+                    }
+                }
+            });
+        }
+    });
+
+    $("#closeWin").click(function(){
+        window.parent.$("#GridDetail").data("kendoWindow").close();
+    });
+
+    function modelBindFunctionImg(){
+        newViewModel.model.set('goodImage',$("#goodImage").val());
+    }
+</script>
+</body>
+</html>

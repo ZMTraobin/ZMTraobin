@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.properties.communityEvent.mapper.LjhEventCommunityMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.properties.communityEvent.dto.LjhEventCommunity">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="EVENT_ID" property="eventId" jdbcType="VARCHAR" />
+		<result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+		<result column="EVENT_TYPE" property="eventType" jdbcType="VARCHAR" />
+		<!-- 非表字段 -->
+		<result column="COMMUNITY_NAME" property="communityName"
+			jdbcType="VARCHAR" />
+		<result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+		<result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectByEvent"
+		parameterType="com.cmig.future.csportal.module.properties.communityEvent.dto.LjhEventCommunity"
+		resultMap="BaseResultMap">
+		select bc.id,bc.CITY_NAME,bc.COMMUNITY_NAME,COMPANY_NAME
+		from
+		csp_ljh_base_community bc,
+		csp_ljh_sys_user_community suc
+		where
+		bc.id = suc.community_id
+		and bc.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+		and suc.sys_user_id =
+		#{request.userId,jdbcType=DECIMAL}
+		and suc.community_id not in
+		(select
+		ec.community_id from
+		csp_ljh_event_community ec
+		where
+		ec.event_id=#{eventId,jdbcType=VARCHAR}
+		and ec.event_type =
+		#{eventType,jdbcType=VARCHAR})
+	</select>
+
+	<select id="select"
+		parameterType="com.cmig.future.csportal.module.properties.communityEvent.dto.LjhEventCommunity"
+		resultMap="BaseResultMap">
+		select 
+		ec.ID,
+		ec.COMMUNITY_ID,
+		ec.EVENT_ID, 
+		ec.EVENT_TYPE,
+		bc.CITY_NAME,
+		bc.COMMUNITY_NAME,
+		bc.COMPANY_NAME
+		from
+		csp_ljh_event_community ec
+		left outer join csp_ljh_base_community bc on
+		bc.ID = ec.COMMUNITY_ID
+		where ec.event_id = #{eventId,jdbcType=VARCHAR}
+		and ec.EVENT_TYPE = #{eventType,jdbcType=VARCHAR}
+	</select>
+</mapper>

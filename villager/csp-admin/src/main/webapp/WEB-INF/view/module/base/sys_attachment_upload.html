@@ -1,0 +1,144 @@
+<!--
+ * description: 附件上传 kendoui实现
+ * version: 1.0
+ * author: shuo.han@hand-china.com
+-->
+<style>
+	.tip{
+		position: absolute;
+		top: 8px;
+		left: 120px;
+		color: #e62a18;
+	}
+</style>
+
+<div class="col-sm-12" >
+	<form id="attForm" style="">
+		<div class="form-group">
+			<label id="tipName" class="col-sm-2 control-label" style="text-align: right">附件上传:</label>
+			<div class="col-sm-8">
+				<input style="border:none;" type="file" name="files" id="files"/><p id="files_tip" class="tip">* 单个文件不能超过10M</p>
+			</div>
+		</div>
+	</form>
+</div>
+
+	<script type="text/javascript">
+		//数据源
+		var dataSource = new kendo.data.DataSource({
+            batch       : true,
+            serverPaging: true,
+            pageSize    : 10,
+            schema      : {
+                data  : 'rows',
+                total : 'total',
+                model : {
+                    id    : "fileId"
+                }
+            }
+        });
+		var fileId = "";
+		//定义文件上传
+		$("#files").kendoUpload({
+	        async        : {
+	            saveUrl: "${base.contextPath}/common/file/upload",
+	            removeUrl: "${base.contextPath}/common/file/delete"
+	        },
+	        showFileList : true,
+	        upload       : onUpload,
+	        success      : onSuccess,
+	        remove       : onRemove
+	    });
+
+		function onRemove(e){
+			var files = e.files;
+			$.each(files,function(){
+				var fileName = this.name;
+				for(var i = 0;i < attchDataArray.length; i ++){
+					if(attchDataArray[i].fileName == fileName){
+						fileId = attchDataArray[i].attachUrl;
+						e.sender.options.async.removeUrl = "${base.contextPath}/common/file/delete?fileId="+fileId;
+						attchDataArray.splice(i,1);
+						if(fileCount > 1){//通知公告页面5个,app升级页面1个
+							var downFileLength = $("#downList").find(".down_a").length;//已传文件数
+							var fileLength = parseInt(downFileLength)+parseInt(attchDataArray.length);//(已传+新传)文件数
+							var fileNum = fileCount-fileLength;//还能传文件数
+							$("#files_tip").html("* 单个文件不能超过10M，已传文件 <font color='#008000'>"+fileLength+"</font> 个，还可以上传 <font color='#88b52d'>"+fileNum+"</font> 个文件。");
+						}
+					}
+				} 
+			})		
+		}
+	    //回调函数
+	    function onSuccess(e) {
+	    	//状态为成功
+			var status = e.response.status;
+			var uid = e.files[0].uid;
+			if (e.response.status === '1') {
+				if (e.response.data != null) {
+					//写数据源
+					var attchData = {};
+					attchData["attachUrl"] = e.response.data[0].attachUrl;
+					if(e.response.data[0].attachUrl == null){//文件服务器异常:java.lang.NullPointerException
+						var length = $(".k-upload-files").find("li").length;//已上传文件个数(包含当前的)
+						if(length == 1){
+							$(".k-upload-files").remove();
+							$(".k-upload-status").remove();
+						}else{
+							var file_li = $(".k-upload-files").find("li").eq(length-1);
+							file_li.remove();
+						}
+						kendo.ui.showInfoDialog({
+							title    : '提示信息',
+							message  : "上传失败,文件服务器异常!"
+						});
+						return;
+					}else{
+						attchData["showAttachUrl"] = e.response.data[0].showAttachUrl;
+						attchData["fileName"] = e.response.data[0].fileName;
+						attchData["size"] = e.response.data[0].size;
+						attchDataArray.push(attchData);
+						if(fileCount > 1){//通知公告页面5个,app升级页面1个
+							var downFileLength = $("#downList").find(".down_a").length;//已传文件数
+							var fileLength = parseInt(downFileLength)+parseInt(attchDataArray.length);//(已传+新传)文件数
+							var fileNum = fileCount-fileLength;//还能传文件数
+							$("#files_tip").html("* 单个文件不能超过10M，已传文件 <font color='#008000'>"+fileLength+"</font> 个，还可以上传 <font color='#88b52d'>"+fileNum+"</font> 个文件。");
+						}
+					}
+				}
+			}
+			//console.log(attchDataArray);
+	        kendo.ui.showInfoDialog({
+                title    : '提示信息',
+                message  : e.response.message
+            }).done(function(data){
+				$(".k-file-name-size-wrapper").css("margin-left","10px");
+				if(status == 0){//上传失败
+					$(".k-upload-files").find("li[data-uid='"+uid+"']").remove();
+					if($(".k-upload-files").find("li").length == 0){
+						$(".k-upload-status,.k-upload-files").remove();
+					}
+				}
+			});
+	    }
+	    //校验上传文件的格式是否正确
+	    function onUpload(e){
+			var downFileLength = $("#downList").find(".down_a").length;//已传文件数
+			var fileLength = parseInt(downFileLength)+parseInt(attchDataArray.length);//(已传+新传)文件数
+			if(fileCount <= fileLength) {//fileCount:限制文件个数
+				kendo.ui.showInfoDialog({
+					title    : '提示信息',
+					message  : "最多上传文件"+fileCount+"个!"
+				});
+				e.preventDefault();//终止上传
+			};
+	        e.data = {};
+			e.sender.options.async.saveUrl = "${base.contextPath}/common/file/upload?mSize="+mSize;//mSize:文件大小,单位M
+	    }
+	    //$(".k-upload").css("margin-left","163px");
+	    //$(".k-upload").css("width","71%");
+	    $(".k-upload").css("border","0px");
+	    $(".k-upload").css("background","none");
+		$(".k-upload-button").css("margin-top","-10px")
+	</script>
+</body>

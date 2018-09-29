@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.sys.openinfo.mapper.OpenAppInfoMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.sys.openinfo.dto.OpenAppInfo">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+        <result column="OFFICIAL_ID" property="officialId" jdbcType="VARCHAR" />
+        <result column="APP_KEY" property="appKey" jdbcType="VARCHAR" />
+        <result column="APP_SECRET" property="appSecret" jdbcType="VARCHAR" />
+        <result column="NOTIFY_URL" property="notifyUrl" jdbcType="VARCHAR" />
+        <result column="SERVER_IP" property="serverIp" jdbcType="VARCHAR" />
+        <result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
+        <result column="APP_STATUS" property="appStatus" jdbcType="VARCHAR" />
+        <result column="PAYMENT_CONFIG_ID" property="paymentConfigId" jdbcType="VARCHAR"/>
+
+
+        <result column="OBJECT_VERSION_NUMBER" property="objectVersionNumber" jdbcType="DECIMAL" />
+        <result column="REQUEST_ID" property="requestId" jdbcType="DECIMAL" />
+        <result column="PROGRAM_ID" property="programId" jdbcType="DECIMAL" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE" />
+        <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <sql id="openColumns">
+        ID,
+        DEL_FLAG,
+        OFFICIAL_ID,
+        APP_KEY,
+        APP_SECRET,
+        NOTIFY_URL,
+        SERVER_IP,
+        APP_NAME,
+        APP_STATUS,
+        PAYMENT_CONFIG_ID
+    </sql>
+
+
+    <!--分页查询-->
+    <select id="selectOppInfo" parameterType="com.cmig.future.csportal.module.sys.openinfo.dto.OpenAppInfo" resultMap="BaseResultMap">
+       select
+       <include refid="openColumns"/>
+       FROM csp_ljh_open_app_info
+        <where>
+            1=1
+            <if test="appName!=null and appName!=''" >
+                AND APP_NAME=#{appName}
+            </if>
+            <if test="appStatus!=null and appStatus!=''">
+                AND APP_STATUS=#{appStatus}
+            </if>
+                AND DEL_FLAG='0'
+
+        </where>
+    </select>
+    <!--根据id查询对象-->
+    <select id="getOpenInfoById" parameterType="com.cmig.future.csportal.module.sys.openinfo.dto.OpenAppInfo" resultMap="BaseResultMap">
+        select
+        <include refid="openColumns"/>
+        from csp_ljh_open_app_info
+        where ID=#{id}
+    </select>
+
+</mapper>

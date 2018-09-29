@@ -1,0 +1,581 @@
+<!#-- * description: 配置维护界面 * version: 1.0 *
+        author:qingliang.zeng@hand-china.com * * -->
+    <#include "../../../include/header.html"/>
+        <html>
+
+        <head>
+            <style>
+                .photo {
+                    -moz-box-sizing: border-box;
+                    -webkit-box-sizing: border-box;
+                    box-sizing: border-box;
+                    width: 63px;
+                    height: 63px;
+                    border-radius: 22px;
+                    -moz-border-radius: 22px;
+                    -webkit-border-radius: 22px;
+                    border: 2px solid #38a9ac;
+                    background-size: 100% 100% !important;
+                    background-position: center center;
+                }
+            .icon-eye-open,.icon-eye-close{
+                position: absolute;
+                right: 16px;
+                top: 3px;
+            }
+            </style>
+        </head>
+        <body style="padding: 10px;">
+        <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+        <!-- 引入hrEmployeeGender对象,var hrEmployeeGender=[{"objectVersionNumber":1,"codeId":10001,"codeValueId":10027,"description":null,"meaning":"女","value":"F","orderSeq":10},{"objectVersionNumber":1,"codeId":10001,"codeValueId":10028,"description":null,"meaning":"男","value":"M","orderSeq":10}]; -->
+        <script src="${base.contextPath}/common/code?hrEmployeeGender=HR.EMPLOYEE_GENDER" type="text/javascript"></script>
+        <!-- 引入对象openAppStatus,var openAppStatus=[{"objectVersionNumber":1,"codeId":10015,"codeValueId":10044,"description":"启用","meaning":"启用","value":"1","orderSeq":10},{"objectVersionNumber":1,"codeId":10015,"codeValueId":10043,"description":"停用","meaning":"停用","value":"0","orderSeq":20}]; -->
+        <script src="${base.contextPath}/common/code?openAppStatus=OPEN.APP_STATUS" type="text/javascript"></script>
+        <!-- 引入证件类型,var identityTypeData=[{"objectVersionNumber":1,"codeId":10055,"codeValueId":10181,"description":null,"meaning":"护照","value":"PASSPORT","orderSeq":0},{"objectVersionNumber":1,"codeId":10055,"codeValueId":10182,"description":null,"meaning":"居住证","value":"RESIDENCE_PERMIT","orderSeq":0},{"objectVersionNumber":1,"codeId":10055,"codeValueId":10183,"description":null,"meaning":"身份证","value":"IDENTIFICATION_CARDS","orderSeq":0},{"objectVersionNumber":1,"codeId":10055,"codeValueId":10184,"description":null,"meaning":"身份识别码","value":"CORPORATE_IDENTITY_CARD","orderSeq":0},{"objectVersionNumber":1,"codeId":10055,"codeValueId":10185,"description":null,"meaning":"军人证","value":"MILITARY_CARD","orderSeq":0},{"objectVersionNumber":1,"codeId":10055,"codeValueId":10186,"description":null,"meaning":"港澳通行证","value":"HONGKONG_AND_MACAO_PASS","orderSeq":0},{"objectVersionNumber":1,"codeId":10055,"codeValueId":10187,"description":null,"meaning":"户口本","value":"HOUSEHOLD_REGISTER","orderSeq":0}]; -->
+        <script src="${base.contextPath}/common/code?identityTypeData=CSP.MGT.IDENTITY_TYPE" type="text/javascript"></script>
+        <div id="content-container">
+            <div id="page-content">
+                <div id="content" class="col-sm-12">
+                    <div id="tabstrip">
+                        <ul>
+                            <li id="baseInfoTab">员工信息</li>
+                            <li id="communityTab">项目信息</li>
+                        </ul>
+                        <div id="baseInfoTab-content" class="row tabstrip" style="">
+                            <div class="panel" id="baseInfo" style="padding: 0px;border:none;box-shadow: none;">
+                                <form class="form-horizontal" id="myForm" enctype="application/json;charset=UTF-8">
+                                    <div class="row" align="center">
+                                        <div class="col-xs-12" >
+                                            <div class="form-group" >
+                                                <div id="photoDiv" class="photo" class="col-xs-12" style="background: url('${base.contextPath}/resources/images/user_default.jpg')"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label class="col-xs-2  control-label">姓名：</label>
+                                                <div class="col-xs-3">
+                                                    <input style="width: 100%" required type="text" id="name" name="name"
+                                                           data-bind="value:model.name" disabled="disabled" class="k-textbox"/>
+                                                </div>
+                                                <label class="col-xs-2  control-label">性别：</label>
+                                                <div class="col-xs-3">
+                                                    <input style="width: 100%" required type="text" id="sex" name="sex"
+                                                           data-bind="value:model.sex" disabled="disabled" class="k-textbox"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label class="col-xs-2  control-label">账号状态：</label>
+                                                <div class="col-xs-3">
+                                                    <input style="width: 100%" required type="text" id="loginFlag" name="loginFlag"
+                                                           data-bind="value:model.loginFlag" disabled="disabled" class="k-textbox"/>
+                                                </div>
+                                                <label class="col-xs-2  control-label">邮箱：</label>
+                                                <div class="col-xs-3">
+                                                    <input style="width: 100%" required type="text" id="email" name="email"
+                                                           data-bind="value:model.email" disabled="disabled" class="k-textbox"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label class="col-xs-2  control-label">手机：</label>
+                                                <div class="col-xs-3">
+                                                    <input id="mobile" style="width: 100%" required type="text" id="mobile" name="mobile"
+                                                           data-bind="value:model.mobile" disabled="disabled" class="k-textbox"/>
+                                                    <img id="mobileOpen" class="icon-eye-open" src="${base.contextPath}/resources/images/eye.png" />
+                                                    <img id="mobileClose" class="icon-eye-close" style="display: none" src="${base.contextPath}/resources/images/eye_close.png" />
+                                                </div>
+                                                <label class="col-xs-2  control-label">出生日期：</label>
+                                                <div class="col-xs-3">
+                                                    <input style="width: 100%" required type="text" id="birthTime" name="birthTime"
+                                                           data-bind="value:model.birthTime" disabled="disabled" class=" k-textbox"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--<div class="row">-->
+                                        <!--<div class="col-xs-12">-->
+                                            <!--<div class="form-group">-->
+                                                <!--<label class="col-xs-2  control-label">年龄：</label>-->
+                                                <!--<div class="col-xs-3">-->
+                                                    <!--<input style="width: 100%" required type="text" id="age" name="age"-->
+                                                           <!--data-bind="value:model.age" disabled="disabled" class="k-textbox"/>-->
+                                                <!--</div>-->
+                                                <!--<label class="col-xs-2  control-label">身份证号：</label>-->
+                                                <!--<div class="col-xs-3">-->
+                                                    <!--<input id="idcard" style="width: 100%" required type="text" id="idcard" name="idcard"-->
+                                                           <!--data-bind="value:model.idcard" disabled="disabled" class="k-textbox"/>-->
+                                                    <!--<img id="idcardOpen" class="icon-eye-open" src="${base.contextPath}/resources/images/eye.png" />-->
+                                                    <!--<img id="idcardClose" class="icon-eye-close" style="display: none" src="${base.contextPath}/resources/images/eye_close.png" />-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label class="col-xs-2  control-label">年龄：</label>
+                                                <div class="col-xs-3">
+                                                    <input style="width: 100%" required type="text" id="age" name="age"
+                                                           data-bind="value:model.age" class="k-textbox"/>
+                                                </div>
+                                                <label class="col-xs-2  control-label">证件类型：</label>
+                                                <div class="col-xs-3">
+                                                    <input style="width: 100%" required type="text" id="identityType" name="identityType"
+                                                           data-bind="value:model.identityType" class="k-textbox"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label class="col-xs-2  control-label">身份证号：</label>
+                                                <div class="col-xs-3">
+                                                    <input style="width: 100%" required type="text" id="idcard" name="idcard"
+                                                           data-bind="value:model.idcard" class="k-textbox"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <br>
+                                    <div class="row" align="center">
+                                        <div class="col-xs-12" align="center">
+                                            <div class="form-group" >
+                                <span class="btn btn-success" data-bind="click:close" type="submit">
+                                    <i class="fa fa-save" style="margin-right:3px;"></i>关闭
+                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div id="communityTab-content" class="row tabstrip" style="">
+
+                            <!-- 弹出框模块 -->
+                            <div id="dialog">
+                                <div class="pull-left" id="sun-toolbar-btn" style="padding-bottom:10px;">
+                                    <span onclick="saveCommunity()" class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;">保存</span>
+                                </div>
+
+                                <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+                                    <!--<span class="btn btn-primary" data-bind="click:queryResource" type="submit"><@spring.message "hap.query"/></span>-->
+                                </div>
+                                <!-- 查询部分结束 -->
+                                <!-- 表单部分 -->
+                                <div style="clear:both;">
+                                    <div id="userchoosecommunity_grid"></div>
+                                </div>
+                            </div>
+
+
+                            <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;padding-left:16px;">
+                                <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="addCommunities()" >添加</span>
+                                <span onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
+                            </div>
+
+                            <div class="panel" id="communityInfo" style="padding: 0px;border:none;box-shadow: none;">
+                                <form class="form-horizontal" id="myForm2" enctype="application/json;charset=UTF-8">
+                                    <div class="panel-body">
+                                        <div style="clear:both">
+                                            <div id="Grid"></div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+         var isedit = '${RequestParameters.isedit!0}' == '1';
+            var viewModel = kendo.observable({
+                model: {},
+                close: function (e) {
+                    window.parent.$("#detail").data("kendoWindow").close();
+                }
+            });
+            
+            var communityModel = kendo.observable({
+                model: {},
+                queryResource: function (e) {
+                    $('#Grid').data('kendoGrid').dataSource.page(1);
+                }
+            });
+           
+            //转换隐藏数据
+            $("#sex").kendoDropDownList({
+                valuePrimitive: true,
+                dataTextField: "meaning",
+                dataValueField: "value",
+                dataSource: hrEmployeeGender
+            });
+
+            $("#identityType").kendoDropDownList({
+                valuePrimitive: true,
+                dataTextField: "meaning",
+                dataValueField: "value",
+                dataSource: identityTypeData
+            });
+
+            $("#loginFlag").kendoDropDownList({
+                valuePrimitive: true,
+                dataTextField: "meaning",
+                dataValueField: "value",
+                dataSource: openAppStatus
+            });
+            //初始化form表单
+            var mobileHidden = "";
+            var idcardHidden = "";
+            $.ajax({
+                url: '${base.contextPath}/ljh/mgt/user/detail',
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                data: {id: '${RequestParameters.id!0}'},
+                success: function (args) {
+                    var profile = args.dto || {};
+                    for (var i in profile) {
+                        viewModel.set("model." + i, profile[i]);
+                    }
+
+                    if(null!=viewModel.get("model.photo")&&""!=viewModel.get("model.photo")){
+                        $("#photoDiv").css("background-image","url("+profile["fastdfsImageServer"]+viewModel.get("model.photo")+")");
+                    }
+                    var mobile = $("#mobile").val();
+                    if(mobile != null && mobile != ""){
+                        mobile = mobile.substring(0,3)+"****"+mobile.substring(7);
+                    }
+                    $("#mobile").val(mobile);
+                    mobileHidden = mobile;
+                    var idcard = $("#idcard").val();
+                    if(idcard != null && idcard != ""){
+                        var hidden = new Array(idcard.length-1).join("*");//生成身份证长度-2的*字符串
+                        idcard = idcard.substring(0,1)+hidden+idcard.substring(idcard.length-1);
+                    }
+                    $("#idcard").val(idcard);
+                    idcardHidden = idcard;
+                }
+            });
+            //绑定模块
+            kendo.bind($('#baseInfo'), viewModel);
+             
+            //初始化本页面的kendo的默认请求
+            var BaseUrl = _basePath;
+            dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: BaseUrl + "/ljh/mgt/user/findCommunityListByMgtUserId?mgtUserId=${RequestParameters.id!0}",
+                        type: "POST",
+                        dataType: "json"
+                    },
+                    update : {
+                        url : BaseUrl + "/csp/ljh/mgt/user/community/submit",
+                        type : "POST",
+                        contentType : "application/json"
+                    },
+                    destroy : {
+                        url : BaseUrl + "/csp/ljh/mgt/user/community/remove",
+                        type : "POST",
+                        contentType : "application/json"
+                    },
+                    create : {
+                        url : BaseUrl + "/csp/ljh/mgt/user/community/submit",
+                        type : "POST",
+                        contentType : "application/json"
+                    },
+                    //参数对应后台重写的IRqeuest
+                    parameterMap: function (options, type) {
+                        if (type !== "read" && options.models) {
+                            var datas = Hap.prepareSubmitParameter(options, type)
+                            return kendo.stringify(datas);
+                        } else if (type === "read") {
+                            return Hap.prepareQueryParameter(communityModel.model.toJSON(), options)
+                        }
+                    }
+                },
+                batch: true,
+                serverPaging: true,
+                pageSize: 10,
+                schema: {
+                    data: 'rows',
+                    total: 'total',
+                    model: {
+                        id: "id",
+                        fields: {}
+                    }
+                }
+            });
+            //将数据源进行展示
+            $("#Grid").kendoGrid({
+                dataSource: dataSource,
+                height: '100%',
+                resizable: true,
+                scrollable: true,
+                navigatable: false,
+                selectable: 'multiple, rowbox',
+                pageable: {
+                    pageSizes: [5, 10, 20, 50],
+                    refresh: true,
+                    buttonCount: 5
+                },
+                columns: [
+                	{
+                        field: "id",
+                        title: '编号',
+                        width: 140
+                    },{
+                        field: "communityName",
+                        title: '项目名称',
+                        width: 140
+                    },
+                    {
+                        field: "communityCode",
+                        title: '项目编码',
+                        width: 100
+                    },
+                    {
+                        field: "address",
+                        title: '详细地址',
+                        width: 140
+                    },
+                ],
+                editable: false//不可修改
+            });
+            //绑定div和kendoui的师视图
+            kendo.bind($('#communityInfo'), communityModel);
+            
+            
+            $(document).ready(function () {
+            	console.log($('#Grid'))
+            });
+            //切换手机号码的隐藏格式
+            $("#mobileOpen").click(function(){
+                $("#mobile").val(viewModel.model.mobile);
+                $("#mobileOpen").css({"display":"none"});
+                $("#mobileClose").css({"display":""});
+            });
+            
+            $("#mobileClose").click(function(){
+                $("#mobile").val(mobileHidden);
+                $("#mobileOpen").css("display","");
+                $("#mobileClose").css("display","none");
+            });
+            //切换身份证号码的隐藏格式
+            $("#idcardOpen").click(function(){
+                $("#idcard").val(viewModel.model.idcard);
+                $("#idcardOpen").css({"display":"none"});
+                $("#idcardClose").css({"display":""});
+            });
+            
+            $("#idcardClose").click(function(){
+                $("#idcard").val(idcardHidden);
+                $("#idcardOpen").css("display","");
+                $("#idcardClose").css("display","none");
+            });
+
+            //定义个人信息按钮
+            var tabToActivate = $("#baseInfoTab");
+            //将两个按钮进行使用kendoui管理
+            var tabstrip =  $("#tabstrip").kendoTabStrip({
+            	//状态对应的样式（淡出淡入）类似于隐藏切换
+                        animation: {
+                            close: {
+                                duration: 200,
+                                effects: "fadeOut"
+                            },
+                            open: {
+                                duration: 200,
+                                effects: "fadeIn"
+                            }
+                        },
+                        show:function(e){
+                            if(e.item.id == "baseInfoTab"){
+
+                            }else if(e.item.id=="communityTab"){
+                                Hap.autoResizeGrid("#Grid");
+                                var grid = $("#Grid").data("kendoGrid");
+                            }
+                        }
+                    }
+            ).data("kendoTabStrip");
+            //按钮初始化状态
+            tabstrip.activateTab(tabToActivate);
+
+
+            function deleteData() {
+            	var ids = $('#Grid').data('kendoGrid').selectedDataItems();
+            	var idArray = [];
+            	if(ids.length<1){
+            		return;
+            	}
+            	for(var i = 0;i < ids.length;i++){
+            		console.log(ids[i].id)
+            		var map = {
+            			id:ids[i].id
+            		}
+            		idArray.push(map)
+            	}
+            	console.log(idArray)
+            	$.ajax({
+            		url:BaseUrl + "/csp/ljh/mgt/user/community/remove",
+            	    type:"post",
+            	    data:JSON.stringify(idArray),
+            	    dataType:"json",
+            	    contentType:"application/json;charset=utf-8",
+            	    success:function(res){
+            	    	var flag = res.success
+            	    	console.log(res.success)
+            	    	if(flag){
+            	    		 kendo.ui.showInfoDialog({
+            	                    title:'提示信息',
+            	                    message:'删除数据成功!'
+            	                }).done(function(e){
+            	                    $('#Grid').data('kendoGrid').dataSource.page(1);
+            	                });
+            	    	}
+            	    }
+            	})  
+                
+            }
+            /*  Hap.deleteGridSelection({
+            grid: $('#Grid')
+        }); */ 
+             function saveCommunity() {
+                var selection = $('#userchoosecommunity_grid').data('kendoGrid').selectedDataItems();
+                var userGrid = $('#Grid').data('kendoGrid');
+                for (var i = 0; i < selection.length; i++) {
+                    userGrid.dataSource.add({
+                        mgtUserId: '${RequestParameters.id!'0'}',
+                        communityId: selection[i].communityId,
+                        communityName: selection[i].communityName,
+                        communityCode: selection[i].communityCode,
+                        address: selection[i].address,
+                    });
+                }
+                userGrid.saveChanges();
+                $("#dialog").data("kendoWindow").close();
+            }
+         $("#dialog").kendoWindow({
+                width: 700,
+                height: '85%',
+                title: "提示",
+                resizable: false,
+                //初始化时设置为隐藏状态
+                visible: false,
+                close: function (e) {
+                    //弹出窗 close 的时候，把它销毁，避免事件的重复绑定
+                    var grid = $("#userchoosecommunity_grid").data("kendoGrid");
+                    grid.destroy();
+                }
+            }).data("kendoWindow");
+
+            function addCommunities(){
+                //弹出框的远程数据源配置
+                var BaseUrl = _basePath;
+                modalDataSource = new kendo.data.DataSource({
+                    transport : {
+                        read : {
+                            url : BaseUrl + "/csp/ljh/mgt/user/community/queryCommunitiesNoAuth",
+                            type : "POST",
+                            dataType : "json"
+                        },
+                        parameterMap: function (options, type) {
+                            if (type !== "read" && options.models) {
+                                var datas = Hap.prepareSubmitParameter(options, type);
+                                for(var i in datas){
+                                    datas[i].mgtUserId = '${RequestParameters.id}';
+                                }
+                                return kendo.stringify(datas);
+                            } else if (type === "read") {
+                                communityModel.model.set('mgtUserId','${RequestParameters.id}');
+                                return Hap.prepareQueryParameter(communityModel.model.toJSON(), options);
+                            }
+                        }
+                    },
+                    batch : true,
+                    serverPaging : true,
+                    pageSize : 10,
+                    schema : {
+                        data : 'rows',
+                        total : 'total',
+                        model : {
+                            id : "id",
+                            fields : {}
+                        }
+                    }
+                });
+
+                //为弹出框加入属性
+                $("#userchoosecommunity_grid").kendoGrid({
+                    dataSource: modalDataSource,
+                    navigatable: false,
+                    height: '100%',
+                    resizable: true,
+                    scrollable: true,
+                    selectable: 'multiple, rowbox',
+                    pageable: {
+                        //可以选择一个页面多少条数据
+                        pageSizes: [5, 10, 20, 50],
+                        refresh: true,
+                        buttonCount: 5
+                    },
+                    columns: [
+
+                        {
+                            field: "cityName",
+                            title: '城市',
+                            width: 120,
+                        },
+                        {
+                            field: "companyName",
+                            title: '物业公司',
+                            width: 120,
+                        },
+                        {
+                            field: "communityName",
+                            title: '项目名称',
+                            width: 120,
+                        }
+                    ],
+                    editable: false,
+                    dataBound: function () {
+                        var view = this.dataSource.view();
+                        this.items().each(function (index, row) {
+                            kendo.bind(row, view[index]);
+                        });
+                    }
+
+                }).data("kendoGrid");
+
+                $("#dialog").kendoWindow({
+                    modal: true
+                });
+
+                var win = $("#dialog").data("kendoWindow");
+                //点击之后，居中打开kendoWindows
+                win.modal = true;
+                win.center().open();
+                Hap.autoResizeGrid("#userchoosecommunity_grid");
+
+            } 
+
+
+        </script>
+        </body>
+        </html>

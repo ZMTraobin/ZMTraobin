@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.user.attentionCommunity.mapper.AttentionCommunityUserMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.user.attentionCommunity.dto.AttentionCommunityUser">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE" />
+        <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+        <result column="IS_ATTENTION" property="isAttention" jdbcType="VARCHAR" />
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_NAME" property="communityName" jdbcType="VARCHAR" />
+        <result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM_ID" property="sourceSystemId" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="attentionCommunityUserColumns">
+        a.id AS "id",
+        a.del_flag AS "delFlag",
+        a.community_id AS "communityId",
+        a.user_id AS "userId",
+        a.is_attention AS "isAttention",
+        a.last_update_date AS "lastUpdateDate",
+        c.company_name AS "companyName",
+        c.community_name AS "communityName",
+        c.address AS "communityAddress",
+        c.SOURCE_SYSTEM AS "sourceSystem",
+        c.SOURCE_SYSTEM_ID AS "sourceSystemId",
+        c.SERVER_URL AS "serverUrl",
+        c.IS_REMOTE_AUTHEN AS "isRemoteAuthen",
+        c.RESIDENT_MANAGER AS "residentManager"
+    </sql>
+
+    <sql id="attentionCommunityUserJoins">
+        LEFT JOIN csp_ljh_app_user u8 ON u8.id = a.user_id
+        LEFT JOIN csp_ljh_base_community c ON c.ID = a.COMMUNITY_ID
+    </sql>
+
+    <!-- 获取小区对象 -->
+    <select id="getEntity" resultMap="BaseResultMap">
+        SELECT
+        <include refid="attentionCommunityUserColumns"/>
+        FROM csp_ljh_attention_community_user a
+        <include refid="attentionCommunityUserJoins"/>
+        WHERE   a.del_flag = #{DEL_FLAG_NORMAL}
+        AND a.community_id = #{communityId}
+        and c.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        AND a.user_id = #{userId}  LIMIT 1
+    </select>
+
+    <!-- 改变当前关注的小区 -->
+    <update id="attentionByFalse">
+        UPDATE csp_ljh_attention_community_user SET IS_ATTENTION = '0'
+        WHERE user_id = #{userId} AND DEL_FLAG= #{DEL_FLAG_NORMAL}
+    </update>
+    <!-- 改变当前关注的小区 -->
+    <update id="attentionByTrue">
+        UPDATE csp_ljh_attention_community_user SET IS_ATTENTION = #{isAttention}
+        WHERE community_id = #{communityId}
+        AND user_id = #{userId}
+    </update>
+
+    <!--查询当前小区用户是否关注 -->
+    <select id="getAttentionCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(0) COUNT FROM csp_ljh_attention_community_user a
+        WHERE a.DEL_FLAG= #{DEL_FLAG_NORMAL}
+        <if test="communityId!=null and communityId!=''">
+            AND a.COMMUNITY_ID = #{communityId}
+        </if>
+        AND a.USER_ID = #{userId}
+    </select>
+
+    <!-- 根据用户id和小区id取消关注 -->
+    <update id="deleteByuser">
+        UPDATE csp_ljh_attention_community_user SET
+        del_flag = #{DEL_FLAG_DELETE}
+        WHERE community_id = #{communityId}
+        AND user_id = #{userId}
+    </update>
+
+    <!--根据id(token)查询关注的项目-->
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="attentionCommunityUserColumns"/>
+        FROM csp_ljh_attention_community_user a
+        <include refid="attentionCommunityUserJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            and c.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+            AND a.user_id = #{userId}
+            <if test="isAttention != null and isAttention != ''">
+                AND a.is_attention = #{isAttention}
+            </if>
+            <if test="communityName != null and communityName != ''">
+                AND c.community_name  LIKE CONCAT(CONCAT('%',#{communityName}),'%')
+            </if>
+        </where>
+            ORDER BY  a.LAST_UPDATE_DATE AND a.IS_ATTENTION  DESC
+    </select>
+
+    <!-- 获取下一条关注的小区 -->
+    <select id="getNextData" resultMap="BaseResultMap">
+        SELECT
+        <include refid="attentionCommunityUserColumns"/>
+        FROM csp_ljh_attention_community_user a
+        <include refid="attentionCommunityUserJoins"/>
+        WHERE
+        a.del_flag = #{DEL_FLAG_NORMAL}
+        and c.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        AND a.user_id = #{userId}
+        ORDER BY a.CREATION_DATE ASC LIMIT 1
+    </select>
+</mapper>

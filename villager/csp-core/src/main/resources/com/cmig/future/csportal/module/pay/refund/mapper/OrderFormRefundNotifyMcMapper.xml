@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.pay.refund.mapper.OrderFormRefundNotifyMcMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.pay.refund.dto.OrderFormRefundNotifyMc">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="REFUND_ORDER_ID" property="refundOrderId" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="TIMES" property="times" jdbcType="DECIMAL" />
+        <result column="TIME_NOTIFIED" property="timeNotified" jdbcType="DATE" />
+        <result column="TIME_NEXT_NOTIFY" property="timeNextNotify" jdbcType="DATE" />
+        <result column="BACK_URL" property="backUrl" jdbcType="VARCHAR" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE" />
+    </resultMap>
+
+    <select id="findByRefundOrderId" resultMap="BaseResultMap">
+        SELECT
+        a.ID as "id",
+        a.REFUND_ORDER_ID as "refundOrderId",
+        a.STATUS as "status",
+        a.TIMES as "times",
+        a.TIME_NOTIFIED as "timeNotified",
+        a.TIME_NEXT_NOTIFY as "timeNextNotify",
+        a.OBJECT_VERSION_NUMBER as "objectVersionNumber",
+        a.PROGRAM_ID as "programId",
+        a.REQUEST_ID as "requestId",
+        a.CREATED_BY as "createdBy",
+        a.CREATION_DATE as "creationDate",
+        a.LAST_UPDATED_BY as "lastUpdatedBy",
+        a.LAST_UPDATE_DATE as "lastUpdateDate"
+
+        FROM csp_order_form_refund_notify_mc a
+        WHERE
+        a.REFUND_ORDER_ID =#{refundOrderId}
+    </select>
+
+    <select id="findByOrderNotify" resultMap="BaseResultMap">
+        select ofnc.id as "id",
+        ofnc.REFUND_ORDER_ID as "refundOrderId",
+        ofnc.status as "status",
+        ofnc.TIMES as "times",
+        ofnc.TIME_NOTIFIED AS "timeNotified",
+        ofnc.TIME_NEXT_NOTIFY AS "timeNextNotify",
+        ofnc.CREATION_DATE AS "creationDate",
+        of.BACK_URL AS "backUrl",
+        from csp_order_form_refund_notify_mc ofnc
+        left outer join
+        csp_order_form_refund of on ofnc.REFUND_ORDER_ID = of.id
+        <where>
+            <if test="status != null and status !='' ">
+                and ofnc.status = #{status}
+            </if>
+        </where>
+        order by ofnc.CREATION_DATE desc
+    </select>
+
+    <select id="getNotifyOrdersForJob" resultMap="BaseResultMap">
+        select ofnc.id,
+        ofnc.REFUND_ORDER_ID,
+        ofnc.status,
+        ofnc.TIMES,
+        ofnc.TIME_NOTIFIED,
+        ofnc.TIME_NEXT_NOTIFY,
+        ofnc.CREATION_DATE
+        from csp_order_form_refund_notify_mc ofnc
+        where ofnc.STATUS = 'N'
+        and ofnc.TIMES &lt; #{times,jdbcType=DECIMAL}
+        and ofnc.TIME_NEXT_NOTIFY &lt;= CURRENT_TIMESTAMP
+    </select>
+
+
+</mapper>

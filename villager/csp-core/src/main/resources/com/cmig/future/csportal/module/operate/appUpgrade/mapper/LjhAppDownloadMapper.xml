@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.operate.appUpgrade.mapper.LjhAppDownloadMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.operate.appUpgrade.dto.LjhAppDownload">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
+		<result column="APP_TYPE" property="appType" jdbcType="VARCHAR" />
+		<result column="APP_APPLICATION_SYSTEM" property="appApplicationSystem" jdbcType="VARCHAR" />
+		<result column="DEVICE_TYPE" property="deviceType" jdbcType="VARCHAR" />
+		<result column="VERSION" property="version" jdbcType="VARCHAR" />
+		<result column="VERSION_NUMBER" property="versionNumber" jdbcType="VARCHAR" />
+		<result column="VERSION_FLAG" property="versionFlag" jdbcType="VARCHAR" />
+		<result column="ISMUPDATEL" property="ismupdatel" jdbcType="VARCHAR" />
+		<result column="URL" property="url" jdbcType="VARCHAR" />
+		<result column="APP_SIZE" property="appSize" jdbcType="VARCHAR" />
+		<result column="APP_CONTENT" property="appContent" jdbcType="VARCHAR" />
+		<result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectApp">
+		select
+		ad.ID,
+		ad.APP_NAME,
+		ad.APP_TYPE,
+		ad.VERSION,
+		ad.VERSION_FLAG,
+		ad.ISMUPDATEL,
+		ad.URL,
+		ad.APP_SIZE,
+		ad.APP_CONTENT
+		from csp_ljh_app_download ad
+		where ad.DEL_FLAG = #{DEL_FLAG_NORMAL}
+		ORDER BY ad.CREATION_DATE DESC
+	</select>
+	
+	
+	<select id="findLastVersionApp" resultMap="BaseResultMap">
+        SELECT 
+        ID,
+		APP_NAME,
+		APP_TYPE,
+		VERSION,
+		VERSION_FLAG,
+		ISMUPDATEL,
+		URL,
+		APP_SIZE,
+		APP_CONTENT
+        FROM csp_ljh_app_download
+        WHERE DEL_FLAG = #{DEL_FLAG_NORMAL} 
+        AND APP_TYPE = #{appType} 
+        AND VERSION_FLAG = #{versionFlag} 
+        AND APP_NAME=#{appName}
+    </select>
+
+	<sql id="appDownColumns">
+		ad.ID,
+		ad.APP_NAME,
+		ad.APP_TYPE,
+		ad.APP_APPLICATION_SYSTEM,
+		ad.DEVICE_TYPE,
+		ad.VERSION,
+		ad.VERSION_NUMBER,
+		ad.VERSION_FLAG,
+		ad.ISMUPDATEL,
+		ad.URL,
+		ad.APP_SIZE,
+		ad.APP_CONTENT,
+		ad.CREATION_DATE,
+		ad.LAST_UPDATE_DATE
+	</sql>
+
+	<select id="findList" resultMap="BaseResultMap">
+		select
+		<include refid="appDownColumns"/>
+		from csp_ljh_app_download ad
+		where ad.DEL_FLAG = #{DEL_FLAG_NORMAL}
+		<if test="id != null and id != ''">
+			AND ad.ID =#{id}
+		</if>
+		<if test="appName != null and appName != ''">
+			AND ad.app_name =#{appName}
+		</if>
+		<if test="appType != null and appType != ''">
+			AND ad.app_type =#{appType}
+		</if>
+		ORDER BY ad.app_name,
+		ad.app_type,
+		-substring_index(ad.VERSION,'.',1),
+		-substring_index(substring_index(ad.VERSION,'.',-2),'.',1),
+		-substring_index(ad.VERSION,'.',-1) ASC
+	</select>
+
+	<select id="findListByNameAndType" resultMap="BaseResultMap">
+		select
+		<include refid="appDownColumns"/>
+		from csp_ljh_app_download ad
+		where ad.DEL_FLAG = #{DEL_FLAG_NORMAL}
+		AND ad.app_name =#{appName}
+		AND ad.app_type =#{appType}
+	</select>
+</mapper>

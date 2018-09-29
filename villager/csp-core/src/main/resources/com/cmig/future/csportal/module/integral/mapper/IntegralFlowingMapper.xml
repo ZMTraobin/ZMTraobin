@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.integral.mapper.IntegralFlowingMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.integral.dto.IntegralFlowing">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+        <result column="SERVICE_ID" property="serviceId" jdbcType="VARCHAR" />
+        <result column="UID" property="uid" jdbcType="VARCHAR" />
+        <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+        <result column="PURCHASE_AMOUNT" property="purchaseAmount" jdbcType="DECIMAL" />
+        <result column="TYPE" property="type" jdbcType="VARCHAR" />
+        <result column="OUT_TRADE_NO" property="outTradeNo" jdbcType="VARCHAR" />
+        <result column="AUTO_TRADE_NO" property="autoTradeNo" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="ATTACH" property="attach" jdbcType="VARCHAR" />
+        <result column="TIMESTAMPS" property="timestamps" jdbcType="VARCHAR" />
+        <result column="CREDITS" property="credits" jdbcType="DECIMAL" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="SIGN" property="sign" jdbcType="VARCHAR" />
+        <result column="INTEGRAL_PARAME" property="integralParame" jdbcType="VARCHAR" />
+        <result column="INTEGRAL_TYPE" property="integralType" jdbcType="VARCHAR" />
+        <result column="INTEGRAL_URL" property="integralUrl" jdbcType="VARCHAR"/>
+        <result column="CREATION_DATE" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <sql id="integralColumns">
+        ID,
+        APP_ID,
+        SERVICE_ID,
+        UID,
+        PHONE,
+        PURCHASE_AMOUNT,
+        TYPE,
+        OUT_TRADE_NO,
+        AUTO_TRADE_NO,
+        DESCRIPTION,
+        ATTACH,
+        TIMESTAMPS,
+        CREDITS,
+        STATUS,
+        SIGN,
+        INTEGRAL_PARAME,
+        INTEGRAL_TYPE,
+        INTEGRAL_URL,
+        CREATION_DATE
+    </sql>
+
+    <!--分页查询积分流水信息-->
+   <select id="selectAllIntegral" resultMap="BaseResultMap">
+         select
+         <include refid="integralColumns"/>
+         from csp_ljh_integral_flowing
+         <where>
+             1=1
+             <if test="type!=null and type!=''">
+                 AND TYPE=#{type}
+             </if>
+
+             <if test="phone!=null and phone!=''">
+                 AND PHONE like concat('%',concat(#{phone,jdbcType=VARCHAR},'%'))
+             </if>
+
+             <if test="status!=null and status!=''">
+                 AND STATUS=#{status}
+             </if>
+             <!--流水单号-->
+             <if test="autoTradeNo!=null and autoTradeNo!=''">
+                 AND AUTO_TRADE_NO=#{autoTradeNo}
+             </if>
+
+             <!--业务单号-->
+             <if test="outTradeNo!=null and outTradeNo!=''">
+                 AND OUT_TRADE_NO=#{outTradeNo}
+             </if>
+
+         </where>
+
+           ORDER  by CREATION_DATE DESC
+   </select>
+    <!--根据流水号和场景类型查看详细的订单信息-->
+    <select id="getIntegralByTypeAndOutTradeno" resultMap="BaseResultMap">
+        SELECT
+        <include refid="integralColumns"/>
+        FROM  csp_ljh_integral_flowing
+        WHERE TYPE =#{type} AND OUT_TRADE_NO=#{outTradeNo}
+    </select>
+    <!--根据uid和sign查询出integralflowing信息-->
+    <select id="selectIntegralByUidAndSign" resultMap="BaseResultMap">
+        SELECT
+        <include refid="integralColumns"/>
+        FROM  csp_ljh_integral_flowing
+        WHERE UID =#{uid} AND SIGN=#{sign}
+    </select>
+    <!--更新积分状态-->
+    <update id="updateIntegralFlowingStatus">
+        UPDATE csp_ljh_integral_flowing set STATUS=#{status}
+        WHERE ID=#{id}
+    </update>
+    <!--根据主键获取IntegralFlowing信息-->
+    <select id="getIntegralFlowingById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="integralColumns"/>
+        FROM csp_ljh_integral_flowing
+        WHERE ID=#{id}
+    </select>
+
+</mapper>

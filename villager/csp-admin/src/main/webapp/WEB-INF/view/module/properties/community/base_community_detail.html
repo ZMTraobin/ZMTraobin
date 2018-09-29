@@ -1,0 +1,245 @@
+<!-- * description: 我的项目详情 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../include/header.html"/>
+    <script src="${base.contextPath}/common/code?yesOrNo=SYS.YES_NO" type="text/javascript"></script>
+    <script src="${base.contextPath}/common/code?openSourceSystem=OPEN.SOURCE_SYSTEM" type="text/javascript"></script>
+<body>
+<div id="content-container">
+    <div id="page-content">
+        <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+            <fieldset>
+                <legend style="font-size:10px;font-weight:normal;">基础信息:</legend>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">城市名称：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="cityName" name="cityName" data-bind="value:model.cityName,text:model.cityId" class="k-textbox k-state-disabled " disabled="disabled"/>
+                            <!--<script>
+                                $("#cityName").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "CITY_LOV")})
+                            </script>-->
+                        </div>
+
+                        <label class="col-xs-2  control-label" style="text-align: right">物业公司名称：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="companyName" name="companyName" data-bind="value:model.companyName" class="k-textbox k-state-disabled" maxlength="50"  disabled="disabled"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+
+                        <label class="col-xs-2  control-label" style="text-align: right">项目编码：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="communityCode" name="communityCode" data-bind="value:model.communityCode" class="k-textbox k-state-disabled"  maxlength="50"  disabled="disabled"/>
+                        </div>
+
+                        <label class="col-xs-2  control-label" style="text-align: right">项目名称：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="communityName" name="communityName" data-bind="value:model.communityName" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">占地面积(㎡)：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="area" name="area" data-bind="value:model.area" class="k-textbox k-state-disabled" disabled="disabled"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">使用面积(㎡)：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width:100%" id="useArea" name="useArea" data-bind="value:model.useArea" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">绿化面积(㎡)：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="greenArea" name="greenArea" data-bind="value:model.greenArea" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">经纬度（°）：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 48%;margin-right: 1.5%;" id="longitude" name="longitude" data-bind="value:model.longitude" class="k-textbox k-state-disabled" disabled="disabled"/>
+                            <input type="text" style="width: 48%" id="latitude" name="latitude" data-bind="value:model.latitude" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">栋数：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="floorNum" name="floorNum" data-bind="value:model.floorNum" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">服务时间：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 48%;margin-right: 1.5%;" id="workingTimeMor" name="workingTimeMor" data-bind="value:model.workingTimeMor" class="k-textbox k-state-disabled" disabled="disabled" />
+                            <input type="text" style="width: 48%" id="workingTimeAft" name="workingTimeAft" data-bind="value:model.workingTimeAft" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">本项目客服电话：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="phone" name="phone" data-bind="value:model.phone" class="k-textbox k-state-disabled"  disabled="disabled"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">集团统一客服电话：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="groupphone" name="groupphone" data-bind="value:model.groupphone" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">地址：</label>
+                        <div class="col-xs-8">
+                            <input type="text" style="width: 100%" id="address" name="address" data-bind="value:model.address" class="k-textbox k-state-disabled" disabled="disabled"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </fieldset>
+            <fieldset style="display: none;">
+                <legend style="font-size:10px;font-weight:normal;">管理信息:</legend>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">物管云服务器地址：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="serverUrl" name="serverUrl" data-bind="value:model.serverUrl" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">是否物管云项目：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="isRemoteAuthen" name="isRemoteAuthen" data-bind="value:model.isRemoteAuthen" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <#if accessService.access('SOURCE_SYSTEM')>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">数据来源：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="sourceSystem" name="sourceSystem" data-bind="value:model.sourceSystem" class="k-textbox k-state-disabled" disabled="disabled" />
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">源系统ID：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="sourceSystemId" name="sourceSystemId" data-bind="value:model.sourceSystemId" class="k-textbox k-state-disabled" disabled="disabled"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </#if>
+
+                <div class="row">
+                    <div class="col-xs-11">
+                        <div class="form-group">
+                            <label class="col-xs-2  control-label" style="text-align: right">是否支持关系人管理：</label>
+                            <div class="col-xs-3">
+                                <input type="text" style="width: 100%" id="residentManager" name="phone" data-bind="value:model.residentManager" class="k-textbox k-state-disabled" maxlength="20" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </fieldset>
+            <br>
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="col-sm-12 text-center">
+                        <span id="back" class="btn btn-primary" style="" onclick="back()">返回</span>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    console.log('${RequestParameters.id!0}');
+    window.viewModel = kendo.observable({
+        model: {},
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin").data("kendoWindow").close();
+        }
+    });
+    var container = $("#mainform");
+    kendo.init(container);
+    container.kendoValidator({
+        messages: {
+            required: "必填项"
+        },
+    });
+    kendo.bind($('#page-content'), viewModel);
+    //初始化form表单
+    $.ajax({
+        url: '${base.contextPath}/ljh/base/community/get',
+        type : "GET",
+        dataType : "json",
+        contentType : "application/json",
+        data : {id:'${RequestParameters.id!0}'},
+        success: function (args) {
+            var profile = args.dto||{};
+            for(var i in profile){
+                if(i == "workingTime"){
+                    var time = profile[i];
+                    if(time != null && time != ""){
+                        var mor = time.split("~")[0];
+                        var aft = time.split("~")[1];
+                        viewModel.set("model."+"workingTimeMor",mor);
+                        viewModel.set("model."+"workingTimeAft",aft);
+                    }
+                }
+                viewModel.set("model."+i,profile[i]);
+            }
+        }
+    });
+    //下拉框
+    $("#isRemoteAuthen").kendoDropDownList({
+        valuePrimitive:true,
+        dataTextField: "meaning",
+        dataValueField: "value",
+        dataSource: yesOrNo
+    });
+    $("#sourceSystem").kendoDropDownList({
+        valuePrimitive:true,
+        dataTextField: "meaning",
+        dataValueField: "value",
+        dataSource: openSourceSystem
+    });
+    $("#residentManager").kendoDropDownList({
+        valuePrimitive:true,
+        dataTextField: "meaning",
+        dataValueField: "value",
+        dataSource: yesOrNo
+    });
+    $(document).ready(function(){
+
+    });
+    function back(){
+        var communityDetails =  window.parent.$("#editWin").data("kendoWindow");
+        communityDetails.close();
+    }
+
+</script>
+</body>
+</html>

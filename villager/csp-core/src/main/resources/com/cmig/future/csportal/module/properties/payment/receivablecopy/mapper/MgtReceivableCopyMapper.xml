@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.payment.receivablecopy.mapper.MgtReceivableCopyMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.payment.receivablecopy.dto.MgtReceivableCopy">
+        <result column="RECEIVABLE_ID" property="receivableId" jdbcType="DECIMAL" />
+        <result column="BUILDING_TYPE" property="buildingType" jdbcType="VARCHAR" />
+        <result column="SOURCE_BUILD_CODE" property="sourceBuildCode" jdbcType="VARCHAR" />
+        <result column="EXPENDITURE" property="expenditure" jdbcType="VARCHAR" />
+        <result column="PERIOD_NAME" property="periodName" jdbcType="VARCHAR" />
+        <result column="TOTAL_AMOUNT" property="totalAmount" jdbcType="DECIMAL" />
+        <result column="DISCOUNT_AMOUNT" property="discountAmount" jdbcType="DECIMAL" />
+        <result column="BREAK_CONTRACT_AMOUNT" property="breakContractAmount" jdbcType="DECIMAL" />
+        <result column="RECEIVABLE_AMOUNT" property="receivableAmount" jdbcType="DECIMAL" />
+        <result column="PAID_TIME" property="paidTime" jdbcType="DATE" />
+        <result column="BACK_URL" property="backUrl" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="NOTIFY_FLAG" property="notifyFlag" jdbcType="VARCHAR" />
+        <result column="CHECK_FLAG" property="checkFlag" jdbcType="VARCHAR" />
+        <result column="PAY_STATUS" property="payStatus" jdbcType="VARCHAR" />
+        <result column="ENABLE_FLAG" property="enableFlag" jdbcType="VARCHAR" />
+        <result column="APP_ID" property="appId" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,143 @@
+<!-- * description: 建筑版本新增 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../../include/header.html"/>
+    <script src="${base.contextPath}/common/code?yesOrNo=SYS.YES_NO" type="text/javascript"></script>
+<body>
+<div id="content-container">
+    <div id="page-content">
+        <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">版本编号：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="versionNo" name="versionNo" data-bind="value:model.versionNo" class="k-textbox"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">版本名称：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="versionName" name="versionName" data-bind="value:model.versionName" class="k-textbox" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">项目：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="communityId" name="communityId" data-bind="value:model.communityId,text:model.communityName" class="k-textbox" />
+                            <script>
+                                $("#communityId").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "COMMUNITY_LOV")});
+                                $($("input[name='communityId_input']").next()).css("margin-top","0px");
+                                $($("input[name='communityId_input']").next().next().find("span")).css("margin-left","-7px");
+                            </script>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">是否默认：</label>
+                        <div class="col-xs-3">
+                            <input required data-value-primitive="true" style="width: 100%" id="isDefault" name="isDefault" data-bind="value:model.isDefault" class="k-textbox"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 是否默认 -->
+            
+            <br>
+            <div class="col-xs-11">
+                <div class="form-group">
+                    <div class="col-sm-12 text-center">
+                        <span class="btn btn-success" id="save" type="submit">
+                            <i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                        <span id="back" class="btn btn-primary" style="" onclick="back()">返回</span>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    window.viewModel = kendo.observable({
+        model: {},
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin1").data("kendoWindow").close();
+        }
+    });
+    //编辑:加载数据
+    if (isedit) {
+        $.ajax({
+            url    : '${base.contextPath}/csp/mgt/structure/version/queryByVersionId?versionId=${RequestParameters.id!0}',
+            async: false,
+            success: function (args) {
+                //console.log(args);
+                var a0 = args.dto || {};
+                for (var k in a0) {
+                    viewModel.model.set(k, a0[k]);
+                }
+            }
+        });
+    }
+
+    //绑定初始化
+    var container = $("#mainform");
+    kendo.init(container);
+    //必填验证
+    container.kendoValidator({
+        messages: {
+            required: "必填项"
+        },
+    });
+    kendo.bind($('#page-content'), viewModel);
+
+    var url = '${base.contextPath}/csp/mgt/structure/version/saveOrUpdate';
+    var validator = $("#mainform").data("kendoValidator");
+
+    $("#save").click(function(){
+        $("#page-content").kendoValidator();
+        viewModel.model.__status = isedit ? 'update' : 'add';
+        if (validator.validate()) {
+            //console.log(viewModel.model);
+            Hap.submitForm({
+                url : url,
+                formModel : viewModel.model,
+                success : function (data) {
+                    kendo.ui.showInfoDialog({
+                        title:'提示信息',
+                        message:'保存成功!'
+                    }).done(function(e){
+                        window.parent.$("#editWin1").data("kendoWindow").close();
+                        var grid = window.parent.$('#Grid').data('kendoGrid');
+                        grid.dataSource.page(grid.dataSource._page);
+                    });
+                }
+            });
+        }
+    });
+
+
+
+    $(document).ready(function(){
+
+    });
+    function back(){
+        var details =  window.parent.$("#editWin1").data("kendoWindow");
+        details.close();
+    }
+    //下拉框
+    $("#isDefault").kendoDropDownList({
+    	dataTextField : "fieldName",
+		dataValueField : "fieldValue",
+		dataSource : [ {
+			fieldName : "是",
+			fieldValue : "Y"
+		},{
+			fieldName : "否",
+			fieldValue : "N"
+		} ]
+    });
+</script>
+</body>
+</html>

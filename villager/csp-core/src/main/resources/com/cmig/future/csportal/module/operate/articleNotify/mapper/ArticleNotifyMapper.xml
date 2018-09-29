@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.operate.articleNotify.mapper.ArticleNotifyMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.operate.articleNotify.dto.ArticleNotify">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="INFORMATION_NUMBER" property="informationNumber" jdbcType="VARCHAR" />
+        <result column="TITLE" property="title" jdbcType="VARCHAR" />
+        <result column="CONTENT" property="content" jdbcType="VARCHAR" />
+        <result column="LINK" property="link" jdbcType="VARCHAR" />
+        <result column="COLOR" property="color" jdbcType="VARCHAR" />
+        <result column="KEYWORDS" property="keywords" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="WEIGHT" property="weight" jdbcType="DECIMAL" />
+        <result column="WEIGHT_DATE" property="weightDate" jdbcType="DATE" />
+        <result column="HITS" property="hits" jdbcType="DECIMAL" />
+        <result column="POSID" property="posid" jdbcType="VARCHAR" />
+        <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+
+        <result column="CREATED_BY_NAME" property="createdByName" jdbcType="VARCHAR" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DATE" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE" />
+    </resultMap>
+
+    <sql id="articleNotifyColumns">
+        a.ID AS "id",
+        a.INFORMATION_NUMBER AS "information_number",
+        a.TITLE AS "title",
+        a.CONTENT AS "content",
+        a.LINK AS "link",
+        a.COLOR AS "color",
+        a.KEYWORDS AS "keywords",
+        a.DESCRIPTION AS "description",
+        a.WEIGHT AS "weight",
+        a.WEIGHT_DATE AS "weightDate",
+        a.HITS AS "hits",
+        a.POSID AS "posid",
+        a.REMARKS AS "remarks",
+        a.DEL_FLAG AS "delFlag",
+        a.STATUS AS "status",
+        (select su.USER_NAME from sys_user su where su.USER_ID = a.CREATED_BY) as createdByName,
+        a.LAST_UPDATE_DATE AS "lastUpdateDate"
+    </sql>
+
+    <!--列表-->
+    <select id="selectArticleNotify" resultMap="BaseResultMap">
+        SELECT
+        <include refid="articleNotifyColumns" />
+        FROM csp_ljh_article_notify a
+        WHERE
+        a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        <if test="id != null and id != '' ">
+          AND a.ID = #{id}
+        </if>
+        <if test="title != null and title != '' ">
+            AND a.TITLE LIKE CONCAT(CONCAT('%',#{title}),'%')
+        </if>
+        <if test="status != null and status != '' and status != 'ALL' ">
+            AND a.STATUS = #{status}
+        </if>
+        ORDER BY a.LAST_UPDATE_DATE DESC
+    </select>
+
+    <!--根据id查询-->
+    <select id="queryArticleNotifyById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="articleNotifyColumns" />
+        FROM csp_ljh_article_notify a
+        WHERE
+        a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        AND a.ID = #{id}
+    </select>
+
+    <update id="deleteArticleNotifyById">
+        UPDATE csp_ljh_article_notify SET
+        DEL_FLAG = #{DEL_FLAG_DELETE},
+        LAST_UPDATED_BY = #{lastUpdatedBy},
+        LAST_UPDATE_DATE = CURRENT_TIMESTAMP
+        WHERE ID = #{id}
+    </update>
+</mapper>

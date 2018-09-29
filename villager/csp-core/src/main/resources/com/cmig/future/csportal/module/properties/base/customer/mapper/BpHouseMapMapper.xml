@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.cmig.future.csportal.module.properties.base.customer.mapper.BpHouseMapMapper">
+    <resultMap id="BaseResultMap"
+               type="com.cmig.future.csportal.module.properties.base.customer.dto.BpHouseMap">
+        <result column="MAP_ID" property="mapId" jdbcType="DECIMAL"/>
+        <result column="APP_USER_ID" property="appUserId" jdbcType="VARCHAR"/>
+        <result column="BP_TYPE" property="bpType" jdbcType="DECIMAL"/>
+        <result column="BP_EXT_ID" property="bpExtId" jdbcType="DECIMAL"/>
+        <result column="BUILDING_TYPE" property="buildingType"
+                jdbcType="DECIMAL"/>
+        <result column="BUILDING_ID" property="buildingId" jdbcType="DECIMAL"/>
+        <result column="EFFECTIVE_START_DATE" property="effectiveStartDate"
+                jdbcType="DATE"/>
+        <result column="EFFECTIVE_END_DATE" property="effectiveEndDate"
+                jdbcType="DATE"/>
+        <result column="STATUS" property="status" jdbcType="VARCHAR"/>
+        <result column="AUTHENTICATE_STATUS" property="authenticateStatus"
+                jdbcType="VARCHAR"/>
+
+        <result property="bpExtId" column="bp_ext_id"/>
+        <result property="effectiveStartDate" column="effective_start_date"/>
+        <result property="effectiveEndDate" column="effective_end_date"/>
+        <result property="houseId" column="house_id"/>
+        <result property="houseCode" column="house_code"/>
+        <result property="houseFullName" column="house_full_name"/>
+        <result property="houseNickName" column="house_nick_name"/>
+        <result property="communityId" column="community_id"/>
+        <result property="useType" column="use_type"/>
+        <result property="sourceHouseCode" column="source_house_code"/>
+        <result property="communityCode" column="community_code"/>
+        <result property="communityName" column="community_name"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="buildingArea" column="building_area"/>
+        <result property="paymentArea" column="payment_area"/>
+    </resultMap>
+
+    <select id="identifyHouse" resultMap="BaseResultMap">
+        select v.map_id from csp_v_bp_house_map v
+        where v.MOBILE = #{mobile}
+        and v.BUILDING_ID = #{buildingId}
+        and v.AUTHENTICATE_STATUS = 'N'
+        and v.STATUS = 'Y'
+        and (current_timestamp between v.EFFECTIVE_START_DATE and v.EFFECTIVE_END_DATE)
+    </select>
+
+    <select id="queryByBpId" resultMap="BaseResultMap">
+        select
+        hm.map_id,
+        hm.APP_USER_ID,
+        hm.BP_EXT_ID,
+        hm.BP_TYPE,
+        hm.BUILDING_ID,
+        hm.BUILDING_TYPE,
+        hm.AUTHENTICATE_STATUS,
+        hm.STATUS,
+        hm.EFFECTIVE_END_DATE,
+        hm.EFFECTIVE_START_DATE,
+        mh.HOUSE_CODE,
+        mh.HOUSE_FULL_NAME,
+        mh.HOUSE_NAME,
+        mh.COMMUNITY_ID,
+        mh.HOUSE_NICK_NAME,
+        mh.USE_TYPE,
+        mh.SOURCE_HOUSE_CODE,
+        bc.COMMUNITY_CODE,
+        bc.COMMUNITY_NAME,
+        bc.COMPANY_ID,
+        bc.COMPANY_NAME
+        from
+        csp_bp_general bg
+        left outer join
+        csp_bp_owner bo on bo.BP_ID = bg.BP_ID
+        left outer join csp_bp_house_map
+        hm on hm.BP_EXT_ID = bo.BP_OWNER_ID
+        left outer join csp_mgt_house mh on
+        mh.HOUSE_ID = hm.BUILDING_ID
+        left outer join csp_ljh_base_community bc on bc.id=mh.COMMUNITY_ID
+        where bg.BP_ID = #{bpId}
+    </select>
+
+    <delete id="deleteByExtId" parameterType="java.lang.Long">
+        delete from csp_bp_house_map
+        where BP_EXT_ID = #{bpExtId}
+    </delete>
+
+
+    <select id="queryByUserId" resultMap="BaseResultMap">
+        select
+        mh.HOUSE_ID,
+        mh.HOUSE_CODE,
+        mh.HOUSE_FULL_NAME,
+        mh.BUILDING_AREA,
+        mh.PAYMENT_AREA
+        from csp_bp_house_map hm
+        left outer join csp_mgt_house mh on mh.HOUSE_ID = hm.BUILDING_ID
+        where hm.APP_USER_ID = #{userId}
+        and hm.STATUS = 'Y'
+        and hm.AUTHENTICATE_STATUS='Y'
+        and mh.COMMUNITY_ID = #{communityId}
+        and (current_timestamp between hm.EFFECTIVE_START_DATE and hm.EFFECTIVE_END_DATE)
+    </select>
+
+    <select id="queryOwnerName" resultType="java.lang.String">
+        select
+        GROUP_CONCAT(bg.BP_NAME) as ownerName
+        from csp_bp_house_map hm
+        left outer join csp_bp_owner bo on bo.BP_OWNER_ID = hm.BP_EXT_ID
+        left outer join csp_bp_general bg on bg.BP_ID = bo.BP_ID
+        where hm.STATUS = 'Y'
+        and hm.BUILDING_ID = #{buildingId}
+        and (hm.EFFECTIVE_START_DATE &lt;= #{sysDate} OR hm.EFFECTIVE_START_DATE IS NULL)
+        and (hm.EFFECTIVE_END_DATE &gt;= #{sysDate} OR hm.EFFECTIVE_END_DATE is null)
+    </select>
+
+    <select id="queryBillsFirstType"
+            resultType="com.cmig.future.csportal.module.properties.payment.receivable.dto.MgtReceivableDetail">
+        select distinct rd.EXPENDITURE
+        from csp_mgt_receivable_detail rd
+        <where>
+            rd.BUILDING_ID = #{buildingId}
+            and rd.PAY_STATUS='N'
+            and rd.ENABLE_FLAG='Y'
+            <if test="periodName != null and periodName !=''">
+                and rd.PERIOD_NAME &lt;= #{periodName}
+            </if>
+            <if test="periodName == null or periodName ==''">
+                and rd.PERIOD_NAME &lt;= DATE_FORMAT(current_timestamp,'%Y-%m')
+            </if>
+        </where>
+    </select>
+
+    <select id="queryBills"
+            resultType="com.cmig.future.csportal.module.properties.payment.receivable.dto.MgtReceivableDetail">
+        select
+        rd.RECEIVABLE_ID as "receivableId",
+        rd.EXPENDITURE as "EXPENDITURE",
+        rd.PRICE_AMOUT as "priceAmout",
+        rd.AREA as "area",
+        rd.TOTAL_AMOUNT as "totalAmount",
+        rd.DISCOUNT_AMOUNT as "discountAmount",
+        rd.BREAK_CONTRACT_AMOUNT as "breakContractAmount",
+        rd.RECEIVABLE_AMOUNT as "receivableAmount",
+        rd.SOURCE_SYSTEM as "sourceSystem",
+        rd.PERIOD_NAME as "periodName"
+        from csp_mgt_receivable_detail rd
+        <where>
+            rd.BUILDING_ID = #{buildingId}
+            and rd.EXPENDITURE = #{expenditure}
+            and rd.PAY_STATUS='N'
+            and rd.ENABLE_FLAG='Y'
+            <if test="periodName != null and periodName !=''">
+                and rd.PERIOD_NAME &lt;= #{periodName}
+            </if>
+            <if test="periodName == null or periodName ==''">
+                and rd.PERIOD_NAME &lt;= DATE_FORMAT(current_timestamp,'%Y-%m')
+            </if>
+        </where>
+    </select>
+
+    <select id="queryCommunityBills" resultType="java.lang.Long">
+        SELECT
+        coalesce(SUM(rd.RECEIVABLE_AMOUNT),0)
+        FROM
+        csp_mgt_receivable_detail rd,
+        csp_mgt_house h,
+        csp_bp_house_map m
+        where rd.BUILDING_ID = h.HOUSE_ID
+        and h.HOUSE_ID = m.BUILDING_ID
+        and m.APP_USER_ID = #{userId}
+        and h.COMMUNITY_ID = #{communityId}
+        and rd.PAY_STATUS='N'
+        and rd.ENABLE_FLAG='Y'
+        and rd.PERIOD_NAME  &lt;= DATE_FORMAT(current_timestamp,'%Y-%m')
+    </select>
+
+    <select id="queryUnCalledFee" resultType="java.lang.Long">
+        select sum(rd.RECEIVABLE_AMOUNT)
+        from csp_mgt_receivable_detail rd
+        <where>
+            rd.BUILDING_ID = #{buildingId}
+            and rd.EXPENDITURE = #{expenditure}
+            and rd.PAY_STATUS='N'
+            and rd.ENABLE_FLAG='Y'
+            and rd.PERIOD_NAME &lt;= DATE_FORMAT(current_timestamp,'%Y-%m')
+        </where>
+    </select>
+
+    <select id="queryPayableFee" resultType="java.lang.Long">
+        select sum(rd.RECEIVABLE_AMOUNT)
+        from csp_mgt_receivable_detail rd
+        <where>
+            rd.BUILDING_ID = #{buildingId}
+            and rd.EXPENDITURE = #{expenditure}
+            and rd.PAY_STATUS='N'
+            and rd.ENABLE_FLAG='Y'
+            <if test="periodName != null and periodName !=''">
+                and rd.PERIOD_NAME &gt; DATE_FORMAT(current_timestamp,'%Y-%m')
+                and rd.PERIOD_NAME &lt;= #{periodName}
+            </if>
+            <if test="periodName == null or periodName ==''">
+                and rd.PERIOD_NAME &gt; DATE_FORMAT(current_timestamp,'%Y-%m')
+            </if>
+        </where>
+    </select>
+
+    <select id="queryPeriod"
+            resultType="com.cmig.future.csportal.module.properties.payment.receivable.dto.MgtReceivableDetail">
+        select
+        min(rd.PERIOD_NAME) as 'periodStart',
+        max(rd.PERIOD_NAME) as 'periodEnd'
+        from csp_mgt_receivable_detail rd
+        where rd.BUILDING_ID = #{buildingId} and rd.ENABLE_FLAG='Y'
+    </select>
+
+    <select id="getHouseType" resultType="java.lang.String">
+        select distinct bp_type from csp_bp_house_map
+        where APP_USER_ID = #{userId}
+        and BUILDING_ID = #{buildingId}
+        and STATUS = 'Y'
+    </select>
+
+    <select id="queryByBuildingIdOwner"
+            resultType="com.cmig.future.csportal.module.properties.payment.receivable.dto.MgtReceivableDetail">
+        select  a.RECEIVABLE_ID as "receivableId",
+        a.EXPENDITURE as "EXPENDITURE",
+        a.PRICE_AMOUT as "priceAmout",
+        a.AREA as "area",
+        a.TOTAL_AMOUNT as "totalAmount",
+        a.DISCOUNT_AMOUNT as "discountAmount",
+        a.BREAK_CONTRACT_AMOUNT as "breakContractAmount",
+        a.RECEIVABLE_AMOUNT as "receivableAmount",
+        a.SOURCE_SYSTEM as "sourceSystem",
+        a.PERIOD_NAME as "periodName"
+        from csp_mgt_receivable_detail a ,
+        CSP_ORDER_FORM f ,
+        CSP_ORDER_FORM_LINE l
+        where a.ENABLE_FLAG='Y'
+        and  a.RECEIVABLE_ID=l.RECEIVABLE_ID
+        and f.ID=l.ORDER_ID
+        and a.BUILDING_ID=#{buildingId}
+        and f.PAY_STATUS='Y'
+        and f.order_type = 'mgtPayment'
+        order by f.TIME_PAID desc
+    </select>
+
+    <!--<select id="queryByBuildingId" resultType="com.cmig.future.csportal.module.properties.payment.receivable.dto.MgtReceivableDetail">-->
+    <!--select  a.RECEIVABLE_ID as "receivableId",-->
+    <!--a.EXPENDITURE as "EXPENDITURE",-->
+    <!--a.PRICE_AMOUT as "priceAmout",-->
+    <!--a.AREA as "area",-->
+    <!--a.TOTAL_AMOUNT as "totalAmount",-->
+    <!--a.DISCOUNT_AMOUNT as "discountAmount",-->
+    <!--a.BREAK_CONTRACT_AMOUNT as "breakContractAmount",-->
+    <!--a.RECEIVABLE_AMOUNT as "receivableAmount",-->
+    <!--a.SOURCE_SYSTEM as "sourceSystem",-->
+    <!--a.PERIOD_NAME as "periodName"-->
+    <!--from csp_mgt_receivable_detail a ,-->
+    <!--CSP_ORDER_FORM f ,-->
+    <!--CSP_ORDER_FORM_LINE l-->
+    <!--where a.ENABLE_FLAG='Y'-->
+    <!--and  a.RECEIVABLE_ID=l.RECEIVABLE_ID-->
+    <!--and f.ID=l.ORDER_ID-->
+    <!--and a.BUILDING_ID=#{buildingId}-->
+    <!--and f.APP_USER_ID=#{appUserId}-->
+    <!--and f.PAY_STATUS='Y'-->
+    <!--and f.order_type = 'mgtPayment'-->
+    <!--order by f.TIME_PAID desc-->
+    <!--</select>-->
+
+    <select id="queryByBuildingId"
+            resultType="com.cmig.future.csportal.module.properties.payment.receivable.dto.MgtReceivableDetail">
+       SELECT
+	t1.*, t2.owner_user_id,
+	t2.BP_TYPE
+FROM
+	(
+		SELECT
+			a.RECEIVABLE_ID AS "receivableId",
+			a.EXPENDITURE AS "EXPENDITURE",
+			a.PRICE_AMOUT AS "priceAmout",
+			a.AREA AS "area",
+			a.TOTAL_AMOUNT AS "totalAmount",
+			a.DISCOUNT_AMOUNT AS "discountAmount",
+			a.BREAK_CONTRACT_AMOUNT AS "breakContractAmount",
+			a.RECEIVABLE_AMOUNT AS "receivableAmount",
+			a.SOURCE_SYSTEM AS "sourceSystem",
+			a.PERIOD_NAME AS "periodName",
+			a.BUILDING_ID AS "buildingId",
+			a.BUILDING_ID,
+			f.APP_USER_ID,
+			f.TIME_PAID,
+			h.COMMUNITY_ID,
+			h.HOUSE_FULL_NAME AS "houseFullName"
+		FROM
+			csp_mgt_receivable_detail a,
+			CSP_ORDER_FORM f,
+			CSP_ORDER_FORM_LINE l,
+			csp_mgt_house h
+		WHERE
+			a.ENABLE_FLAG = 'Y'
+		AND a.RECEIVABLE_ID = l.RECEIVABLE_ID
+		AND f.ID = l.ORDER_ID
+		AND f.PAY_STATUS = 'Y'
+		AND f.order_type = 'mgtPayment'
+		AND h.house_id = a.BUILDING_ID
+	) t1
+LEFT JOIN (
+	SELECT
+		mh.HOUSE_ID,
+		hm.APP_USER_ID,
+		hm.BP_TYPE,
+		(
+			CASE
+			WHEN hm.BP_TYPE = 'OWNER'  and hm.STATUS='Y'  and now() &gt;= hm.EFFECTIVE_START_DATE and now()  &lt;=hm.EFFECTIVE_END_DATE
+			THEN hm.APP_USER_ID
+			ELSE
+				''
+			END
+		) AS owner_user_id
+	FROM
+		csp_bp_house_map hm
+	inner JOIN csp_mgt_house mh ON mh.HOUSE_ID = hm.BUILDING_ID
+	WHERE
+		hm.APP_USER_ID = #{appUserId}
+	AND hm.AUTHENTICATE_STATUS = 'Y'
+) t2 ON t1.BUILDING_ID = t2.HOUSE_ID
+WHERE
+	t1.community_id = #{communityId}
+AND (
+        ( t2.bp_type='OWNER' and t2.owner_user_id = #{appUserId} )
+        OR  (  t2.bp_type!='OWNER'  and  t1.APP_USER_ID =#{appUserId} )
+)
+ORDER BY
+	t1.TIME_PAID DESC
+    </select>
+
+    <select id="getByExtBuilding" resultType="java.lang.Integer">
+        select count(*) from csp_bp_house_map m
+        where m.BP_EXT_ID = #{bpExtId}
+        and m.BUILDING_ID = #{buildingId}
+        and m.status = 'Y'
+        and m.EFFECTIVE_END_DATE &gt; current_timestamp
+    </select>
+
+    <select id="getByBpBuilding" resultMap="BaseResultMap">
+        select m.* from
+        csp_bp_owner o,
+        csp_bp_house_map m
+        where o.BP_OWNER_ID = m.BP_EXT_ID
+        and o.BP_ID = #{bpId}
+        and m.BUILDING_ID = #{buildingId}
+    </select>
+
+    <select id="getOwnerHouse" resultMap="BaseResultMap">
+        select
+        m.map_id,
+        m.building_id,
+        m.EFFECTIVE_START_DATE,
+        m.EFFECTIVE_END_DATE,
+        h.house_full_name
+        from csp_bp_house_map m
+        left outer join csp_mgt_house h on h.house_id = m.building_id
+        where m.APP_USER_ID = #{userId}
+        and m.STATUS = 'Y'
+        and m.BP_TYPE='OWNER'
+        and m.AUTHENTICATE_STATUS='Y'
+        and h.community_id = #{communityId}
+        and (current_timestamp between m.EFFECTIVE_START_DATE and m.EFFECTIVE_END_DATE)
+    </select>
+
+
+    <select id="deleteContacter">
+        delete from csp_bp_house_map
+        where bp_ext_id = #{bpExtId}
+	    and bp_type = 'CONTACTER'
+	    and building_id in (
+        select h.house_id from csp_mgt_house h where h.community_id = #{communityId}
+        )
+    </select>
+
+    <select id="lossValid">
+            update csp_bp_house_map t
+            set t.status = 'N'
+            WHERE t.building_id = #{buildingId}
+    </select>
+
+    <select id="queryValidData" resultMap="BaseResultMap">
+        select t.MAP_ID from csp_bp_house_map t
+        where t.status = 'Y'
+        and t.EFFECTIVE_END_DATE &lt;= current_timestamp
+    </select>
+
+    <update id="valiadByMapId">
+            update csp_bp_house_map t
+            set t.status = 'N'
+            WHERE t.map_id = #{mapId}
+    </update>
+</mapper>

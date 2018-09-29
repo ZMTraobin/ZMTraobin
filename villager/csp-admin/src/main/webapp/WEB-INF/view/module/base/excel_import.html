@@ -1,0 +1,291 @@
+<#include "../../../../include/header.html"/>
+
+<style>
+	.tip{
+		position: absolute;
+		top: 8px;
+		left: 120px;
+		color: #e62a18;
+	}
+</style>
+<script type="text/javascript">
+    var attchDataArray = [];//上传文件集合
+    var mSize = 20;//文件大小,单位M
+    var fileCount = 1;//文件个数
+    var saveUrl = "${base.contextPath}/common/excel/import";
+    var removeUrl = "${base.contextPath}/common/excel/delete";
+    var versionId = '${RequestParameters.id!0}';//建筑结构版本id
+    var enumValue = '${RequestParameters.enum}';
+    var communityId = '${RequestParameters.communityId!0}';//项目id
+    var paramStr = "?mSize="+mSize+"&versionId="+versionId+"&importEnumName="+enumValue+"&communityId="+communityId;
+    var viewModel = kendo.observable({
+        model: {}
+    });
+</script>
+<body>
+
+<div class="col-sm-12" id="uploadExcel">
+	<form id="attForm" style="">
+		<div class="form-group">
+			<label id="tipName" class="col-sm-2 control-label" style="text-align: right">附件上传:</label>
+			<div class="col-sm-8">
+				<input style="border:none;" type="file" name="files" id="files"/><p id="files_tip" class="tip">* 单个文件不能超过20M</p>
+			</div>
+		</div>
+	</form>
+</div>
+
+<div id="editWin" style="clear: both" ></div>
+<div id="page-content">
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+        <form class="form-horizontal" id="mainform" enctype="application/json;charset=UTF-8">
+        <div class="col-xs-12" style="display: block;">
+            <div class="form-group">
+                <label class="col-sm-1"></label>
+                <div class="col-sm-11" style="margin-bottom: 10px;">
+                    <fieldset>
+                        <legend style="display: block;">
+                            <font color="red">操作提示</font>
+                            <a id="templateDownLoad" href="#"><img src="${base.contextPath}/resources/images/ico28.gif" align="absmiddle" border="0">下载模板</a>
+                        </legend>
+                        1、上传数据前，请先下载数据模板。<br>
+                        2、下载后，请严格按照模板所规定的格式进行填写，格式不符可能会造成数据无法成功上传。<br>
+                        3、数据填写并保存后，请选择对应数据文件并点击上传按钮完成操作。<br>
+                        4、目前支持文件格式为xls、xlsx，不可擅自更改模板文件名后缀，否则影响数据上传。<br>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
+    <div style="clear:both">
+        <div id="Grid" style="display: none"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+var BaseUrl = _basePath;
+
+function hidden(){
+    $("#Grid").css({"display":"none"});
+    $("#tip").css({"display":"none"});
+    $("#div_tip").css({"display":"block"});
+}
+
+function showSuccess(){
+    $("#tip_msg").html("成功导入数据："+attchDataArray[0].list_length+" 条！");
+    $("#Grid").css({"display":"none"});
+    $("#tip").css({"display":""});
+    $("#div_tip").css({"display":"none"});
+}
+
+function showError(){
+    $("#tip").css({"display":"none"});
+    $("#div_tip").css({"display":"none"});
+    $("#uploadExcel").find(".k-upload-pct").html("");//隐藏100%
+    var excelErrorList = attchDataArray[0].excelErrorList;
+    var list = [];
+    for(var i = 0;i < excelErrorList.length;i++){
+        var obj = {};
+        //obj["column"] = excelErrorList[i].column;
+        obj["errorMessage"] = excelErrorList[i].errorMessage;
+        obj["row"] = excelErrorList[i].row;
+        obj["sheetName"] = excelErrorList[i].sheetName;
+        obj["title"] = excelErrorList[i].title;
+        list.push(obj);
+    }
+    $("#tip").css({"display":"none"});
+    $("#Grid").css({"display":""});
+    $("#Grid").kendoGrid({
+        dataSource: {
+            data: list,
+            pageSize: 10
+        },
+        height: '100%',
+        resizable: true,
+        scrollable: true,
+        navigatable: false,
+        //selectable: 'multiple, rowbox',
+        pageable: {
+            pageSizes: [5, 10, 20, 50],
+            refresh: true,
+            buttonCount: 5
+        },
+        columns: [
+            {
+                field: "sheetName",
+                title: '工作表名',
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style  : "text-align: center"
+                },
+                width: 80
+            },
+            {
+                field: "row",
+                title: '行数',
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style  : "text-align: center"
+                },
+                attributes: {style: "text-align:right"},
+                width: 30
+            },
+            {
+                field: "title",
+                title: '列名',
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style  : "text-align: center"
+                },
+                width: 100
+            },
+            {
+                field: "errorMessage",
+                title: '错误信息',
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style  : "text-align: center"
+                },
+                attributes: {style: "color:red"},
+                width: 200
+            },
+        ],
+        editable: false
+    });
+    Hap.autoResizeGrid("#Grid");
+}
+
+$("#templateDownLoad").click(function(){
+    var form = $("<form>");   //定义一个form表单
+    form.attr('style','display:none');   //在form表单中添加查询参数
+    form.attr('target','');
+    form.attr('method','post');
+    form.attr('action',"${base.contextPath}/common/excel/download?importEnumName="+enumValue);
+
+    var input1 = $('<input>');
+    input1.attr('type','hidden');
+    input1.attr('name','exportPostTime');
+    input1.attr('value','');
+
+    $('body').append(form);  //将表单放置在web中
+    form.append(input1);   //将查询参数控件提交到表单上
+    form.submit();   //表单提交
+});
+
+
+//数据源
+var dataSource = new kendo.data.DataSource({
+    batch       : true,
+    serverPaging: true,
+    pageSize    : 10,
+    schema      : {
+        data  : 'rows',
+        total : 'total',
+        model : {
+            id    : "fileId"
+        }
+    }
+});
+var fileId = "";
+//定义文件上传
+$("#files").kendoUpload({
+    async        : {
+        saveUrl: saveUrl,
+        removeUrl: removeUrl
+    },
+    showFileList : true,
+    upload       : onUpload,
+    success      : onSuccess,
+    remove       : onRemove
+});
+
+function onRemove(e){
+	var files = e.files;
+	$.each(files,function(){
+		var fileName = this.name;
+		for(var i = 0;i < attchDataArray.length; i ++){
+			if(attchDataArray[i].fileName == fileName){
+				//fileId = attchDataArray[i].attachUrl;
+				attchDataArray.splice(i,1);
+				if(fileCount > 1){//通知公告页面5个,app升级页面1个
+					var downFileLength = $("#downList").find(".down_a").length;//已传文件数
+					var fileLength = parseInt(downFileLength)+parseInt(attchDataArray.length);//(已传+新传)文件数
+					var fileNum = fileCount-fileLength;//还能传文件数
+					$("#files_tip").html("* 单个文件不能超过20M，已传文件 <font color='#008000'>"+fileLength+"</font> 个，还可以上传 <font color='#88b52d'>"+fileNum+"</font> 个文件。");
+				}
+			}
+		} 
+	})		
+}
+//回调函数
+function onSuccess(e) {
+	//console.log(e);
+	//状态为成功
+	var status = e.response.status;
+	var uid = e.files[0].uid;
+	if (e.response.status === '1') {
+		if (e.response.data != null) {
+			//写数据源
+			var attchData = {};
+			attchData["fileName"] = e.response.data[0].fileName;
+			attchData["size"] = e.response.data[0].size;
+			attchData["excelErrorList"] = e.response.data[0].excelErrorList;
+			attchData["list_length"] = e.response.data[0].list_length;
+			attchDataArray.push(attchData);
+			if(fileCount > 1){//通知公告页面5个,app升级页面1个
+				var downFileLength = $("#downList").find(".down_a").length;//已传文件数
+				var fileLength = parseInt(downFileLength)+parseInt(attchDataArray.length);//(已传+新传)文件数
+				var fileNum = fileCount-fileLength;//还能传文件数
+				$("#files_tip").html("* 单个文件不能超过20M，已传文件 <font color='#008000'>"+fileLength+"</font> 个，还可以上传 <font color='#88b52d'>"+fileNum+"</font> 个文件。");
+			}
+		}
+	}
+	//console.log(attchDataArray);
+    kendo.ui.showInfoDialog({
+        title    : '提示信息',
+        message  : e.response.message
+    }).done(function(data){
+		$(".k-file-name-size-wrapper").css("margin-left","10px");
+		if(status == 0){//上传失败
+			$(".k-upload-files").find("li[data-uid='"+uid+"']").remove();
+			if($(".k-upload-files").find("li").length == 0){
+				$(".k-upload-status,.k-upload-files").remove();
+			}
+		}
+		//有错误信息
+		if(attchDataArray[0] != null && attchDataArray[0].excelErrorList.length >0){
+			showError();
+		}else if(attchDataArray[0] != null){
+			showSuccess();
+		}else{
+			hidden();
+		}
+	});
+}
+//校验上传文件的格式是否正确
+function onUpload(e){
+	var downFileLength = $("#downList").find(".down_a").length;//已传文件数
+	var fileLength = parseInt(downFileLength)+parseInt(attchDataArray.length);//(已传+新传)文件数
+	if(fileCount <= fileLength) {//fileCount:限制文件个数
+		kendo.ui.showInfoDialog({
+			title    : '提示信息',
+			message  : "最多上传文件"+fileCount+"个!"
+		});
+		e.preventDefault();//终止上传
+	};
+    e.data = {};
+	e.sender.options.async.saveUrl = saveUrl+paramStr;//mSize:文件大小,单位M
+	//console.log(e.sender.options.async.saveUrl);
+}
+//$(".k-upload").css("margin-left","163px");
+//$(".k-upload").css("width","71%");
+$(".k-upload").css("border","0px");
+$(".k-upload").css("background","none");
+$(".k-upload-button").css("margin-top","-10px");
+$("#files").next().html("上传");
+
+
+</script>
+</body>
+</html>

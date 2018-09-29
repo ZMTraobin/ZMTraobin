@@ -1,0 +1,227 @@
+<!-- * description: 建筑结构修改 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../../include/header.html"/>
+<body>
+<div id="content-container">
+    <div id="page-content">
+        <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">父结构：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="parentStructureId" name="parentStructureId" data-bind="value:model.parentStructureId,text:model.structureParentFullName" class="k-textbox" />
+                            <script>
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">结构编码：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="structureCode" name="structureCode" data-bind="value:model.structureCode" class="k-textbox" maxlength="50"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">节点名称：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="structureName" name="structureName" data-bind="value:model.structureName" class="k-textbox" maxlength="50"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">建筑名称：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="structureFullName" name="structureFullName" data-bind="value:model.structureFullName" class="k-textbox" maxlength="50"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <div class="col-sm-12 text-center">
+                        <span class="btn btn-success" id="save" type="submit">
+                            <i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                        <span id="back" class="btn btn-primary" style="" onclick="back()">返回</span>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    var versionId = '${RequestParameters.versionId!0}';
+    var pid = '${RequestParameters.pid!0}';
+    var communityId = '${RequestParameters.communityId!0}';
+    window.viewModel = kendo.observable({
+        model: {},
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin").data("kendoWindow").close();
+        }
+    });
+
+    //编辑:加载数据
+    $.ajax({
+        url    : '${base.contextPath}/csp/mgt/structure/queryByStructureId?structureId=${RequestParameters.id!0}',
+        async: false,
+        success: function (args) {
+            //console.log(args);
+            var a0 = args.dto || {};
+            for (var k in a0) {
+                viewModel.model.set(k, a0[k]);
+                if(k == "parentStructureId"){
+                    if(a0[k] == "0"){
+                        a0["structureParentFullName"] = "*不可修改*";
+                    }
+                }
+            }
+        }
+    });
+
+
+    if (isedit) {
+        $("input").removeClass("k-state-disabled");
+        $("input").attr("readOnly",false);
+        $("#save").css({"display":""});
+        //LOV
+        if( viewModel.model.parentStructureId != "0" ){
+            $("#parentStructureId").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "MGT_PARENT_STRUCTURE_LOV")});
+            $($("input[name='parentStructureId_input']").next()).css("margin-top","0px");
+            $($("input[name='parentStructureId_input']").next().next().find("span")).css("margin-left","-7px");
+        }else {
+            $("#parentStructureId").attr("data-bind","value:model.structureParentFullName");
+            $("#parentStructureId").attr("readOnly",true);
+        }
+    }else{
+        $("input").addClass("k-state-disabled");
+        $("input").attr("readOnly",true);
+        $("#save").css({"display":"none"});
+        $("#parentStructureId").attr("data-bind","value:model.structureParentFullName");
+    }
+
+    //绑定初始化
+    var container = $("#mainform");
+    kendo.init(container);
+    //必填验证
+    container.kendoValidator({
+        messages: {
+            required: "必填项"
+        },
+    });
+    kendo.bind($('#page-content'), viewModel);
+
+    var url = '${base.contextPath}/csp/mgt/structure/saveOrUpdate';
+    var validator = $("#mainform").data("kendoValidator");
+
+    //验证标识符
+    var isOK = true;
+    //编码格式验证
+    function validator_code(str) {
+        var patrn=/^([A-Z]{1,}[0-9]{0,})(\-[A-Z0-9]{1,}){0,}$/;//编码格式
+        if (!patrn.test(str)) {
+            kendo.ui.showInfoDialog({
+                message:'结构编码格式不正确'
+            });
+            isOK = false;
+        }else{
+            isOK = true;
+        }
+    }
+
+    $("#save").click(function(){
+        $("#page-content").kendoValidator();
+        viewModel.model.__status = isedit ? 'update' : 'add'
+        var url = '${base.contextPath}/csp/mgt/structure/saveOrUpdate?isedit='+"update";
+        if (validator.validate()) {
+            var structureId = viewModel.model.structureId;
+            var versionId = viewModel.model.versionId;
+            var parentStructureId = viewModel.model.parentStructureId;
+            var structureName = viewModel.model.structureName;
+            var communityId = viewModel.model.communityId;
+            var structureCode = viewModel.model.structureCode;
+            var structureNickName = viewModel.model.structureNickName;
+            var structureFullName = viewModel.model.structureFullName;
+            var structureType = viewModel.model.structureType;
+            var businessType = viewModel.model.businessType;
+            var structureParentFullName = viewModel.model.structureParentFullName;
+            validator_code(structureCode);
+            if(!isOK){
+                return;
+            }
+            var jsonArray = {
+                structureId: structureId,
+                versionId: versionId,
+                parentStructureId: parentStructureId,
+                structureName: structureName,
+                communityId: communityId,
+                structureCode: structureCode,
+                structureNickName: structureNickName,
+                structureFullName: structureFullName,
+                structureType: structureType,
+                businessType: businessType,
+                structureParentFullName: structureParentFullName
+            };
+            console.log(jsonArray);
+            $.ajax({
+                url: url,
+                async: false,
+                type: "post",
+                data: jsonArray,
+                dataType: "json",
+                success: function (data) {
+                    //console.log(data);
+                    var message = '保存成功!';
+                    if(!data.success){
+                        message = data.message;
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: message
+                        });
+                    }else {
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: message
+                        }).done(function (e) {
+                            if (pid == 0) {
+                                window.parent.$("#editWin").data("kendoWindow").close();
+                                var grid = window.parent.$('#Grid').data('kendoGrid');
+                                grid.dataSource.page(grid.dataSource._page);
+                            } else {
+                                window.parent.$("#editWin").data("kendoWindow").close();
+                            }
+                        });
+                    }
+                },
+                error: function (data) {
+                    kendo.ui.showErrorDialog({
+                        message: data.message
+                    });
+                }
+            });
+        }
+    });
+
+
+
+    $(document).ready(function(){
+
+    });
+
+    function back(){
+        var details =  window.parent.$("#editWin").data("kendoWindow");
+        details.close();
+    }
+
+</script>
+</body>
+</html>

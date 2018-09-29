@@ -1,0 +1,483 @@
+<#include "../../../include/header.html"/>
+    <style>
+        .caozuo_btn{
+            display: inline-block;
+            min-width: 24px;
+            margin-right: 1px;
+            padding: 0 12px;
+            line-height: 22px;
+            color: #fff;
+            background: #6fb3e0;
+            font-size: 12px;
+            margin-top: 1px;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    <script src="${base.contextPath}/common/code?hrEmployeeGender=HR.EMPLOYEE_GENDER" type="text/javascript"></script>
+    <script src="${base.contextPath}/common/code?openAppStatus=OPEN.APP_STATUS" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?mgtIdentityType=CSP.MGT.IDENTITY_TYPE" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    var viewModel = kendo.observable({
+        model: {},
+        loginFlag:openAppStatus,
+        sex:hrEmployeeGender,
+        createFunction: function () {
+            $('#Grid').data('kendoGrid').addRow();
+        },
+        saveFunction: function () {
+            $('#Grid').data('kendoGrid').saveChanges();
+        },
+        queryResource: function (e) {
+            $('#Grid').data('kendoGrid').dataSource.page(1);
+        }
+    });
+
+    function detail(id) {
+        var url = 'mgtuser_detail.html';
+        if (id) {
+            url = url + '?isedit=1&id=' + id;
+        }
+        var detailWin = $("#detail").kendoWindow({
+            actions: ["Maximize", "Minimize", "Close"],
+            width: "85%",
+            height: "75%",
+            title: '详情',
+            content: url,
+            scrollable: false,
+            resizable: false,
+            iframe: true,
+            visible: false,
+            modal: true,
+            close: function () {
+                //window 关闭  刷新 本页面的  Grid
+                $('#Grid').data('kendoGrid').dataSource.page(1);
+            }
+        }).data("kendoWindow");
+        detailWin.center().open();
+    }
+    //停用员工的登陆状态
+    function stopstatus(id){
+        $.ajax({
+            url: '${base.contextPath}/ljh/mgt/user/stopLoginStatus',
+            type : "GET",
+            dataType : "json",
+            traditional: true,
+            contentType : "application/json",
+            data : {id:id},
+            success: function (args) {
+                kendo.ui.showInfoDialog({
+                    title:'提示信息',
+                    message:'该用户的登陆状态已修改!'
+                }).done(function(e){
+                    $('#Grid').data('kendoGrid').dataSource.page(1);
+                });
+            }
+        });
+    }
+    //开启用户状态
+    function startstatus(id){
+        $.ajax({
+            url: '${base.contextPath}/ljh/mgt/user/startLoginStatus',
+            type : "GET",
+            dataType : "json",
+            traditional: true,
+            contentType : "application/json",
+            data : {id:id},
+            success: function (args) {
+                kendo.ui.showInfoDialog({
+                    title:'提示信息',
+                    message:'用户状态已修改!'
+                }).done(function(e){
+                    $('#Grid').data('kendoGrid').dataSource.page(1);
+                });
+            }
+        });
+    }
+    //编辑
+    function editUser(id) {
+        var url = 'mgtuser_edit.html';
+        if (id) {
+            url = url + '?isedit=1&id=' + id;
+        }
+        var editWin = $("#edit").kendoWindow({
+            actions: ["Maximize", "Minimize", "Close"],
+            width: 800,
+            height: 500,
+            title: '编辑',
+            content: url,
+            scrollable: false,
+            resizable: false,
+            iframe: true,
+            visible: false,
+            modal: true,
+            close: function () {
+                //window 关闭  刷新 本页面的  Grid
+                $('#Grid').data('kendoGrid').dataSource.page(1);
+            }
+        }).data("kendoWindow");
+        editWin.center().open();
+    }
+
+</script>
+<body>
+<!-- test -->
+<div id="test" style="clear: both" ></div>
+<!-- test -->
+<div id="detail" style="clear: both" ></div>
+<div id="edit" style="clear: both" ></div>
+<div id="page-content">
+<!-- test -->
+     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+         <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="testHtml()" ><@spring.message "hap.new"+"html"/></span>
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+ <!-- test -->
+     <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+         <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" onclick="editUser()" ><@spring.message "hap.new"/></span>
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+
+    <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+        <!--添加查询条件-->
+        <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='手机号' data-bind="value:model.mobile" class="k-textbox">
+        <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='姓名' data-bind="value:model.name" class="k-textbox">
+
+        <div style="float:left;margin-right:5px;">
+            <select data-role="combobox" data-value-primitive="true" placeholder='性别' style="width:150px;"
+                    data-text-field="meaning" data-value-field="value"
+                    data-bind="source: sex, value: model.sex" >
+            </select>
+        </div>
+        <div style="float:left;margin-right:5px;">
+            <select data-role="combobox" data-value-primitive="true" placeholder='用户状态' style="width:150px;"
+                    data-text-field="meaning" data-value-field="value"
+                    data-bind="source: loginFlag,value: model.loginFlag" >
+            </select>
+        </div>
+        <!--<input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='性别' id="sex" data-bind="value:model.sex" class="k-textbox">
+        <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='用户状态' id="loginFlag" data-bind="value:model.loginFlag" class="k-textbox">-->
+        <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:queryResource" type="submit"><@spring.message "hap.query"/></span>
+        <div style="clear:both"></div>
+        <!--结束-->
+    </div>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
+    <div style="clear:both">
+        <div id="Grid"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var BaseUrl = _basePath;
+    dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: BaseUrl + "/ljh/mgt/user/query",
+                type: "POST",
+                dataType: "json"
+            },
+            update: {
+                url: BaseUrl + "/ljh/mgt/user/submit",
+                type: "POST",
+                contentType: "application/json"
+            },
+            destroy: {
+                url: BaseUrl + "/ljh/mgt/user/remove",
+                type: "POST",
+                contentType: "application/json"
+            },
+            create: {
+                url: BaseUrl + "/ljh/mgt/user/submit",
+                type: "POST",
+                contentType: "application/json"
+            },
+            parameterMap: function (options, type) {
+                if (type !== "read" && options.models) {
+                    var datas = Hap.prepareSubmitParameter(options, type)
+                    return kendo.stringify(datas);
+                } else if (type === "read") {
+                    var a = viewModel.model.toJSON();
+                    return Hap.prepareQueryParameter(viewModel.model.toJSON(), options)
+                }
+            }
+        },
+        batch: true,
+        serverPaging: true,
+        pageSize: 10,
+        schema: {
+            data: 'rows',
+            total: 'total',
+            model: {
+                id: "id",
+                fields: {}
+            }
+        }
+    });
+
+    $("#Grid").kendoGrid({
+        dataSource: dataSource,
+        height: '100%',
+        resizable: true,
+        scrollable: true,
+        navigatable: false,
+        selectable: 'multiple',
+        pageable: {
+            pageSizes: [5, 10, 20, 50],
+            refresh: true,
+            buttonCount: 5
+        },
+        columns: [
+/*            {
+                field: "companyName",
+                title: '物业公司',
+                width: 180,
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+            },*/
+            {
+                field: "name",
+                title: '用户姓名',
+                width: 100,
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+            },
+            {
+                field: "sex",
+                title: '性别',
+                width: 60,
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+                template: function(dataItem){
+                    var v = dataItem.sex;
+                    $.each(hrEmployeeGender,function(i,n){
+                        if((n.value||'').toLowerCase() == (v||'').toLowerCase()){
+                            v = n.meaning;
+                            return v;
+                        }
+                    })
+                    return v;
+                }
+            },
+            {
+                field: "age",
+                title: "年龄",
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+                attributes: {style: "text-align:right"},
+                width: 60
+            },
+             {
+                field: "mobile",
+                title: "手机",
+                 headerAttributes: {
+                     "class": "table-header-cell",
+                     style: "text-align: center"
+                 },
+                 attributes: {style: "text-align:right"},
+                 width: 110,
+                 template: function(dataItem){
+                     var v = dataItem.mobile;
+                     if(v != null && v != ""){
+                         v = v.substring(0,3) + "****" + v.substring(7);
+                     }
+                     return v;
+                 }
+            },
+            {
+                field: "identityType",
+                title: '证件类型',
+                width: 60,
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+                template: function(dataItem){
+                    var v = dataItem.identityType;
+                    $.each(mgtIdentityType,function(i,n){
+                        if((n.value||'').toLowerCase() == (v||'').toLowerCase()){
+                            v = n.meaning;
+                            return v;
+                        }
+                    })
+                    return v;
+                }
+            },
+            {
+                field: "idcard",
+                title: "证件号",
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+                attributes: {style: "text-align:right"},
+                width: 120,
+                template: function(dataItem){
+                    var v = dataItem.idcard;
+                    if(v != null && v != ""){
+                        var hidden = new Array(v.length-1).join("*");//生成身份证长度-2的*字符串
+                        v = v.substring(0,1) + hidden + v.substring(v.length-1);
+                    }
+                    return v;
+                }
+            },
+            {
+                field: "email",
+                title: "邮箱",
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+                width: 120
+            },
+            {
+                field: "loginFlag",
+                title: "账号状态",
+                width: 80,
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style: "text-align: center"
+                },
+                template: function(dataItem){
+                    var v = dataItem.loginFlag;
+                    $.each(openAppStatus,function(i,n){
+                        if((n.value||'').toLowerCase() == (v||'').toLowerCase()){
+                            v = n.meaning;
+                            return v;
+                        }
+                    })
+                    return v;
+                }
+            },
+            {
+                field : "creationDate",
+                headerAttributes : {
+                    style : "text-align:center"
+                },
+                attributes : {
+                    style : "text-align:left"
+                },
+                title : '创建时间',
+                width : 150
+            },
+            {
+                field: "",
+                title: '操作',
+                width: 180,
+                headerAttributes: {
+                    "class": "table-header-cell",
+                    style  : "text-align: center"
+                },
+                template : function (rowdata) {
+                    var v = rowdata.loginFlag;
+                    if(v=="0"){
+                        return '<div style="text-align:center;"><a class="caozuo_btn" href="#" onclick="detail(\''+rowdata.id+'\')">查看</a>&nbsp;&nbsp;' +
+                                '<a class="caozuo_btn" href="#" onclick="startstatus(\''+rowdata.id+'\')">启用</a>&nbsp;&nbsp;' +
+                                '<a class="caozuo_btn" href="#" onclick="editUser(\''+rowdata.id+'\')">修改</a></div>';
+                    }else if(v=="1"){
+                        return '<div style="text-align:center;"><a class="caozuo_btn" href="#" onclick="detail(\''+rowdata.id+'\')">查看</a>&nbsp;&nbsp;' +
+                                '<a class="caozuo_btn" href="#" onclick="stopstatus(\''+rowdata.id+'\')">停用</a>&nbsp;&nbsp;' +
+                                '<a class="caozuo_btn" href="#" onclick="editUser(\''+rowdata.id+'\')">修改</a></div>';
+                    }
+                },
+            },
+        ],
+        editable: false
+    });
+    /**
+     * 删除用户，就是软删除，也就是更新
+     */
+    function deleteData(delSelection) {
+        var grid = $('#Grid').data('kendoGrid').selectedDataItems();
+        var array;
+        if(grid.length>0){
+            array = new Array();
+            for(var i=0;i<grid.length;i++){
+                array[i] = grid[i].id;
+            }
+        }else{
+            alert("请选中要删除的数据");
+            return false;
+        }
+        $.ajax({
+            url: '${base.contextPath}/ljh/mgt/user/bathRemove',
+            type : "GET",
+            dataType : "json",
+            traditional: true,
+            contentType : "application/json",
+            data : {arr:array},
+            success: function (args) {
+                kendo.ui.showInfoDialog({
+                    title:'提示信息',
+                    message:'删除数据成功!'
+                }).done(function(e){
+                    $('#Grid').data('kendoGrid').dataSource.page(1);
+                });
+            }
+        });
+    }
+    Hap.autoResizeGrid("#Grid");
+    
+    <!-- testContent begain -->
+    function testHtml() {
+        var url = 'test.html';
+       // if (id) {
+            //url = url;
+       // }
+        var detailWin = $("#test").kendoWindow({
+            actions: ["Maximize", "Minimize", "Close"],
+            width: "85%",
+            height: "75%",
+            title: '测试页面',
+            content: url,
+            scrollable: false,
+            resizable: false,
+            iframe: true,
+            visible: false,
+            modal: true,
+            close: function () {
+                //window 关闭  刷新 本页面的  Grid
+                $('#Grid').data('kendoGrid').dataSource.page(1);
+            }
+        }).data("kendoWindow");
+        detailWin.center().open();
+    }
+    
+    
+    $("#delete").click(function(){
+    	alert("删除")
+    	var arrAttr = [];
+    	var data = {
+    		id:'feea6cd65ff147f091b84ceb27e97ebc',
+    		SOURCE_SYSTEM:'kill'
+    	}
+    	arrAttr.push(data)
+    	//window.location.href='${base.contextPath}/ljh/test/community/test/delete';
+    	$.ajax({
+    		url:"${base.contextPath}/ljh/mgt/user/updateTest",
+    	    type:"post",
+    	    data:JSON.stringify(arrAttr),
+    	    traditional: true,
+    	    dataType:"json",
+    	    contentType:"application/json;charset=utf-8",
+    	    success:function(res){
+    	    	alert("success")
+    	    },
+    		erorr:function(err){
+    			alert("err")
+    		}
+    	})
+    })
+    
+    <!-- testContent over -->
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<! * description: 配置维护界面 * version: 1.0 *
+author:qingliang.zeng@hand-china.com * * -->
+    <#include "../../../include/header.html"/>
+<body style="padding: 10px;">
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="${base.contextPath}/common/code?openSourceSystem=OPEN.SOURCE_SYSTEM" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?openAppStatus=OPEN.APP_STATUS" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?paymentAppId=CSP_LJH_PAYMENT_APP_ID" type="text/javascript"></script>
+	<div id="content-container">
+		<div id="page-content">
+				<form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+                    <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">appid</label>
+                            <div class="col-xs-6">
+                                <input type="hidden" id="id" name="id" data-bind="value:model.id" class="k-textbox">
+                                <input required type="text" style="width: 100%" id="appKey" name="appKey" data-bind="value:model.appKey" class="k-textbox k-state-disabled">
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">appSecret</label>
+                            <div class="col-xs-6">
+                                <input required type="text" style="width: 100%" id="appSecret" name="appSecret" data-bind="value:model.appSecret" class="k-textbox k-state-disabled">
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">授权回调页路径</label>
+                            <div class="col-xs-6">
+                                    <input required type="text" style="width: 100%" id="notifyUrl" name="notifyUrl" data-bind="value:model.notifyUrl" class="k-textbox">
+                            </div>
+                            <div class="col-xs-3" >
+                                <span data-for="notifyUrl" class=".k-invalid-msg"></span>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">服务器IP</label>
+                            <div class="col-xs-6">
+                                <input required type="text" id="serverIp" style="width: 100%" name="serverIp" data-bind="value:model.serverIp"  class="k-textbox">
+                            </div>
+                            <div class="col-xs-3" >
+                                <span data-for="serverIp" class=".k-invalid-msg"></span>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">应用名称</label>
+                            <div class="col-xs-6">
+                                <input required type="text" style="width: 100%" id="appName" name="appName" data-bind="value:model.appName" class="k-textbox">
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">应用状态</label>
+                            <div class="col-xs-6">
+                                <input required type="text" style="width: 100%" id="appStatus" name="appStatus" data-bind="value:model.appStatus" class="k-textbox">
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">支付账号</label>
+                                <div class="col-xs-6">
+                                <select data-role="combobox" data-value-primitive="true" placeholder='支付账号' style="width:100%"
+                                        data-text-field="meaning" data-value-field="value"
+                                        data-bind="source: payMentAppId, value: model.paymentConfigId">
+                                </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                 <!--   <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-2 col-xs-offset-1 control-label" style="text-align: right">支付账号</label>
+                                <div class="col-xs-6">
+                                    <input type="text" style="width: 100%" id="paymentConfigId" name="paymentConfigId" data-bind="value:model.paymentConfigId,text:model.pingAppName" class="k-textbox"   />
+                                </div>
+                                <script>$("#paymentConfigId").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "PAYMENTCONFIG")});
+                                $($("input[name='paymentConfigId_input']").next()).css("margin-top","0px");
+                                $($("input[name='paymentConfigId_input']").next().next().find("span")).css("margin-left","-7px");
+                                </script>
+                            </div>
+                        </div>
+                    </div>-->
+                    <br>
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <div class="col-sm-12 text-center">
+                                <span class="btn btn-success" data-bind="click:save" type="submit"><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                            </div>
+                        </div>
+                    </div>
+
+				</form>
+		</div>
+		</div>
+<script type="text/javascript">
+var isedit = '${RequestParameters.isedit!0}' == '1';
+window.viewModel = kendo.observable({
+    model: {},
+    payMentAppId:paymentAppId,
+    save:function(e){
+        var url ;
+        if (isedit)
+            url = '${base.contextPath}/ljh/open/app/info/submit';
+        else
+            url = '${base.contextPath}/ljh/open/app/info/add';
+        var validator = $("#mainform").data("kendoValidator");
+        if (validator.validate()) {
+            Hap.submitForm({
+                url           : url,
+                formModel     : viewModel.model,
+                asArray       : false,
+                success       : function (data) {
+                    kendo.ui.showInfoDialog({
+                        title:'提示信息',
+                        message:'保存成功!'
+                    }).done(function(e){
+                        window.parent.$("#editWin").data("kendoWindow").close();
+                        window.parent.$('#grid').data('kendoGrid').dataSource.page(1);
+                    });
+                }
+            });
+        }
+    },
+    closeWin :function(e){
+        //关闭该window
+        window.parent.$("#editWin").data("kendoWindow").close();
+    }
+});
+
+var container = $("#mainform");
+kendo.init(container);
+container.kendoValidator({
+    messages: {
+        required: "必填项"
+    },
+});
+kendo.bind($('#page-content'), viewModel);
+
+//下拉框
+$("#appName").kendoDropDownList({
+    valuePrimitive:true,
+    dataTextField: "meaning",
+    dataValueField: "value",
+    dataSource: openSourceSystem
+});
+
+$("#appStatus").kendoDropDownList({
+    valuePrimitive:true,
+    dataTextField: "meaning",
+    dataValueField: "value",
+    dataSource: openAppStatus
+});
+
+//初始化form表单
+$.ajax({
+    url: '${base.contextPath}/ljh/open/app/info/get',
+    type : "GET",
+    dataType : "json",
+    contentType : "application/json",
+    data : {id:'${RequestParameters.id!0}'},
+    success: function (args) {
+        var profile = args.dto||{};
+        for(var i in profile){
+            viewModel.set("model."+i,profile[i]);
+        }
+    }
+});
+
+$(document).ready(function(){
+
+});
+</script>
+
+</body>
+</html>

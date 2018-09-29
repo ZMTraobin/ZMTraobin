@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.user.appuser.mapper.AppUserCardMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.user.appuser.dto.AppUserCard">
+        <result column="CARD_ID" property="cardId" jdbcType="DECIMAL" />
+        <result column="APP_USER_ID" property="appUserId" jdbcType="VARCHAR" />
+        <result column="ID_NO" property="idNo" jdbcType="VARCHAR" />
+        <result column="ID_TYPE" property="idType" jdbcType="VARCHAR" />
+        <result column="CARD_NO" property="cardNo" jdbcType="VARCHAR" />
+        <result column="CARD_TYPE" property="cardType" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="BANK_MOBILE" property="bankMobile" jdbcType="VARCHAR" />
+        <result column="BANK_CODE" property="bankCode" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="ORDER_SQ" property="orderSq" jdbcType="DECIMAL" />
+        <result column="DEFAULT_FLAG" property="defaultFlag" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="userCardColumns">
+        a.CARD_ID as "cardId",
+        a.APP_USER_ID as "appUserId",
+        a.ID_NO as "idNo",
+        a.ID_TYPE as "idType",
+        a.CARD_NO as "cardNo",
+        a.CARD_TYPE as "cardType",
+        a.NAME as "name",
+        a.BANK_MOBILE as "bankMobile",
+        a.BANK_CODE as "bankCode",
+        a.STATUS as "status",
+        a.ORDER_SQ as "orderSq",
+        a.DEFAULT_FLAG as "defaultFlag"
+    </sql>
+
+    <select id="find" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userCardColumns" />
+        FROM csp_app_user_card a
+        WHERE
+        1=1
+        <if test="cardId != null and cardId != '' ">
+            and a.CARD_ID=#{cardId}
+        </if>
+        <if test="appUserId != null and appUserId != '' ">
+            and a.APP_USER_ID=#{appUserId}
+        </if>
+        <if test="idNo != null and idNo != '' ">
+            and a.ID_NO=#{idNo}
+        </if>
+        <if test="idType != null and idType != '' ">
+            and a.ID_TYPE=#{idType}
+        </if>
+        <if test="cardNo != null and cardNo != '' ">
+            and a.CARD_NO=#{cardNo}
+        </if>
+        <if test="cardType != null and cardType != '' ">
+            and a.CARD_TYPE=#{cardType}
+        </if>
+        <if test="name != null and name != '' ">
+            and a.name=#{name}
+        </if>
+        <if test="bankMobile != null and bankMobile != '' ">
+            and a.BANK_MOBILE=#{bankMobile}
+        </if>
+        <if test="bankCode != null and bankCode != '' ">
+            and a.BANK_CODE=#{bankCode}
+        </if>
+        <if test="status != null and status != '' ">
+            and a.status=#{status}
+        </if>
+        <if test="defaultFlag != null and defaultFlag != '' ">
+            and a.DEFAULT_FLAG=#{defaultFlag}
+        </if>
+        order by a.DEFAULT_FLAG desc, a.CREATION_DATE asc
+    </select>
+
+
+    <select id="findDefault" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userCardColumns" />
+        FROM csp_app_user_card a
+        WHERE
+            a.APP_USER_ID=#{appUserId}
+        and a.status='Y'
+        and a.DEFAULT_FLAG='Y'
+    </select>
+
+    <!--查询用户第一次绑卡的信息做为用户基本信息，不排除已解绑-->
+    <select id="findFirstCard" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userCardColumns" />
+        FROM csp_app_user_card a
+        WHERE
+        a.APP_USER_ID=#{appUserId}
+        order by a.CREATION_DATE asc limit 0,1
+    </select>
+
+    <!--卡是否默认置为N-->
+    <update id="updateDefaultToN">
+        UPDATE csp_app_user_card SET
+        DEFAULT_FLAG ='N'
+        WHERE APP_USER_ID=#{appUserId}
+    </update>
+
+    <!--卡是否默认置为Y-->
+    <update id="updateDefaultToY">
+        UPDATE csp_app_user_card SET
+        DEFAULT_FLAG ='Y'
+        WHERE  CARD_ID=#{cardId}
+    </update>
+
+</mapper>

@@ -1,0 +1,112 @@
+<#include "../../include/header.html">
+<body style="padding: 15px">
+	<div id="content-container">
+		<div id="page-content">
+			<form class="form-horizontal" id="editForm"
+				enctype="application/json;charset=UTF-8">
+				<div class="row" style="margin-bottom: 20px">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">审核:</label>
+							<div class="col-sm-9">
+								<input id=status style="width: 70%" required />&nbsp&nbsp <font
+									color="red">*</font>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row" style="margin-bottom: 20px">
+					<div class="col-sm-12">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">审核意见:</label>
+							<div class="col-sm-9">
+								<textarea id="approvalComment" type="text"
+									style="width: 70%; height: 200px"required"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="row" style="float: right">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<label> <span class="btn btn-success"
+									style="float: right" data-bind="click:save" type="submit"><i
+										class="fa fa-save" style="margin-right: 6px;"></i>保存</span>
+								</label> 
+								<label>
+									<span class="btn btn-success" style="float: right"
+									onclick="closeWin()" type="submit"><i class="fa fa-save"
+										style="margin-right: 6px;"></i>取消</span>
+								</label>
+							</div>
+						</div>
+					</div>
+			</form>
+		</div>
+	</div>
+	<script>
+		var groupIdentifying='${RequestParameters.groupIdentifying}';
+		window.viewModel = kendo.observable({
+			model : {},
+			save : function(e) {
+				var url = '${base.contextPath}/app/adv/submit/newexamine';
+				var validator = $("#editForm").data("kendoValidator");
+	            if (validator.validate()) {
+	            	var status=$("#status").val();
+	            	var description=$("#approvalComment").val();
+	            	var datas={"groupIdentifying":groupIdentifying,"status":status,"description":description};
+	            	$.ajax({
+	                    type   : 'POST',
+	                    url    : url,
+	                    dataType : "json",
+	                    contentType : "application/json",
+	                    data   : kendo.stringify(datas),
+	                    success: function (data) {
+	                    	if(data.success==false){
+	                    		kendo.ui.showInfoDialog({
+	                             	message: $l('保存失败')
+	                             });
+	                    	}	
+	                    	else{
+	                    		kendo.ui.showInfoDialog({
+	                             	message: $l('保存成功')
+	                             });
+	                    		 window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+	                    		 window.parent.$("#auditWin").data("kendoWindow").close();
+	                        }
+	                    }
+	                });  
+	            } 
+			},
+			closeWin : function(e) {
+				//关闭该window
+				window.parent.$("#editWin").data("kendoWindow").close()
+			}
+		});
+		//校验
+		$("#editForm")
+				.kendoValidator(
+						{
+							errorTemplate : '<div class="k-widget k-tooltip k-tooltip-validation k-invalid-msg" style="margin: 0.5em; display: block;" role="alert"><span class="k-icon k-warning"> </span>#=message#<div class="k-callout k-callout-n"></div></div>'
+						});
+		kendo.bind($('#page-content'), viewModel);
+
+		function closeWin() {
+			//取消事件
+			window.parent.$("#auditWin").data("kendoWindow").close();
+		}
+		//下拉框
+		$("#status").kendoDropDownList({
+			dataTextField : "fieldName",
+			dataValueField : "fieldValue",
+			dataSource : [ {
+				fieldName : "同意",
+				fieldValue : 1
+			}, {
+				fieldName : "拒绝",
+				fieldValue : 2
+			} ]
+		});
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.operate.neighbor.mapper.LjhNeighborTopicReplyMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicReply">
+        <result column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR"/>
+        <result column="REPLY_ID" property="replyId" jdbcType="VARCHAR"/>
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR"/>
+        <result column="CONTENT" property="content" jdbcType="VARCHAR"/>
+        <result column="COMMENT_ID" property="commentId" jdbcType="VARCHAR"/>
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE"/>
+        <!--扩展字段-->
+        <result column="reply_from" property="replyFrom" jdbcType="VARCHAR"/>
+        <result column="reply_from_icon" property="replyFromIcon" jdbcType="VARCHAR"/>
+        <result column="reply_to" property="replyTo" jdbcType="VARCHAR"/>
+        <result column="reply_to_icon" property="replyToIcon" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getRepliesByCommentId" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicReply">
+        SELECT t.*,
+        (select u.NICK_NAME from csp_ljh_app_user u where u.id = t.user_id) reply_from,
+        (select u.user_icon from csp_ljh_app_user u where u.id = t.user_id) reply_from_icon,
+        (select u.NICK_NAME from csp_ljh_app_user u,csp_ljh_neighbor_topic_reply t1
+         where u.id = t1.user_id and t1.ID = t.REPLY_ID) reply_to,
+        (select u.user_icon from csp_ljh_app_user u,csp_ljh_neighbor_topic_reply t1
+         where u.id = t1.user_id and t1.ID = t.REPLY_ID) reply_to_icon
+         from csp_ljh_neighbor_topic_reply t
+        where t.comment_id = #{commentId, jdbcType=VARCHAR}
+        and t.del_flag = '0'
+        order by t.creation_date
+    </select>
+
+    <select id="getReplyTo" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        (select u.NICK_NAME from csp_ljh_app_user u,csp_ljh_neighbor_topic_comment t1
+        where u.id = t1.user_id and t1.ID = t.REPLY_ID) reply_to,
+        (select u.user_icon from csp_ljh_app_user u,csp_ljh_neighbor_topic_comment t1
+        where u.id = t1.user_id and t1.ID = t.REPLY_ID) reply_to_icon
+        from csp_ljh_neighbor_topic_reply t
+        where t.id = #{id, jdbcType=VARCHAR}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.mgtuser.mapper.MgtUserCommunityMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.mgtuser.dto.MgtUserCommunity">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+        <result column="MGT_USER_ID" property="mgtUserId" jdbcType="VARCHAR" />
+        <result column="SOURCE_MGT_USER_ID" property="sourceMgtUserId" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM_COMMUNITY_ID" property="sourceSystemCommunityId" jdbcType="VARCHAR" />
+
+        <result column="COMMUNITY_NAME" property="communityName" jdbcType="VARCHAR" />
+        <result column="COMPANY_ID" property="companyId" jdbcType="VARCHAR" />
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR" />
+        <result column="NAME" property="userName" jdbcType="VARCHAR" />
+        <result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+        <result column="COMMUNITY_CODE" property="communityCode" jdbcType="VARCHAR" />
+        <result column="SERVER_URL" property="serverUrl" jdbcType="VARCHAR" />
+        <result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+    <sql id="mgtUserCommunityColumns">
+        ID,
+        SOURCE_SYSTEM,
+        MGT_USER_ID,
+        SOURCE_MGT_USER_ID,
+        COMMUNITY_ID,
+        SOURCE_SYSTEM_COMMUNITY_ID
+    </sql>
+    
+    
+    
+    <!-- 软删除，删除小区和用户的映射关系，实际上进行了更新 -->
+    <update id="deleteBySourceSystemId">
+        UPDATE csp_ljh_mgt_user_community SET
+        del_flag = #{DEL_FLAG_DELETE}
+        WHERE SOURCE_SYSTEM = #{sourceSystem}
+			and SOURCE_SYSTEM_COMMUNITY_ID = #{sourceSystemCommunityId}
+			and SOURCE_MGT_USER_ID = #{sourceMgtUserId}
+    </update>
+
+    <!--查询用户和小区之间的映射关系-->
+    <select id="getAllUserCommunity" parameterType="com.cmig.future.csportal.module.properties.mgtuser.dto.MgtUserCommunity" resultMap="BaseResultMap">
+            select
+            <include refid="mgtUserCommunityColumns"/>
+            from csp_ljh_mgt_user_community
+            where SOURCE_SYSTEM=#{sourceSystem} and SOURCE_SYSTEM_COMMUNITY_ID=#{sourceSystemCommunityId}
+            <if test="mgtUserId != null and mgtUserId != '' ">
+                AND MGT_USER_ID=#{mgtUserId}
+            </if>
+            and DEL_FLAG=#{DEL_FLAG_NORMAL}
+    </select>
+    <!--新增用户和小区之间的映射关系-->
+    <insert id="insertUserCommunity" parameterType="com.cmig.future.csportal.module.properties.mgtuser.dto.MgtUserCommunity">
+
+      insert into csp_ljh_mgt_user_community
+      (ID,SOURCE_SYSTEM,MGT_USER_ID,SOURCE_MGT_USER_ID,COMMUNITY_ID,SOURCE_SYSTEM_COMMUNITY_ID)
+      VALUES
+      (#{id},#{sourceSystem},#{mgtUserId},#{sourceMgtUserId},#{communityId},#{sourceSystemCommunityId})
+    </insert>
+
+    <sql id="mgtUserCommunityColumns_branch">
+        a.id AS "id",
+        a.source_system AS "sourceSystem",
+        a.source_system_community_id AS "sourceSystemCommunityId",
+        a.mgt_user_id AS "mgtUserId",
+        a.source_mgt_user_id AS "sourceMgtUserId",
+        a.del_flag AS "delFlag",
+        a.community_id AS "communityId",
+        b.community_name AS "communityName",
+        b.company_id AS"companyId",
+        b.company_name AS "companyName",
+        b.community_code AS "communityCode",
+        b.server_url AS serverUrl,
+        b.address as address
+    </sql>
+    <sql id="mgtUserCommunityJoins">
+        left join csp_ljh_base_community b on a.COMMUNITY_ID=b.id
+    </sql>
+
+    <!--据项目Id分组,查询列表-->
+    <select id="findPublishCommunityList" resultMap="BaseResultMap">
+        SELECT DISTINCT
+            <include refid="mgtUserCommunityColumns_branch"/>
+        FROM csp_ljh_mgt_user_community a
+            <include refid="mgtUserCommunityJoins"/>
+        left outer join csp_ljh_sys_user_community  suc on a.COMMUNITY_ID = suc.COMMUNITY_ID
+        WHERE
+          a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+          and b.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+          AND suc.SYS_USER_ID = #{request.mgtUserId,jdbcType=DECIMAL}
+          AND b.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        <if test="communityId != null and communityId != '' ">
+          AND a.COMMUNITY_ID = #{communityId}
+        </if>
+        <if test="companyId != null and companyId != '' ">
+            AND b.COMPANY_ID = #{companyId}
+        </if>
+        GROUP BY b.ID
+        ORDER BY CONVERT( b.COMPANY_NAME USING gbk ) ,
+        CONVERT( b.COMMUNITY_NAME USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+
+    <!--查询人员列表-->
+    <select id="findPublishUserList" resultMap="BaseResultMap">
+        SELECT DISTINCT
+          <include refid="mgtUserCommunityColumns_branch"/>
+          ,u.name as "userName",u.mobile as "mobile"
+        FROM csp_ljh_mgt_user_community a
+          <include refid="mgtUserCommunityJoins"/>
+          left join csp_ljh_mgt_user u on a.MGT_USER_ID=u.id
+          left outer join csp_ljh_sys_user_community  suc on a.COMMUNITY_ID = suc.COMMUNITY_ID
+        WHERE
+          a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+          and b.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+          AND suc.SYS_USER_ID = #{request.mgtUserId,jdbcType=DECIMAL}
+          AND b.DEL_FLAG = #{DEL_FLAG_NORMAL} AND u.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        <if test="communityId != null and communityId != '' ">
+            AND a.COMMUNITY_ID = #{communityId}
+        </if>
+        <if test="companyId != null and companyId != '' ">
+            AND b.COMPANY_ID = #{companyId}
+        </if>
+        <if test="userName != null and userName != '' ">
+            AND u.NAME like concat('%',concat(#{userName,jdbcType=VARCHAR},'%'))
+        </if>
+        <if test="selectIds!=null and selectIds.length>0 ">
+            and b.id in
+            <foreach collection="selectIds" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        <if test="selectUserIds!=null and selectUserIds.length>0 ">
+            and u.id in
+            <foreach collection="selectUserIds" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        ORDER BY CONVERT( b.COMPANY_NAME USING gbk ) ,
+        CONVERT( b.COMMUNITY_NAME USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+
+    <!--根据物管员工id查询关联的项目-->
+    <select id="findCommunityListByMgtUserId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="mgtUserCommunityColumns_branch"/>
+        FROM csp_ljh_mgt_user_community a
+        <include refid="mgtUserCommunityJoins"/>
+        WHERE a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        AND b.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+        AND b.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        AND a.MGT_USER_ID=#{mgtUserId,jdbcType=VARCHAR}
+        ORDER BY CONVERT( b.COMPANY_NAME USING gbk ) ,
+                CONVERT( b.COMMUNITY_NAME USING gbk ) COLLATE gbk_chinese_ci ASC
+    </select>
+
+    <select id="queryCommunitiesNoAuth" resultMap="BaseResultMap">
+        select
+		bc.id as "communityId",
+		bc.CITY_NAME as "cityName",
+        bc.COMMUNITY_CODE AS "communityCode",
+		bc.COMMUNITY_NAME AS "communityName",
+		bc.COMPANY_NAME AS "companyName",
+		BC.ADDRESS AS "address"
+		from csp_ljh_base_community bc
+		where bc.DEL_FLAG =#{DEL_FLAG_NORMAL}
+		and bc.id not in (select suc.COMMUNITY_ID from csp_ljh_mgt_user_community suc where suc.MGT_USER_ID=#{mgtUserId} and suc.DEL_FLAG =#{DEL_FLAG_NORMAL})
+    </select>
+    
+    
+</mapper>

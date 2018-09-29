@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.mgtuser.mapper.MgtUserMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.mgtuser.dto.MgtUser">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="COMPANY_ID" property="companyId" jdbcType="VARCHAR" />
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR" />
+        <result column="OFFICE_ID" property="officeId" jdbcType="VARCHAR" />
+        <result column="OFFICE_NAME" property="officeName" jdbcType="VARCHAR" />
+        <result column="LOGIN_NAME" property="loginName" jdbcType="VARCHAR" />
+        <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+        <result column="NO" property="no" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="EMAIL" property="email" jdbcType="VARCHAR" />
+        <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+        <result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+        <result column="USER_TYPE" property="userType" jdbcType="VARCHAR" />
+        <result column="PHOTO" property="photo" jdbcType="VARCHAR" />
+        <result column="LOGIN_IP" property="loginIp" jdbcType="VARCHAR" />
+        <result column="LOGIN_DATE" property="loginDate" jdbcType="TIMESTAMP" />
+        <result column="LOGIN_FLAG" property="loginFlag" jdbcType="VARCHAR" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="TIMESTAMP" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+        <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL" />
+        <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+        <result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+        <result column="SEX" property="sex" jdbcType="VARCHAR" />
+        <result column="BIRTH_TIME" property="birthTime" jdbcType="DATE" />
+        <result column="POST" property="post" jdbcType="VARCHAR" />
+        <result column="IDENTITY_TYPE" property="identityType" jdbcType="VARCHAR" />
+        <result column="IDCARD" property="idcard" jdbcType="VARCHAR" />
+        <result column="AGE" property="age" jdbcType="VARCHAR" />
+        <result column="COMMUNITYID" property="communityId" jdbcType="VARCHAR" />
+        <result column="EMPLOYEE_ID" property="employeeId" jdbcType="VARCHAR" />
+        <result column="BUSINESS_NEWS" property="businessNews" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM_ID" property="sourceSystemId" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+
+    <!-- 更新登录信息，如登录IP、登录时间 -->
+    <update id="updateUserLoginInfo">
+        UPDATE csp_ljh_mgt_user SET
+        LOGIN_IP = #{loginIp},
+        LOGIN_DATE = #{loginDate}
+        WHERE ID = #{id}
+    </update>
+
+
+
+    <sql id="mgtuserColumns">
+           mgtuser.ID,
+           mgtuser.COMPANY_ID,
+           mgtuser.COMPANY_NAME,
+           mgtuser.OFFICE_ID,
+           mgtuser.OFFICE_NAME,
+           mgtuser.LOGIN_NAME,
+           mgtuser.PASSWORD,
+           mgtuser.NO,
+           mgtuser.NAME,
+           mgtuser.EMAIL,
+           mgtuser.PHONE,
+           mgtuser.MOBILE,
+           mgtuser.USER_TYPE,
+           mgtuser.PHOTO,
+           mgtuser.LOGIN_IP,
+           mgtuser.LOGIN_DATE,
+           mgtuser.LOGIN_FLAG,
+           mgtuser.CREATED_BY,
+           mgtuser.CREATION_DATE,
+           mgtuser.LAST_UPDATED_BY,
+           mgtuser.LAST_UPDATE_DATE,
+           mgtuser.LAST_UPDATE_LOGIN,
+           mgtuser.REMARKS,
+           mgtuser.DEL_FLAG,
+           mgtuser.SEX,
+           mgtuser.BIRTH_TIME,
+           mgtuser.POST,
+           mgtuser.IDENTITY_TYPE,
+           mgtuser.IDCARD,
+           mgtuser.AGE,
+           mgtuser.COMMUNITY_ID,
+           mgtuser.EMPLOYEE_ID,
+           mgtuser.BUSINESS_NEWS,
+           mgtuser.SOURCE_SYSTEM,
+           mgtuser.SOURCE_SYSTEM_ID
+    </sql>
+    
+    <!--根据手机号查询用户-->
+    <select id="getUserByMobile" resultMap="BaseResultMap">
+        select
+         <include refid="mgtuserColumns"/>
+        from csp_ljh_mgt_user mgtuser
+        <where>
+            mgtuser.DEL_FLAG=#{DEL_FLAG_NORMAL}
+            <if test="mobile!=null and mobile!=''">
+              AND  mgtuser.MOBILE=#{mobile}
+            </if>
+        </where>
+    </select>
+    <!--根据email查询出用户-->
+    <select id="getUserByEmail" resultMap="BaseResultMap">
+        select
+        mgtuser.ID
+        from csp_ljh_mgt_user mgtuser
+        <where>
+            mgtuser.DEL_FLAG=#{DEL_FLAG_NORMAL}
+            <if test="email!=null and email!=''">
+                AND  mgtuser.EMAIL=#{email}
+            </if>
+        </where>
+    </select>
+    <!-- 分页查询出物业用户 -->
+    <select id="selectMgtUser" resultMap="BaseResultMap">
+         select DISTINCT
+         <include refid="mgtuserColumns"/>
+         from csp_ljh_mgt_user mgtuser
+
+         where  mgtuser.DEL_FLAG=#{DEL_FLAG_NORMAL}
+
+        <if test="mobile!=null and mobile!=''">
+            AND mgtuser.MOBILE like concat('%',concat(#{mobile,jdbcType=VARCHAR},'%'))
+        </if>
+
+        <if test="name!=null and name!=''">
+            AND mgtuser.NAME like concat('%',concat(#{name,jdbcType=VARCHAR},'%'))
+        </if>
+
+        <if test="sex!=null and sex!=''">
+            AND  mgtuser.SEX=#{sex}
+        </if>
+
+        <if test="loginFlag!=null and loginFlag!=''">
+            AND  mgtuser.LOGIN_FLAG=#{loginFlag}
+        </if>
+
+    </select>
+
+    <!--批量删除物业用户，也就是批量更新-->
+    <update id="updateBathMgtUser" parameterType="java.util.Map">
+        update csp_ljh_mgt_user
+        set DEL_FLAG=#{DEL_FLAG_DELETE}
+        where
+
+        ID in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--根据主键和del_flag查询用户-->
+    <select id="getMgtUserById" parameterType="com.cmig.future.csportal.module.properties.mgtuser.dto.MgtUser" resultMap="BaseResultMap">
+
+         select
+         <include refid="mgtuserColumns"/>
+         from csp_ljh_mgt_user mgtuser
+         where mgtuser.ID=#{id}
+         and mgtuser.DEL_FLAG='0'
+
+    </select>
+</mapper>

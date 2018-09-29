@@ -1,0 +1,18 @@
+ [{
+	"value": "SELF",
+	"name": "业主本人"
+}, {
+	"value": "POSTERITY",
+	"name": "子女"
+}, {
+	"value": "COUPLE",
+	"name": "配偶"
+}, {
+	"value": "OTHER",
+	"name": "其他"
+}]
+
+
+
+
+

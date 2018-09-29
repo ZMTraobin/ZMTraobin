@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.user.appuser.mapper.AppUserAuthMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.user.appuser.dto.AppUserAuth">
+        <result column="AUTH_ID" property="authId" jdbcType="VARCHAR" />
+        <result column="APP_USER_ID" property="appUserId" jdbcType="VARCHAR" />
+        <result column="IDENTITY_TYPE" property="identityType" jdbcType="VARCHAR" />
+        <result column="UUID" property="uuid" jdbcType="VARCHAR" />
+        <result column="NICK_NAME" property="nickName" jdbcType="VARCHAR" />
+        <result column="AVATAR" property="avatar" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+    <select id="findByUUIDAndType" resultMap="BaseResultMap">
+        select a.*
+        from csp_ljh_app_user_auth a
+        where a.IDENTITY_TYPE=#{identityType}
+        and a.UUID=#{uuid}
+    </select>
+
+    <delete id="unbundled">
+        delete from csp_ljh_app_user_auth where
+        IDENTITY_TYPE=#{identityType}
+        and UUID=#{uuid}
+        and APP_USER_ID=#{appUserId}
+
+    </delete>
+</mapper>

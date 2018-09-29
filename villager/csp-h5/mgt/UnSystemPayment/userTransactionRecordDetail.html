@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>收据明细</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+		<link rel="stylesheet" type="text/css" href="css/userCreateRepairDetail.css"/>
+		<link rel="stylesheet" type="text/css" href="css/payment.css"/>
+		<script src="js/mui.min.js"></script>
+		<style type="text/css">
+			html body{background: #fff;}
+			.mui-bar-nav~.mui-content {padding-bottom: 0;}
+			.textAlignR{text-align: right;}
+			.listTable td {padding: 5px 0!important;}
+			
+			.mui-backdrop {
+			    position: fixed;
+			    top: 0;
+			    right: 0;
+			    bottom: 0;
+			    left: 0;
+			    z-index: 998;
+			    background-color: rgba(0,0,0,.3);
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<!--<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"><img src="img/icon-back.png" style="height: 24px;" /></a>-->
+			<a class="mui-icon mui-pull-left" onclick="myHouseBack()"><img src="img/icon-back.png" style="height: 24px;" /></a>
+			<h1 class="mui-title">明细</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="fee_list">
+				
+				<!--<div class="mui-content-padded" style="background: #fff; position: relative; padding-left: 15px !important; padding-right: 15px!important; color: #AAAAAA;">
+					<table id="data.result.notice_number" border="" cellspacing="" cellpadding="" class="listTable">
+						<tr><td width="100">项目:</td><td class="mui-text-right"> data.result.notice_num </td></tr>
+						<tr><td width="100">房间:</td><td class="house-loc mui-text-right" id="address"></td></tr>
+						<tr><td width="100">付款方式:</td><td class="mui-text-right"> listItem.notice_date</td></tr>
+						<tr><td width="100">付款时间:</td><td class="mui-text-right">listItem.notice_date</td></tr>
+						<tr><td width="100">付款人:</td><td class="mui-text-right">listItem.notice_date </td></tr>
+						<tr><td width="100">应付金额:</td><td class="mui-text-right">listItem.notice_date </td></tr>
+						<tr><td width="100">优惠金额:</td><td class="mui-text-right">listItem.notice_date </td></tr>
+						<tr><td width="100">实付金额:</td><td class="mui-text-right">listItem.notice_date </td></tr>
+						<tr><td width="100">交易单号:</td><td class="mui-text-right">listItem.notice_date </td></tr>
+						<tr><td width="100">收款单号:</td><td class="mui-text-right">listItem.notice_date </td></tr>
+						<tr><td width="100">收款方</td><td class="mui-text-right">listItem.notice_date </td></tr>
+					</table>
+				</div>-->
+				
+			</div>
+			
+		</div>
+
+		<script src="js/mui.min.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/public.js"></script>
+		<script type="text/javascript">
+			//获取列表页缓存的信息
+	      	var order_id = localStorage.order_id ;//缴费通知单
+//	      	获取列表页缓存的信息
+	      	var property_number = localStorage.property_number ;//房间编号
+	      	var property_name = localStorage.property_name ;//建筑
+	      	
+	      	var token = null;
+	      	token = localStorage.token;
+	      	
+	        //根据房屋编号查询房屋缴费记录
+			mui.init();
+			var bill_detail = function(){
+				mui.ajax(localStorage.http_service1+'user/st/pay/orderDetail', {
+//				mui.ajax('js/userTransactionRecordDetail.json', {	
+					dataType:'json',//服务器返回json格式数据
+					data:{
+						token: token,
+						id: order_id,
+					},
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒
+//					headers:getHeaders(),  
+					success:function(data){
+						
+						//TODO 测试数据   
+
+						console.log(JSON.stringify(data));
+						closePpage(data.status)
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if(data.status == "1" &&  data.data != null ){
+							//组装费用明细
+							var html = "";
+							html += '<div class="mui-content-padded" style="background: #fff; position: relative; padding-left: 15px !important; padding-right: 15px!important; color: #AAAAAA;">';
+							html += '	<table border="" cellspacing="" cellpadding="" class="listTable">';
+							if (data.data.communityName == '') {
+								html += '			<tr  class="mui-hidden"><td width="80">项目:</td><td></td></tr>';
+							} else{
+								html += '			<tr><td width="80">项目:</td><td class="mui-text-right">'+data.data.communityName+'</td></tr>';
+							}
+							
+							if (data.data.houseName == '') {
+								html += '			<tr  class="mui-hidden"><td width="80">房间:</td><td class="mui-text-right"></td></tr>';
+							} else{
+								html += '			<tr><td width="80">房间:</td><td class="mui-text-right">' + data.data.houseName + '</td></tr>';
+							}
+							html += '			<tr><td width="80">付款方式:</td><td class="mui-text-right"> ' + data.data.payChannelName + '</td></tr>';
+							html += '			<tr><td width="80">付款时间:</td><td class="mui-text-right">' + data.data.timePaid + '</td></tr>';
+							html += '			<tr><td width="80">付款人:</td><td class="mui-text-right">' + data.data.userName + '</td></tr>';
+							html += '			<tr><td width="80">应付金额:</td><td class="mui-text-right">' + (data.data.orderAmount)*0.01.toFixed(2) + '</td></tr>';
+							html += '			<tr><td width="80">优惠金额:</td><td class="mui-text-right">' + (data.data.discountAmount)*0.01.toFixed(2) + '</td></tr>';
+							html += '			<tr><td width="80">积分抵扣:</td><td class="mui-text-right">' + (data.data.integralAmount)*0.01.toFixed(2) + '</td></tr>';
+							html += '			<tr><td width="80">实付金额:</td><td class="mui-text-right">' + (data.data.paidAmount)*0.01.toFixed(2) + '</td></tr>';
+							html += '			<tr><td width="80">交易单号:</td><td class="mui-text-right">' + data.data.transeq + '</td></tr>';
+							html += '			<tr><td width="80">收款单号:</td><td class="mui-text-right">' + data.data.orderNumber + '</td></tr>';
+							html += '			<tr><td width="80">收款方:</td><td class="mui-text-right">' + data.data.receiveSide + '</td></tr>';
+							html += '	</table>';
+							html += '</div>';
+							document.getElementById("fee_list").innerHTML += html ;
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						console.log(type);
+					}
+				});
+	
+			}
+			
+	      	//查询房屋缴费记录
+	      	bill_detail();
+	      	
+//		返回我的房屋
+		function myHouseBack(){
+				//跳转到页面
+				mui.openWindow({
+				    url: 'userTransactionRecord.html',
+				    id:'userTransactionRecord',
+				    show:{
+				      autoShow:false,
+				      aniShow:'slide-in-right',
+				      duration:200
+				    }
+				});
+		}
+	      	
+		</script>
+	</body>
+
+</html>

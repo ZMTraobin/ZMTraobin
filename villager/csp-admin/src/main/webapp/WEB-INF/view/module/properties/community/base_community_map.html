@@ -1,0 +1,63 @@
+<!-- * description: 我的项目修改 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../include/header.html"/>
+    <script src="${base.contextPath}/common/code?yesOrNo=SYS.YES_NO" type="text/javascript"></script>
+    <script src="${base.contextPath}/common/code?openSourceSystem=OPEN.SOURCE_SYSTEM" type="text/javascript"></script>
+<body>
+<div id="content-container">
+    <div id="page-content">
+    <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+        <div class="row">
+            <div class="col-xs-12">
+                    <div id="BMap" class="BMap">
+                        <iframe id="mapIframe" src="" width="99%;" height="500px;"style="margin-top: 10px;"></iframe>
+                        <input id="longitude" type="hidden">
+                        <input id="latitude" type="hidden">
+                    </div>
+             </div>
+        </div>
+        <br>
+        <div class="col-sm-12">
+            <div class="form-group">
+                <div class="col-sm-12 text-center">
+                    <span id="back" class="btn btn-primary" style="" onclick="back()">返回</span>
+                </div>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var cityName = '${(RequestParameters.cityName)!""}';
+    var communityName = '${(RequestParameters.communityName)!""}';
+    $("#mapIframe").attr("src","bmap.html?cityName="+cityName+"&communityName="+communityName);
+
+    //根据百度地图点击的经纬度,地址,对model赋值
+    var setPoint = function(lng, lat,address) {
+        window.parent.$("#longitude").val(lng);
+        window.parent.viewModel.model.longitude=lng;
+        window.parent.$("#latitude").val(lat);
+        window.parent.viewModel.model.latitude=lat;
+        if(address!=""){
+            window.parent.$("#address").val(address);
+            window.parent.viewModel.model.address=address;
+        }
+        window.parent.$("#latitude").focus();
+        window.parent.$("#latitude").blur();
+        back();
+    }
+
+    $(document).ready(function(){
+
+    });
+    $("span[class='k-dropdown-wrap k-state-default']").css("height","26px");
+    $("span[class='k-picker-wrap k-state-default']").css("height","26px");
+
+    function back(){
+        var communityDetails =  window.parent.$("#editWin").data("kendoWindow");
+        communityDetails.close();
+    }
+</script>
+</body>
+</html>

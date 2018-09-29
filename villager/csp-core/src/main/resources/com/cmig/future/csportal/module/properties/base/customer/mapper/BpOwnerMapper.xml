@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.properties.base.customer.mapper.BpOwnerMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.properties.base.customer.dto.BpOwner">
+		<result column="BP_OWNER_ID" property="bpOwnerId" jdbcType="DECIMAL" />
+		<result column="BP_ID" property="bpId" jdbcType="DECIMAL" />
+		<!-- 非表字段 -->
+		<result column="BP_CODE" property="bpCode" jdbcType="VARCHAR" />
+		<result column="BP_NAME" property="bpName" jdbcType="VARCHAR" />
+		<result column="BP_NICK_NAME" property="bpNickName" jdbcType="VARCHAR" />
+		<result column="ID_TYPE" property="idType" jdbcType="VARCHAR" />
+		<result column="ID_NO" property="idNo" jdbcType="VARCHAR" />
+		<result column="PHOTO" property="photo" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="GENDER" property="gender" jdbcType="VARCHAR" />
+		<result column="BIRTHDAY" property="birthday" jdbcType="DATE" />
+		<result column="AGE" property="age" jdbcType="DECIMAL" />
+	</resultMap>
+
+	<select id="selectCustomer" resultMap="BaseResultMap">
+		select
+		bg.ID_TYPE,
+        bg.ID_NO,
+		bg.BP_ID,
+		bg.BP_CODE,
+		bg.BP_NAME,
+		bg.BP_NICK_NAME,
+		bg.GENDER,
+		bg.AGE,
+		bg.EMAIL,
+		bg.GENDER,
+		bg.BIRTHDAY,
+		bg.MOBILE,
+		bg.PHONE,
+		bg.PHOTO,
+		bo.BP_OWNER_ID
+		from
+		csp_bp_general bg
+		left outer join csp_bp_owner bo on bo.BP_ID = bg.BP_ID
+		where bg.BP_ID = #{bpId}
+	</select>
+
+	<select id="getOwnerIdByIdNo" resultType="java.lang.Long">
+		select bo.BP_OWNER_ID
+		from csp_bp_owner bo,csp_bp_general bg
+		where bo.BP_ID = bg.BP_ID
+		and
+		bg.ID_NO = #{idNo}
+	</select>
+
+	<select id="findGeneralByBuildingId" resultMap="BaseResultMap">
+		select
+		bg.BP_ID,
+		bg.BP_CODE,
+		bg.BP_NAME,
+		bg.BP_NICK_NAME,
+		bg.GENDER,
+		bg.AGE,
+		bg.EMAIL,
+		bg.GENDER,
+		bg.BIRTHDAY,
+		bg.MOBILE,
+		bg.PHONE,
+		bg.PHOTO,
+		bo.BP_OWNER_ID,
+		hm.BP_TYPE,
+		hm.BUILDING_ID,
+		hm.BUILDING_TYPE,
+		hm.EFFECTIVE_END_DATE,
+		hm.EFFECTIVE_START_DATE,
+		mh.HOUSE_CODE,
+		mh.HOUSE_FULL_NAME
+		from
+		csp_mgt_house mh
+		left outer join csp_bp_house_map hm on mh.HOUSE_ID =hm.BUILDING_ID AND hm.BUILDING_TYPE = 'HOUSING'
+		left outer join csp_bp_owner bo on hm.BP_EXT_ID = bo.BP_OWNER_ID
+		left outer join csp_bp_general bg on bo.BP_ID = bg.BP_ID
+		WHERE  hm.BUILDING_ID = #{buildingId}
+	</select>
+	
+	
+	<select id="queryOwners" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.properties.base.customer.dto.BpOwner">
+	    select 
+bo.BP_OWNER_ID,
+bg.BP_CODE,
+bg.BP_ID,
+bg.BP_NAME,
+bg.BP_NICK_NAME,
+bg.ID_TYPE,
+bg.ID_NO,
+bg.MOBILE
+from csp_bp_owner bo 
+left outer join csp_bp_general bg on bg.BP_ID = bo.BP_ID 
+<where>
+			<if test="bpName != null">
+				 bg.bp_name LIKE concat('%',
+				concat(#{bpName,jdbcType=VARCHAR}, '%'))
+			</if>
+			<if test="bpCode != null">
+				and bg.bp_code LIKE concat('%',
+				concat(#{bpCode,jdbcType=VARCHAR}, '%'))
+			</if>
+			<if test="idNo != null">
+				and bg.id_no LIKE concat('%',
+				concat(#{idNo,jdbcType=VARCHAR}, '%'))
+			</if>
+			<if test="mobile != null">
+				and bg.mobile LIKE concat('%',
+				concat(#{mobile,jdbcType=VARCHAR}, '%'))
+			</if>
+			<if test="idType != null">
+				and bg.id_type = #{idType,jdbcType=VARCHAR}
+			</if>
+</where>
+	</select>
+
+	<select id="getByUserId" resultMap="BaseResultMap">
+			select bo.BP_OWNER_ID
+      from csp_bp_owner bo
+      left outer join csp_v_app_user_bp t on t.BP_ID = bo.BP_ID
+      where t.APP_USER_ID= #{userId}
+	</select>
+</mapper>

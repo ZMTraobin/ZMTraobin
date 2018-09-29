@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.pay.refund.mapper.OrderFormRefundMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.pay.refund.dto.OrderFormRefund">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="REFUND_ID" property="refundId" jdbcType="VARCHAR" />
+        <result column="REFUND_ORDER_NO" property="refundOrderNo" jdbcType="VARCHAR" />
+        <result column="AMOUNT" property="amount" jdbcType="DECIMAL" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="TIME_SUCCEED" property="timeSucceed" jdbcType="DATE" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="FAILURE_CODE" property="failureCode" jdbcType="VARCHAR" />
+        <result column="FAILURE_MSG" property="failureMsg" jdbcType="VARCHAR" />
+        <result column="METADATA" property="metadata" jdbcType="VARCHAR" /> 
+        <result column="CHARGE_ID" property="chargeId" jdbcType="VARCHAR" />
+        <result column="BACK_URL" property="backUrl" jdbcType="VARCHAR" />
+        <result column="ORDER_ID" property="orderId" jdbcType="DECIMAL" />
+        <result column="ORDER_NUMBER" property="orderNumber" jdbcType="VARCHAR" />
+        <result column="TRANSACTION_NO" property="transactionNo" jdbcType="VARCHAR" />
+        <result column="FUNDING_SOURCE" property="fundingSource" jdbcType="VARCHAR" />
+        <!--  -->
+        <result column="REFUND_NOTIFY_ID" property="refundNotifyId" jdbcType="DECIMAL" />
+        <result column="REFUND_NOTIFY_STATUS" property="refundNotifyStatus" jdbcType="VARCHAR" />
+        <result column="NOTIFY_TIMES" property="notifyTimes" jdbcType="DECIMAL" />
+        <result column="TIME_NOTIFIED" property="timeNotified" jdbcType="DATE" />
+        <result column="TIME_NEXT_NOTIFY" property="timeNextNotify" jdbcType="DATE" /> 
+    </resultMap>
+
+
+    <sql id="orderFormRefundColumns">
+        a.ID	 AS 	"id",
+        a.REFUND_ID AS "refundId",
+        a.REFUND_ORDER_NO AS "refundOrderNo",
+        a.AMOUNT AS "amount",
+        a.STATUS AS "status",
+        a.TIME_SUCCEED AS "timeSucceed",
+        a.DESCRIPTION AS "description",
+        a.FAILURE_CODE AS "failureCode",
+        a.FAILURE_MSG AS "failureMsg",
+        a.METADATA AS "metadata",
+        a.CHARGE_ID AS "chargeId",
+        a.BACK_URL AS "backUrl",
+        a.ORDER_ID AS "orderId",
+        a.ORDER_NUMBER AS "orderNumber",
+        a.TRANSACTION_NO AS "transactionNo",
+        a.FUNDING_SOURCE AS "fundingSource",
+        a.CREATED_BY as "createdBy",
+        a.CREATION_DATE as "creationDate",
+        a.LAST_UPDATED_BY as "lastUpdatedBy",
+        a.LAST_UPDATE_DATE as "lastUpdateDate"
+    </sql>
+
+    <select id="findByRefundOrderNo" resultMap="BaseResultMap">
+        SELECT
+        <include refid="orderFormRefundColumns" />
+        FROM csp_order_form_refund a
+        WHERE a.REFUND_ORDER_NO =#{refundOrderNo}
+    </select>
+    
+    <select id="selectByOrder" resultMap="BaseResultMap" parameterType="com.cmig.future.csportal.module.pay.refund.dto.OrderFormRefund">
+        SELECT
+        <include refid="orderFormRefundColumns" />,
+        an.id as "refundNotifyId",
+        an.status as "refundNotifyStatus",
+        an.times as "notifyTimes",
+        an.time_notified as "timeNotified",
+        an.time_next_notify as "timeNextNotify"
+        FROM csp_order_form_refund a
+        LEFT OUTER JOIN csp_order_form_refund_notify_mc an on an.REFUND_ORDER_ID = a.ID
+        WHERE a.order_id=#{orderId,jdbcType=DECIMAL}
+    </select>
+
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.properties.authorManager.mapper.LjhSysUserCommunityMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.properties.authorManager.dto.LjhSysUserCommunity">
+		<result column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="SYS_USER_ID" property="sysUserId" jdbcType="DECIMAL" />
+		<result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+		<result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" />
+		<!-- 非表字段 -->
+		<result column="COMMUNITY_NAME" property="communityName"
+			jdbcType="VARCHAR" />
+		<result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+		<result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR" />
+	</resultMap>
+
+
+	<select id="selectByUser" resultMap="BaseResultMap"
+		parameterType="com.cmig.future.csportal.module.properties.authorManager.dto.LjhSysUserCommunity">
+		select suc.id,
+		suc.SYS_USER_ID,
+		suc.COMMUNITY_ID,
+		bc.CITY_NAME,
+		bc.COMMUNITY_NAME,
+		bc.COMPANY_NAME
+		from csp_ljh_sys_user_community suc
+		left outer join
+		csp_ljh_base_community bc
+		on bc.ID = suc.COMMUNITY_ID
+		where suc.DEL_FLAG
+		= #{DEL_FLAG_NORMAL}
+		and suc.sys_user_id =
+		#{sysUserId,jdbcType=DECIMAL}
+	</select>
+
+	<select id="findListByUserId" resultMap="BaseResultMap">
+		SELECT
+		ID,SYS_USER_ID,COMMUNITY_ID
+		FROM csp_ljh_sys_user_community
+		WHERE
+		DEL_FLAG = #{DEL_FLAG_NORMAL}
+		AND sys_user_id =
+		#{sysUserId,jdbcType=DECIMAL}
+	</select>
+
+	<select id="queryCommunitiesNoAuth" resultMap="BaseResultMap">
+		select
+		bc.id,bc.CITY_NAME,bc.COMMUNITY_NAME,COMPANY_NAME
+		from csp_ljh_base_community bc
+		where bc.id not in
+		(select suc.COMMUNITY_ID from csp_ljh_sys_user_community suc where suc.sys_user_id=#{sysUserId,jdbcType=DECIMAL})
+		and bc.UNABLE_FLAG =#{UNABLE_FLAG_NORMAL}
+	</select>
+</mapper>

@@ -1,0 +1,61 @@
+<#-- * description: 快速编码界面 *author:jialong.zuo@hand-china.com * version:
+1.0 * --> 
+<body>
+<script src="/hap/lib/js/jquery-form.js"></script>
+	<div class="col-xs-12">
+                    <div class="form-group">
+                        <label class="col-xs-2 control-label"
+                               style="text-align: right">附件</label>
+                        <div class="col-xs-5">
+                            <div class="col-xs-6">
+                                <form id="fileForm" name="fileForm"
+                                      action="${base.contextPath}/common/file/upload"
+                                      target="_uploadTarget" enctype="multipart/form-data" method="POST">
+                                    <a href="javascript:void(0);" class="file"><@spring.message
+                                        "sys.config.select_file"/>
+                                        <input type="file" name="file"/>
+                                    </a>
+                                </form>
+                                <br/>
+                                <button type="submit" class="btn btn-primary"
+                                            onclick="subimtBtn()">
+                                        <@spring.message "sys.config.upload_file"/>
+                                </button>
+                            </div>
+                            
+                            <div>
+                                <p><a style="display:none" id="attach_url" href="javascript:void(0)">下载附件</a></p>
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+<script type="text/javascript">
+function subimtBtn() {
+		var imageform = $("form[name=fileForm]");
+		var options = {
+			url : "${base.contextPath}/common/file/upload",
+			type : 'post',
+			async : false,
+			success : function(result) {
+				if (result.status == '1') {
+					attchUrl = result.data[0].attchUrl;
+                    attchData = result.data[0];
+					var showAttachUrl = result.data[0].showAttachUrl;
+					$("#attach_url").attr('href',showAttachUrl);
+					$("#attach_url").attr('style','');
+					kendo.ui.showInfoDialog({
+                                    message: result.message
+                                });
+				}else{
+				kendo.ui.showErrorDialog({
+                                    message: result.message
+                                });
+				}
+			}
+		};
+		imageform.ajaxSubmit(options);
+		//$("#fileForm").submit();  
+	}
+</script>    
+</body>	          
+</html>

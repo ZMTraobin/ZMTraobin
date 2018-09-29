@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.operate.neighbor.mapper.LjhNeighborTopicPraiseMapper">
+
+    <sql id="nhTopicPraiseColumns">
+		a.id AS "id",
+		a.del_flag AS "delFlag",
+		<!-- a.created_by AS "createId.id",
+		a.last_updated_by AS "updateId.id",
+		a.creation_date AS "createTime",
+		a.last_updated_by AS "updateTime", -->
+		a.topic_id AS "topicId",
+		a.user_id AS "userId"
+	</sql> 
+	<select id="findList" resultType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicPraise">
+		SELECT 
+			<include refid="nhTopicPraiseColumns"/> 
+		FROM CSP_LJH_NEIGHBOR_TOPIC_PRAISE a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="topicId != null and topicId != ''">
+			AND a.topic_id = #{topicId}
+			</if>
+			<if test="userId != null and userId != ''">
+			AND a.user_id = #{userId}
+			</if>
+		</where>
+		ORDER BY a.creation_date DESC
+		<!-- <choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.creation_date DESC
+			</otherwise>
+		</choose> -->
+	</select>
+	
+	<update id="delete">
+		UPDATE CSP_LJH_NEIGHBOR_TOPIC_PRAISE SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
+		<if test="id != null and id != ''">
+			AND id = #{id}
+		</if>
+		<if test="topicId != null and topicId != ''">
+			AND topic_id = #{topicId}
+		</if>
+	</update>
+
+    <select id="findListByTopicList" resultType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopicPraise">
+        SELECT
+        <include refid="nhTopicPraiseColumns"/>
+        FROM CSP_LJH_NEIGHBOR_TOPIC_PRAISE a
+        <where>
+            a.del_flag = '0'
+            AND a.user_id = #{userId}
+            AND a.topic_id in
+            <foreach collection="nhTopicViewList" item="entry" index="index" open="(" close=")" separator=",">
+                #{entry.id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,688 @@
+<#include "../../../include/header.html"/>
+<script src="${base.contextPath}/common/code?openSourceSystem=OPEN.SOURCE_SYSTEM" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?payStatusData=PAY.STATUS" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?payChannelData=PAY.CHANNEL" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?yesnoData=SYS.YES_NO" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?orderTypeData=CSP.PAY.ORDER_TYPE" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?orderStatusData=CSP.PAY_ORDER_STATUS" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?merchantNoData=CSP.MERCHANT_NO" type="text/javascript"></script>
+
+
+
+<script type="text/javascript">
+    var today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+    var viewModel = kendo.observable({
+        model: {},
+        requeteMethodData: [
+            {mean: "GET", value: "GET"},
+            {mean: "POST", value: "POST"}],
+        openSourceSystem: openSourceSystem,
+        payStatusData: payStatusData,
+        payChannelData: payChannelData,
+        yesnoData: yesnoData,
+        orderTypeData: orderTypeData,
+        orderStatusData: orderStatusData,
+        merchantNoData:merchantNoData,
+        saveFunction: function () {
+            $('#Grid').data('kendoGrid').saveChanges();
+        },
+        queryFunction: function (e) {
+            $('#Grid').data('kendoGrid').dataSource.page(1);
+        },
+        resetFunction: function (e) {
+            var formData = viewModel.model.toJSON();
+            for (var k in formData) {
+                viewModel.model.set(k, null);
+            }
+        },
+        exportExcelFunction:function(e){
+            var form = $("<form>");   //定义一个form表单
+            form.attr('style','display:none');   //在form表单中添加查询参数
+            form.attr('target','');
+            form.attr('method','post');
+            form.attr('action',"${base.contextPath}/csp/order/form/export")
+
+            var formData = viewModel.model.toJSON();
+            for (var k in formData) {
+                var input1 = $('<input>');
+                input1.attr('type','hidden');
+                input1.attr('name',k);
+                input1.attr('value',formData[k]);
+
+                form.append(input1);   //将查询参数控件提交到表单上
+            }
+            var $inputToken=$('<input>').attr({name:"${_csrf.parameterName}",value:"${_csrf.token}",type:"hidden"});
+            form.append($inputToken);
+            $(document.body).append(form);
+            form.submit();   //表单提交
+            form.remove();
+        }
+
+    });
+</script>
+<body>
+<div id="page-content">
+
+    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+        <span class="btn btn-primary" style="float:left;margin-right:5px;"
+              data-bind="click:exportExcelFunction"><i class="fa fa-file-excel-o" style="margin-right:3px;"></i><@spring.message "hap.exportexcel"/></span>
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+
+    <div class="pull-right" id="queryPanel" style="margin-right:5px;padding-bottom:10px;">
+    <div class="k-query-simple" id="query-form">
+        <form class="form-horizontal" id="myForm" >
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">订单编号</label>
+                    <div class="col-sm-8">
+                        <input type="text" style="width: 100%"
+                               data-bind="value:model.orderNumber" class="k-textbox">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">支付渠道</label>
+                    <div class="col-sm-8">
+                        <select data-role="combobox" data-value-primitive="true"
+                                data-text-field="meaning" data-value-field="value"
+                                data-bind="source: payChannelData,value:model.payChannel" style="width: 100%;"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">原订单号</label>
+                    <div class="col-sm-8">
+                        <input type="text" style="width: 100%"
+                               data-bind="value:model.sourceOrderNumber" class="k-textbox">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <script>
+        kendo.bind($('#query-form'), viewModel);
+    </script>
+
+    <div class="k-query-detail" id="query-form2">
+        <div class="rows">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">来源系统</label>
+                    <div class="col-sm-8">
+                        <select data-role="combobox" data-value-primitive="true"
+                                data-text-field="meaning" data-value-field="value"
+                                data-bind="source: openSourceSystem,value:model.sourceSystem"
+                                style="width: 100%;"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">商品标题</label>
+                    <div class="col-sm-8">
+                        <input type="text" style="width: 100%"
+                               data-bind="value:model.subject" class="k-textbox">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">支付状态</label>
+                    <div class="col-sm-8">
+                        <select data-role="combobox" data-value-primitive="true"
+                                data-text-field="meaning" data-value-field="value"
+                                data-bind="source: payStatusData,value:model.payStatus" style="width: 100%;"></select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="rows" style="margin-top: 10px">
+            <div class="col-sm-4" style="margin-top: 10px;margin-bottom: 8px">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">是否有退款</label>
+                    <div class="col-sm-8">
+                        <select data-role="combobox" data-value-primitive="true"
+                                data-text-field="meaning" data-value-field="value"
+                                data-bind="source: yesnoData,value:model.hasRefunds" style="width: 100%;"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4" style="margin-top: 10px;margin-bottom: 8px">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">支付时间从</label>
+                    <div class="col-sm-8">
+                        <input style="width: 100%" data-role="datetimepicker"
+                               data-bind="value:model.startDate" class="k-datetimepicker">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4" style="margin-top: 10px;margin-bottom: 8px">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">支付时间至</label>
+                    <div class="col-sm-8">
+                        <input style="width: 100%" data-role="datetimepicker"
+                               data-bind="value:model.endDate" class="k-datetimepicker">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rows" style="margin-top: 10px">
+            <div class="col-sm-4" style="margin-top: 5px;margin-bottom: 20px">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">手机号</label>
+                    <div class="col-sm-8">
+                        <input type="text" style="width: 100%"
+                               data-bind="value:model.mobile" class="k-textbox">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4" style="margin-top: 5px;margin-bottom: 20px">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">订单类型</label>
+                    <div class="col-sm-8">
+                        <select data-role="combobox" data-value-primitive="true"
+                                data-text-field="meaning" data-value-field="value"
+                                data-bind="source: orderTypeData,value:model.orderType" style="width: 100%;"></select>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4" style="margin-top: 5px;margin-bottom: 20px">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">订单状态</label>
+                    <div class="col-sm-8">
+                        <select data-role="combobox" data-value-primitive="true"
+                                data-text-field="meaning" data-value-field="value"
+                                data-bind="source: orderStatusData,value:model.orderStatus"
+                                style="width: 100%;"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rows" style="margin-top: 10px">
+            <div class="col-sm-4" style="margin-top: 5px;margin-bottom: 20px">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">商户</label>
+                    <div class="col-sm-8">
+                        <select data-role="combobox" data-value-primitive="true"
+                                data-text-field="meaning" data-value-field="value"
+                                data-bind="source: merchantNoData,value:model.merchantNo"
+                                style="width: 100%;"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        kendo.bind($('#query-form2'), viewModel);
+    </script>
+</div>
+
+<script>
+    $('#queryPanel').kendoQueryPanel({
+        queryFunction: function () {
+            viewModel.queryFunction();
+        },
+        resetFunction: function () {
+            viewModel.resetFunction();
+        }
+    })
+</script>
+
+<div style="clear: both;">
+    <div id="Grid"></div>
+    <div id="orderDetail"></div>
+</div>
+</div>
+
+<script type="text/javascript">
+    var BaseUrl = _basePath;
+    dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: BaseUrl + "/csp/order/form/query",
+                type: "POST",
+                dataType: "json"
+            },
+            update: {
+                url: BaseUrl + "/csp/order/form/submit",
+                type: "POST",
+                contentType: "application/json"
+            },
+            destroy: {
+                url: BaseUrl + "/csp/order/form/remove",
+                type: "POST",
+                contentType: "application/json"
+            },
+            create: {
+                url: BaseUrl + "/csp/order/form/submit",
+                type: "POST",
+                contentType: "application/json"
+            },
+            parameterMap: function (options, type) {
+                if (type !== "read" && options.models) {
+                    var datas = Hap.prepareSubmitParameter(options, type)
+                    return kendo.stringify(datas);
+                } else if (type === "read") {
+                    return Hap.prepareQueryParameter(viewModel.model
+                        .toJSON(), options)
+                }
+            }
+        },
+        batch: true,
+        serverPaging: true,
+        pageSize: 10,
+        schema: {
+            data: 'rows',
+            total: 'total',
+            model: {
+                id: "id",
+                fields: {}
+            }
+        }
+    });
+
+    $("#Grid")
+        .kendoGrid(
+            {
+                dataSource: dataSource,
+                height: '100%',
+                resizable: true,
+                scrollable: true,
+                navigatable: false,
+                //selectable: 'multiple, rowbox',
+                pageable: {
+                    pageSizes: [5, 10, 20, 50],
+                    refresh: true,
+                    buttonCount: 5
+                },
+                columns: [
+                    {
+                        //field: "orderNumber",
+                        title: '订单号',
+                        width: 180,
+                        template: function (rowdata) {
+                            return "<a href='#' onclick='showOrder(\"" + rowdata.id + "\",\"" + rowdata.hasRefunds + "\")'>"
+                                + rowdata.orderNumber
+                                + "</a>"
+                        }
+                    },
+                    {
+                        field: "sourceSystem",
+                        title: '来源系统',
+                        template: function (dataItem) {
+                            var v = dataItem.sourceSystem;
+                            $
+                                .each(
+                                    openSourceSystem,
+                                    function (i, n) {
+                                        if (v == null) {
+                                            v = "";
+                                            return v;
+                                        }
+                                        if ((n.value || '')
+                                                .toLowerCase() == (v || '')
+                                                .toLowerCase()) {
+                                            v = n.meaning;
+                                            return v;
+                                        }
+                                    })
+                            return v;
+                        },
+                        width: 100
+                    },
+                    {
+                        field: "sourceOrderNumber",
+                        title: '原系统订单号',
+                        width: 120
+                    },
+                    {
+                        field: "mobile",
+                        title: '用戶手机号',
+                        width: 120
+                    },
+                    {
+                        field: "payStatus",
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:center"
+                        },
+                        template: function (dataItem) {
+                            var v = dataItem.payStatus;
+                            $
+                                .each(
+                                    payStatusData,
+                                    function (i, n) {
+                                        if (v == null) {
+                                            v = "";
+                                            return v;
+                                        }
+                                        if ((n.value || '')
+                                                .toLowerCase() == (v || '')
+                                                .toLowerCase()) {
+                                            v = n.meaning;
+                                            return v;
+                                        }
+                                    })
+                            return v;
+                        },
+                        title: '支付状态',
+                        width: 80
+                    },
+                    {
+                        field: "merchantNo",
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:center"
+                        },
+                        template: function (dataItem) {
+                            var v = dataItem.merchantNo;
+                            $
+                                .each(
+                                    merchantNoData,
+                                    function (i, n) {
+                                        if (v == null) {
+                                            v = "";
+                                            return v;
+                                        }
+                                        if ((n.value || '')
+                                                .toLowerCase() == (v || '')
+                                                .toLowerCase()) {
+                                            v = n.meaning;
+                                            return v;
+                                        }
+                                    })
+                            return v;
+                        },
+                        title: '商户',
+                        width: 80
+                    },
+                    {
+                        field: "orderType",
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:center"
+                        },
+                        template: function (dataItem) {
+                            var v = dataItem.orderType;
+                            $
+                                .each(
+                                    orderTypeData,
+                                    function (i, n) {
+                                        if (v == null) {
+                                            v = "";
+                                            return v;
+                                        }
+                                        if ((n.value || '')
+                                                .toLowerCase() == (v || '')
+                                                .toLowerCase()) {
+                                            v = n.meaning;
+                                            return v;
+                                        }
+                                    })
+                            return v;
+                        },
+                        title: '订单类型',
+                        width: 80
+                    },
+                    {
+                        field: "orderStatus",
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:center"
+                        },
+                        template: function (dataItem) {
+                            var v = dataItem.orderStatus;
+                            $
+                                .each(
+                                    orderStatusData,
+                                    function (i, n) {
+                                        if (v == null) {
+                                            v = "";
+                                            return v;
+                                        }
+                                        if ((n.value || '')
+                                                .toLowerCase() == (v || '')
+                                                .toLowerCase()) {
+                                            v = n.meaning;
+                                            return v;
+                                        }
+                                    })
+                            return v;
+                        },
+                        title: '订单状态',
+                        width: 80
+                    },
+                    {
+                        //field: "payChannel",
+                        title: '支付渠道',
+                        width: 80,
+                        template: function (dataItem) {
+                            var v = dataItem.payChannel;
+                            $
+                                .each(
+                                    payChannelData,
+                                    function (i, n) {
+                                        if (v == null) {
+                                            v = "";
+                                            return v;
+                                        }
+                                        if ((n.value || '')
+                                                .toLowerCase() == (v || '')
+                                                .toLowerCase()) {
+                                            v = n.meaning;
+                                            return v;
+                                        }
+                                    })
+                            return v;
+                        }
+                    },
+                    {
+                        title: '是否有退款',
+                        width: 80,
+                        template: function (dataItem) {
+                            var v = dataItem.hasRefunds;
+                            $
+                                .each(
+                                    yesnoData,
+                                    function (i, n) {
+                                        if (v == null) {
+                                            v = "";
+                                            return v;
+                                        }
+                                        if ((n.value || '')
+                                                .toLowerCase() == (v || '')
+                                                .toLowerCase()) {
+                                            v = n.meaning;
+                                            return v;
+                                        }
+                                    })
+                            return v;
+                        }
+                    },
+                    {
+                        field: "orderAmount",
+                        title: '订单总额（元）',
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:right"
+                        },
+                        width: 120,
+                        template: function (dataItem) {
+                            return toThousands(dataItem.orderAmount / 100);
+                        }
+                    },
+                    {
+                        field: "discountAmount",
+                        title: '折扣金额（元）',
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:right"
+                        },
+                        width: 120,
+                        template: function (dataItem) {
+                            return toThousands(dataItem.discountAmount / 100);
+                        }
+                    },
+                    {
+                        field: "integralAmount",
+                        title: '积分抵扣（元）',
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:right"
+                        },
+                        width: 120,
+                        template: function (dataItem) {
+                            return toThousands(dataItem.integralAmount / 100);
+                        }
+                    },
+                    {
+                        field: "payableAmount",
+                        title: '应付金额（元）',
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:right"
+                        },
+                        width: 120,
+                        template: function (dataItem) {
+                            return toThousands(dataItem.payableAmount / 100);
+                        }
+                    },
+                    {
+                        field: "paidAmount",
+                        title: '实付金额（元）',
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:right"
+                        },
+                        width: 120,
+                        template: function (dataItem) {
+                            return toThousands(dataItem.paidAmount / 100);
+                        }
+                    },
+                    {
+                        field: "timePaid",
+                        title: '支付时间',
+                        width: 150,
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                    },
+                    {
+                        field: "timeExpire",
+                        title: '失效时间',
+                        width: 150,
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                    },
+                    {
+                        field: "subject",
+                        title: '商品标题',
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:center"
+                        },
+                        width: 100
+                    },
+                    {
+                        field: "transeq",
+                        title: '渠道流水号',
+                        width: 140
+                    },
+                    {
+                        field: "creationDate",
+                        headerAttributes: {
+                            style: "text-align:center"
+                        },
+                        attributes: {
+                            style: "text-align:left"
+                        },
+                        title: '下单时间',
+                        width: 150
+                    }],
+                editable: false
+            });
+
+    function deleteData() {
+        Hap.deleteGridSelection({
+            grid: $('#Grid')
+        });
+    }
+
+    Hap.autoResizeGrid("#Grid");
+
+    var __baseUrl = "${base.contextPath}/module/pay/order/";
+
+    function showOrder(id, hasRfunds) {
+        $("#orderDetail").kendoWindow(
+            {
+                width: "85%",
+                height: "91%",
+                title: '订单详情',
+                actions: ["Pin", "Minimize", "Maximize", "Close"],
+                content: __baseUrl + "order_form_detail.html?isedit=1&id=" + id,
+                modal: true,
+                visible: false,
+                iframe: true
+            });
+        var orderDetail = $("#orderDetail").data("kendoWindow");
+        orderDetail.center().open();
+    }
+
+    function toThousands(num) {
+        return kendo.toString(num, "n");
+    }
+
+    $("#exportBt").click(function(){
+        Hap.submitForm({
+            url: '${base.contextPath}/common/excel/download?importEnumName=ORDER',
+            formModel: viewModel.model,
+            success: function (data) {
+
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.lifepay.mapper.LifePayBillMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.lifepay.dto.LifePayBill">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="PRODUCT_TYPE" property="productType" jdbcType="VARCHAR" />
+        <result column="PRODUCT_ID" property="productId" jdbcType="VARCHAR" />
+        <result column="BILL_ID" property="billId" jdbcType="VARCHAR" />
+        <result column="BILL_ORG_ID" property="billOrgId" jdbcType="VARCHAR" />
+        <result column="BILL_ORG_NAME" property="billOrgName" jdbcType="VARCHAR" />
+        <result column="BILL_NO" property="billNo" jdbcType="VARCHAR" />
+        <result column="BILL_MONTH" property="billMonth" jdbcType="VARCHAR" />
+        <result column="BILL_AMT" property="billAmt" jdbcType="DECIMAL" />
+        <result column="BILL_RECORD_TIMES" property="billRecordTimes" jdbcType="VARCHAR" />
+        <result column="SEARCH_TYPE" property="searchType" jdbcType="VARCHAR" />
+        <result column="BARCODE" property="barcode" jdbcType="VARCHAR" />
+        <result column="DOOR_CODE" property="doorCode" jdbcType="VARCHAR" />
+        <result column="BILL_ADDR" property="billAddr" jdbcType="VARCHAR" />
+        <result column="BILL_OWNER" property="billOwner" jdbcType="VARCHAR" />
+        <result column="OVERDUE_FEE" property="overdueFee" jdbcType="DECIMAL" />
+        <result column="IS_INSURANCE" property="isInsurance" jdbcType="VARCHAR" />
+        <result column="BILL_STATUS" property="billStatus" jdbcType="VARCHAR" />
+        <result column="ORDER_NOTIFY_TIME" property="orderNotifyTime" jdbcType="DATE" />
+        <result column="ORDER_NOTIFY_STATUS" property="orderNotifyStatus" jdbcType="VARCHAR" />
+        <result column="THIRD_ORDER_NO" property="thirdOrderNo" jdbcType="VARCHAR" />
+
+    </resultMap>
+
+
+</mapper>

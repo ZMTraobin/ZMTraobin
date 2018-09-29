@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.kpi.mapper.UmengAppMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.kpi.dto.UmengApp">
+        <result column="ID" property="id" jdbcType="DECIMAL" />
+        <result column="APP_KEY" property="appKey" jdbcType="VARCHAR" />
+        <result column="PLATFORM" property="platform" jdbcType="VARCHAR" />
+        <result column="POPULAR" property="popular" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+        <result column="USE_GAME_SDK" property="useGameSdk" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+</mapper>

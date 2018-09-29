@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.cmig.future.csportal.module.operate.neighbor.mapper.LjhNeighborTopicMapper">
+	<resultMap id="BaseResultMap"
+		type="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopic">
+	</resultMap>
+	
+	<sql id="nhTopicColumns">
+		a.id AS "id",
+		a.del_flag AS "delFlag",
+		a.topic_content AS "topicContent",
+		a.publish_time AS "publishTime",
+		a.publish_id AS "publishId",
+		a.community_id AS "communityId",
+		a.type_id AS "typeId",
+		a.topic_type AS "topicType",
+		a.topic_address AS "topicAddress",
+		a.longitude AS "longitude",
+		a.latitude AS "latitude"
+	</sql>
+	<select id="findList" resultType="com.cmig.future.csportal.module.operate.neighbor.dto.LjhNeighborTopic">
+		SELECT 
+			<include refid="nhTopicColumns"/> 
+		FROM CSP_LJH_NEIGHBOR_TOPIC a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="topicContent != null  and topicContent != ''">
+				AND a.topic_content= #{topicContent}
+			</if>
+			<if test="typeId != null  and typeId != ''">
+				AND a.type_id= #{typeId}
+			</if>
+            <if test="topicType != null  and topicType != ''">
+                AND a.topic_type= #{topicType}
+            </if>
+			<if test="longitude != null  and longitude != ''">
+				AND a.longitude= #{longitude}
+			</if>
+			<if test="latitude != null  and latitude != ''">
+				AND a.latitude= #{latitude}
+			</if>
+			<if test="communityId != null  and communityId != ''">
+				AND a.community_id= #{communityId}
+			</if>
+			<if test="publishId != null  and publishId != ''">
+				AND a.publish_id= #{publishId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.publish_time DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<update id="delete">
+		UPDATE CSP_LJH_NEIGHBOR_TOPIC SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update> 
+	
+	<select id="findTag"  resultType="java.lang.Integer">
+		SELECT COUNT(a.id) AS "count"  FROM CSP_LJH_NEIGHBOR_TOPIC a WHERE a.del_flag = '0' AND a.TYPE_ID =  #{typeId}
+	</select>
+	
+	<select id="hasComments" resultType="java.lang.Integer">
+	    select count(*) from 
+	    csp_ljh_neighbor_topic_comment tc 
+	    where tc.TOPIC_ID = #{topicId}
+	</select>
+	
+</mapper>

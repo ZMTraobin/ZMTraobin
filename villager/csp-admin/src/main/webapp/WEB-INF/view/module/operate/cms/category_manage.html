@@ -1,0 +1,153 @@
+<#--
+        * description: 快速编码界面
+        *author:jialong.zuo@hand-china.com
+        * version: 1.0
+        *
+        -->
+    <#include "../../../include/header.html">
+        <body>
+        <script src="${base.contextPath}/common/code?contentTypeData=CSP.CMS.CONTENT_TYPE" type="text/javascript"></script>
+        <div class="col-sm-12" style="margin-top: 10px;">
+            <div id="treeList"></div>
+            <div id="categoryDetails"></div>
+        </div>
+        <script type="text/javascript">
+            var treeDataSource = new kendo.data.TreeListDataSource({
+                transport: {
+                    read: {
+                        //url: "${base.contextPath}/hr/unit/queryall",
+                        url: "${base.contextPath}/cms/category/query",
+                        type: "POST",
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    model: {
+                        expanded: true
+                    },
+                    parse: function (response) {
+                        var categorys = [];
+                        for (var i = 0; i < response.total; i++) {
+                            if (response.rows[i]) {
+                                var category = {
+                                    id: response.rows[i].id,
+                                    parentId: response.rows[i].parentId,
+                                    name: response.rows[i].name,
+                                    contentType: response.rows[i].contentType,
+                                };
+                                categorys.push(category);
+                            }
+                        }
+                        return categorys;
+                    }
+                }
+            });
+
+            var treeList = $("#treeList").kendoTreeList({
+                dataSource: treeDataSource,
+                navigatable: false,
+                height: "100%",
+                editable: "popup",
+                resizable: false,
+                scrollable: false,
+                editable: false,
+                columns: [
+                    {field: "name", title: '栏目名称', width: 80},
+                    {
+                        title: '内容类型', 
+                        width: 80,
+                        template: function (dataItem) {
+                    var v = dataItem.contentType;
+                    $.each(contentTypeData, function (i, n) {
+                        if ((n.value || '').toLowerCase() == (v || '').toLowerCase()) {
+                            v = n.meaning;
+                            return v;
+                                    }
+                            })
+                            return v;
+                          }
+                        },
+                    {
+                        title: '操作',
+                        width: 100,
+                        headerAttributes: {
+                            "class": "table-header-cell",
+                            style: "text-align: center"
+                        },
+                        template: function (rowdata) {
+                            console.info(rowdata);
+                            if(rowdata.id == '1'){
+                                return "&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick='categoryAdd(\"" + rowdata.id + "\",\""+rowdata.contentType+"\")'>添加下级栏目</a>";
+                            } else {
+                                return "&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick='categoryEdit(\"" + rowdata.id + "\",\""+rowdata.parentId+"\",\""+rowdata.contentType+"\")'>修改</a>&nbsp;&nbsp;<a href='#' onclick='deleteCategory(\"" + rowdata.id + "\")'>删除</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' onclick='categoryAdd(\"" + rowdata.id + "\",\""+rowdata.contentType+"\")'>添加下级栏目</a>";
+                            }
+                        },
+                    }
+                ],
+            }).data("kendoTreeList");
+
+            Hap.autoResizeGrid("#grid");
+
+            $("#categoryDetails").kendoWindow({
+                width: "85%",
+                height: "91%",
+                actions: [
+                    "Pin",
+                    "Minimize",
+                    "Maximize",
+                    "Close"
+                ],
+                modal: true,
+                visible: false,
+                iframe: true
+            });
+
+
+            function querydata() {
+                treeDataSource.read();
+            }
+
+            function categoryEdit(id,parentId,contentType) {
+                var categoryDetails = $("#categoryDetails").data("kendoWindow");
+                categoryDetails.refresh('category_detail.html?isedit=1&parentId='+parentId+'&id=' + id+'&contentType='+contentType);
+                categoryDetails.title('栏目详情').center().open();
+            }
+
+
+            function deleteCategory(id) {
+                console.info('delete id:' + id);
+                kendo.ui.showConfirmDialog({
+                    title: $l('hap.tip.info'),
+                    message: $l('hap.tip.delete_confirm')
+                }).done(
+                        function (event) {
+                            if (event.button == 'OK') {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "${base.contextPath}/cms/category/updateCategoryDelFlag",
+                                    data: {
+                                        id: id
+                                    },
+                                    success: function (data) {
+                                        if (data.success) {
+                                            kendo.ui.showInfoDialog({
+                                                message: '删除成功'
+                                            });
+                                            querydata();
+                                        }
+                                    }
+                                });
+                            }
+                        })
+            }
+
+            function categoryAdd(id,contentType) {
+                console.info('id:' + id);
+                console.info('contentType:' + contentType);
+                var categoryDetails = $("#categoryDetails").data("kendoWindow");
+                categoryDetails.refresh('category_detail.html?isedit=0&parentId='+ id+'&contentType='+contentType);
+                categoryDetails.title('新增栏目').center().open();
+            }
+        </script>
+        </body>
+        </html>

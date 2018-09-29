@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>交易记录</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/app.css" />
+		<link rel="stylesheet" type="text/css" href="css/userCreateRepairDetail.css" />
+		<link rel="stylesheet" type="text/css" href="css/payment.css" />
+		
+		<script src="js/mui.min.js"></script>
+		<style type="text/css">
+			/*位置图标大小*/
+			.mui-icon {
+				font-size: 20px;
+			}
+			
+			/*右上角未交费按钮样式*/
+			.mui-btn-danger,
+			.mui-btn-negative,
+			.mui-btn-red {
+				border: none;
+			}
+			
+			.mui-btn-danger.mui-active:enabled,
+			.mui-btn-danger:enabled:active,
+			.mui-btn-negative.mui-active:enabled,
+			.mui-btn-negative:enabled:active,
+			.mui-btn-red.mui-active:enabled,
+			.mui-btn-red:enabled:active {
+				border: none;
+				background-color: #fff;
+			}
+			
+			.mui-content-padded{ background: #efeff4; margin-top:0;}
+			.listTable tr{ display:block; margin-top:10px;}
+			.listTable td {  padding: 0!important;}
+			.imgss{ display: inline-block; width:43px; height:43px; margin-right:10px;}
+			.pamentList tr{background: #fff; position: relative;padding: 10px 15px !important; font-size: 16px;}
+			.pamentList .marginR{margin-right:-10px;}
+			.listTable tr:nth-child(1){margin-top:0;}
+			
+		</style>
+	</head>
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav">
+			<!--<a class="mui-icon mui-icon-left-nav mui-pull-left " href="ljh://finish_page"></a>-->
+			<a class=" mui-icon  mui-pull-left" href="ljh://finish_page"><img src="img/icon-back.png" style="height: 24px;" /></a>
+			<h1 class="mui-title">交易记录</h1>
+			<!--<span class="mui-btn mui-btn-danger mui-btn-outlined color_464952" style="float: right;" id="toFinished" onclick="toFinished()">电子收据</span>-->
+		</header>
+		
+		<div class="mui-content" id="mui-content">
+			<!--<div class="mui-content-padded pamentList">
+				<table id="xxxxnumber" border="" cellspacing="" cellpadding="" class="listTable">
+					<tr>
+						<td><img src="img/icon-branch.png" class="imgss"></td>
+						<td width="400"><div>物业缴费</div><div style="color:#8e8e8e">2017-5-3 11:30</div></td>
+						<td width="150" class="mui-text-right">￥430</td>
+						<td><span class="mui-icon mui-icon-forward marginR"></span></td>
+					</tr>
+				</table>
+			</div>-->
+		</div>
+	
+		<script src="js/jquery.js"></script>
+		<script src="js/public.js"></script>
+		<script type="text/javascript">
+			var order_id = null; //房间编号
+			
+			//先获取当前环境
+			getUrl();
+			//先获取用户token
+			getToken();
+			
+			(function($, doc) {
+				$.init();
+				$.ready(function() {
+					//根据小区id获取交易记录
+					function charge_bill() {
+						mui.ajax(localStorage.http_service1 + 'user/st/pay/myAllBill', {
+//						mui.ajax('js/userTransactionRecord.json', {
+							dataType: 'json', //服务器返回json格式数据
+							data: {
+								token: token,
+								page: '',
+								pageSize: '40'
+							},
+							type: 'post', 
+							timeout: 10000, 
+//							headers: getHeaders(),
+							success: function(data) {
+								console.log(JSON.stringify(data));
+		
+								//TODO 测试数据
+//										data = 
+//								
+								closePpage(data.status)
+								//服务器返回响应，根据响应结果，分析是否登录成功；
+								if(data.status == "1") {
+									var Html = "";
+										
+									if(data.data.length > 1) {
+										Html += '<div class="mui-content-padded pamentList">';
+										Html += '	<table id="" border=""  cellspacing="" cellpadding="" class="listTable">';
+										for(var i = 0; i < data.data.length; i++) {
+											var feelistItem = data.data[i];
+											Html += '		<tr id="' + feelistItem.orderId + '"><td><img src="img/icon-branch.png" class="imgss"></td>';
+											Html += '		<td width="400"><div>' + feelistItem.orderType + '</div><div style="color:#8e8e8e;font-size:14px ;">' + feelistItem.timePaid + '</div></td>';
+											Html += '		<td width="150" class="mui-text-right">￥' + feelistItem.orderAmount*0.01 + '</td>';
+											Html += '		<td><span class="mui-icon mui-icon-forward marginR"></span></td></tr>';
+										}
+										Html += '	</table>';
+										Html += '</div>';		
+										
+									} else {
+										//显示空图标
+										document.getElementById("mui-content").innerHTML = '<div class="" style="margin-top: 150px;display: block; overflow: hidden; text-align: center;"><img src="img/userPaymentListEmpty.png" style="width: 40%;"/><p style="font-size: 20px;color: #AAAAAA;margin-top: 10px;">暂无已缴费用</p></div>';
+									};
+									
+									document.getElementById("mui-content").innerHTML = Html;
+									addItemClick();
+								} else {
+									//显示空图标
+									document.getElementById("mui-content").innerHTML = '<div class="" style="margin-top: 150px;display: block; overflow: hidden; text-align: center;"><img src="img/userPaymentListEmpty.png" style="width: 40%;"/><p style="font-size: 20px;color: #AAAAAA;margin-top: 10px;">无交易记录</p></div>';
+								};
+							},
+							error: function(xhr, type, errorThrown) {
+								//异常处理；
+								console.log(type);
+							}
+						});
+					}
+					
+//					function getToken() {
+////						window.location.href = 'ljh://user_token/getUserToken';
+//						var prop_ = prompt("ljh://user_token/getUserToken");
+//						getUserToken(prop_);
+//					}
+//					function getUserToken(redata) {
+//						var data = eval('(' + redata + ')');
+//						token = data.user_token;
+//						localStorage.token = data.user_token;
+//					}
+//					//先获取用户token
+//					getToken();
+					
+					//根据小区id获取交易记录
+					charge_bill();
+					
+				});
+				
+			})(mui, document);
+			
+			
+			//点击表单绑定事件
+			function addItemClick() {
+				mui("#mui-content").on("tap", "table tr", function(e) {
+					if(e.target.name == "checkItem") {
+						return;
+					} else {
+						//跳转详情页
+						openuserPayment(this.getAttribute("id"));
+
+					}
+				});
+			}
+			
+			//跳转到详情
+			function openuserPayment(order_id) {
+				//跳转详情页时缓存部分信息
+				localStorage.order_id = order_id; //订单编号
+				
+//				console.log('localStorage.order_id:'+localStorage.order_id+'>>>'+'order_id:'+order_id);
+				mui.openWindow({
+					url: 'userTransactionRecordDetail.html',
+					id: 'userTransactionRecordDetail',
+					show: {
+						aniShow: 'slide-in-right',
+						duration: 200
+					}
+				});
+			}
+			
+		</script>
+	</body>
+</html>

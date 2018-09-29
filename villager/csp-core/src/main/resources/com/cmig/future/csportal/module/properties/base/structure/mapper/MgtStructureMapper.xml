@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.properties.base.structure.mapper.MgtStructureMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.properties.base.structure.dto.MgtStructure">
+        <result column="STRUCTURE_ID" property="structureId" jdbcType="DECIMAL" />
+        <result column="VERSION_ID" property="versionId" jdbcType="DECIMAL" />
+        <result column="PARENT_STRUCTURE_ID" property="parentStructureId" jdbcType="DECIMAL" />
+        <result column="COMMUNITY_ID" property="communityId" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_CODE" property="structureCode" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_NAME" property="structureName" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_NICK_NAME" property="structureNickName" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_FULL_NAME" property="structureFullName" jdbcType="VARCHAR" />
+        <result column="STRUCTURE_TYPE" property="structureType" jdbcType="VARCHAR" />
+        <result column="BUSINESS_TYPE" property="businessType" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="SOURCE_STRUCTURE_CODE" property="sourceStructureCode" jdbcType="VARCHAR" />
+
+        <result column="STRUCTURE_PARENT_FULL_NAME" property="structureParentFullName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="findByStructureCode" resultMap="BaseResultMap">
+        SELECT a.*
+        FROM csp_mgt_structure a
+        WHERE
+        a.STRUCTURE_CODE = #{structureCode}
+    </select>
+    
+    <select id="getCountByStructureCode" resultType="java.lang.Integer">
+    SELECT count(*)
+    FROM csp_mgt_structure a
+    WHERE
+    a.STRUCTURE_CODE = #{structureCode}
+    </select>
+
+    <select id="queryByStructureId" resultMap="BaseResultMap">
+        SELECT a.*,
+        (SELECT s.STRUCTURE_FULL_NAME
+          FROM csp_mgt_structure s
+          WHERE s.STRUCTURE_ID = a.PARENT_STRUCTURE_ID
+        )AS STRUCTURE_PARENT_FULL_NAME
+        FROM csp_mgt_structure a
+        WHERE
+        a.STRUCTURE_ID = #{structureId}
+    </select>
+
+    <select id="getParentStructureList" resultMap="BaseResultMap">
+        SELECT a.STRUCTURE_ID AS structureId,a.STRUCTURE_CODE AS structureCode,a.STRUCTURE_FULL_NAME AS structureFullName
+        FROM csp_mgt_structure a
+        WHERE 1=1
+        <if test="structureId !=null and structureId != '' ">
+            AND a.STRUCTURE_ID = #{structureId}
+        </if>
+        <if test="structureFullName !=null and structureFullName != '' ">
+            AND a.STRUCTURE_FULL_NAME LIKE CONCAT(CONCAT('%',#{structureFullName}),'%')
+        </if>
+        <if test="structureCode !=null and structureCode != '' ">
+            AND a.STRUCTURE_CODE LIKE CONCAT(CONCAT('%',#{structureCode}),'%')
+        </if>
+    </select>
+
+    <delete id="deleteByVersionId">
+        DELETE FROM csp_mgt_structure
+        WHERE VERSION_ID = #{versionId}
+    </delete>
+</mapper>

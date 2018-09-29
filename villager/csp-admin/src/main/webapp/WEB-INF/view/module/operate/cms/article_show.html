@@ -1,0 +1,114 @@
+<#--
+        * description: cms文章详情界面
+        *author:chao.wang@hand-china.com
+        * version: 1.0
+        *
+-->
+<#include "../../../include/header.html">
+<body>
+<script src="../../../lib/kendoui/js/kendo.editor.js"></script>
+<script>
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    var parentId,parentName,categoryId;
+    newViewModel = kendo.observable({
+        model: {}
+    });
+    if (isedit) {
+        $.ajax({
+            url: '${base.contextPath}/cms/article/queryById?id=${RequestParameters.id!0}',
+            async: false,
+            success: function (args) {
+                var a0 = args.rows[0] || {};
+                for (var k in a0) {
+                    newViewModel.model.set(k, a0[k]);
+                }
+            }
+        });
+    }else{
+    
+    }
+
+</script>
+    <div id="page-content" >
+        <form class="form-horizontal" >
+        <div class="col-xs-12" >
+                <div class="form-group">
+                    <label class="col-xs-2  control-label"
+                           style="text-align: right">归属栏目</label>
+                    <div class="col-xs-5">
+                        <input type="text" id="categoryName" readonly="true"
+                               style="width:100%;" data-bind="value:model.categoryName">
+                        <input type="hidden" id="categoryId">  
+                        <script>
+                        kendo.bind($('#categoryName'), newViewModel);
+                        </script>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="col-xs-12" >
+                <div class="form-group">
+                    <label class="col-xs-2 control-label"
+                           style="text-align: right">标题</label>
+                    <div class="col-xs-5">
+                        <input id="title" type="text" readonly="true" data-bind="value:model.title" class="k-textbox"
+                               style="width: 100%;">
+                        <script>kendo.bind($('#title'), newViewModel);</script>
+                    </div>
+                </div>
+            </div>
+            
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                            <label class="col-xs-2 control-label"
+                           style="text-align: right">正文</label>
+                                <div class="col-sm-8">
+                                    <textarea id="editor" required readonly="readonly"
+                                               data-bind="value:model.content" ></textarea>
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </form>
+    </div>
+<div id="categoryWin">
+<div id="categoryTree"></div>
+</div>
+<script>
+
+$(document).ready(function() {
+	$("#editor").kendoEditor({
+	    //content: true,
+	    tools: [
+                "fontName",
+                "fontSize",
+                "formatting",
+                "bold",
+                "italic",
+                "underline",
+                "strikethrough",
+                "justifyLeft",
+                "justifyCenter",
+                "justifyRight",
+                "justifyFull",
+                "insertUnorderedList",
+                "insertOrderedList",
+                "indent",
+                "outdent",
+                "insertImage",
+                "subscript",
+                "superscript",
+                "foreColor",
+                "backColor",
+            ],
+            /* change: function(){
+            alert('aaa');
+            } */
+	});
+	//设置description
+	$("#editor").data("kendoEditor").value(newViewModel.model.content);
+});
+</script>
+</body>
+</html>

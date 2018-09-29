@@ -1,0 +1,397 @@
+<!-- * description: 通知公告发布 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../include/header.html"/>
+
+<script type="text/javascript">
+
+    var viewModel = kendo.observable({
+        model: {},
+        queryResourceCom:function(){
+            $('#gridCommunity').data('kendoGrid').dataSource.page(1);
+        },
+    });
+    var userViewModel = kendo.observable({
+        userModel: {},
+        queryResourceUser:function(){
+            $('#gridUser').data('kendoGrid').dataSource.page(1);
+        },
+    });
+</script>
+<body>
+<div id="page-content">
+    <div id="tabstrip">
+        <ul>
+            <li id="baseInfoTab">按项目设置</li>
+            <li id="baseByUserTab">按人员设置</li>
+        </ul>
+        <div id="baseInfoTab-content">
+            <form id="form1" class="form-horizontal" >
+            <div id="query-form1" class="row" style="margin-bottom: 10px;">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-1 control-label" style="text-align: right;top: 0px;" >公司:</label>
+                        <div class="col-xs-3">
+                            <input required id="companyName" name="companyName" type="text" style="width: 100%" data-bind="value:model.companyId,text:model.companyName" class="k-textbox">
+                            <script>
+                                $("#companyName").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "MGT_COMPANY_LOV")});
+                                $($("input[name='companyName_input']").next()).css("margin-top","0px");
+                                $($("input[name='companyName_input']").next().next().find("span")).css("margin-left","-7px");
+                            </script>
+                        </div>
+                        <label class="col-xs-1 control-label" style="text-align: right;top: 0px;">项目:</label>
+                        <div class="col-xs-3">
+                            <input required id="communityName" name="communityName" type="text" style="width: 100%" data-bind="value:model.communityId,text:model.communityName" class="k-textbox">
+                            <script>
+                                $("#communityName").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "COMMUNITY_LOV")});
+                                $($("input[name='communityName_input']").next()).css("margin-top","0px");
+                                $($("input[name='communityName_input']").next().next().find("span")).css("margin-left","-7px");
+                            </script>
+                        </div>
+                        <div class="col-xs-1">
+                            <span class="btn btn-primary" style="float:left;width:70px;margin-left:10px;" data-bind="click:queryResourceCom" type="submit">
+                                <i class="fa fa-search" style="margin-right:3px;"></i><@spring.message "hap.query"/></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <script>kendo.bind($('#query-form1'), viewModel);</script>
+            <div style="clear:both"></div>
+            <div id="gridCommunity" ></div>
+            <div class="row" class="col-sm-12">
+                <div align="center">
+                    <span class="btn btn-primary" id="public1" type="submit" style="margin-right:10px">发布</span>
+                    <span class="btn btn-default" id="back1" type="button">取消</span>
+                </div>
+            </div>
+            </form>
+        </div>
+        <div id="baseByUserTab-content">
+            <form id="form2" class="form-horizontal" >
+            <div id="query-form2" class="row" style="margin-bottom: 10px;">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-1 control-label" style="text-align: right;top: 0px;">公司:</label>
+                        <div class="col-xs-2">
+                            <input required id="companyName2" name="companyName2" type="text" style="width: 100%" data-bind="value:userModel.companyId,text:userModel.companyName" class="k-textbox">
+                            <script>
+                                $("#companyName2").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "MGT_COMPANY_LOV")});
+                                $($("input[name='companyName2_input']").next()).css("margin-top","0px");
+                                $($("input[name='companyName2_input']").next().next().find("span")).css("margin-left","-7px");
+                            </script>
+                        </div>
+                        <label class="col-xs-1 control-label" style="text-align: right;top: 0px;margin-left: -10px;">项目:</label>
+                        <div class="col-xs-2">
+                            <input required id="communityName2" name="communityName2" type="text" style="width: 100%" data-bind="value:userModel.communityId,text:userModel.communityName" class="k-textbox">
+                            <script>
+                                $("#communityName2").kendoLov(${lovProvider.getLov(base.contextPath, base.locale, "COMMUNITY_LOV")});
+                                $($("input[name='communityName2_input']").next()).css("margin-top","0px");
+                                $($("input[name='communityName2_input']").next().next().find("span")).css("margin-left","-7px");
+                            </script>
+                        </div>
+                        <label class="col-xs-1 control-label" style="text-align: right;top: 0px;margin-left: -10px;">人员:</label>
+                        <div class="col-xs-2">
+                            <input required id="userId" type="text" style="width: 100%" data-bind="value:userModel.userName" class="k-textbox">
+                        </div>
+                        <div class="col-xs-1">
+                            <span class="btn btn-primary" style="float:left;width:70px;" data-bind="click:queryResourceUser" type="submit">
+                                <i class="fa fa-search" style="margin-right:3px;"></i><@spring.message "hap.query"/></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>kendo.bind($('#query-form2'), userViewModel);</script>
+            <div style="clear:both">
+                <div id="gridUser"></div>
+            </div>
+            <div class="row" class="col-sm-12">
+                <div align="center">
+                    <span class="btn btn-primary" id="public2" type="submit" style="margin-right:10px">发布</span>
+                    <span class="btn btn-default" id="back2" type="button">取消</span>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    //标签栏
+    var tabToActivate = $("#baseInfoTab");
+    var tabstrip =  $("#tabstrip").kendoTabStrip({
+                animation: {
+                    close: {duration: 200,effects: "fadeOut"},
+                    open: {duration: 200,effects: "fadeIn"}
+                },
+                show:function(e){
+                    if(e.item.id == "baseInfoTab"){
+                    }else if(e.item.id=="baseByUserTab"){
+                        Hap.autoResizeGrid("#gridUser");
+                    }
+                }
+
+            }
+    ).data("kendoTabStrip");
+    tabstrip.activateTab(tabToActivate);
+
+    //返回按钮
+    $("#back1,#back2").click(function(){
+        var articleNotifyDetails =  window.parent.$("#editWin").data("kendoWindow");
+        articleNotifyDetails.close();
+    });
+
+    //按项目发布
+    $("#public1").click(function(){
+        var grid = $("#gridCommunity").data('kendoGrid');
+        var checked = grid.selectedDataItems();
+        var selectIds = "";
+        for(var i in checked){
+            var mgtUserCommunity = checked[i];
+            var communityId = mgtUserCommunity.communityId;
+            selectIds += communityId + ",";
+        }
+        selectIds = selectIds.substring(0,selectIds.length-1);
+        if(selectIds == ""){
+            kendo.ui.showInfoDialog({
+                title:'提示信息',
+                message:'请选择项目!'
+            })
+        }else{
+            $.ajax({
+                url: "${base.contextPath}/articleNotify/publishToCommunity",
+                type: "post",
+                dataType: "json",
+                data: {articleId: '${RequestParameters.id!0}',selectIds:selectIds},
+                async: false,
+                success: function (data) {
+                    if(data.success==false){
+                        kendo.ui.showErrorDialog({
+                            message:data.message
+                        });
+                    }
+                    else{
+                        kendo.ui.showInfoDialog({
+                            title:'提示信息',
+                            message:'已推送!'
+                        }).done(function(data){
+                            window.parent.$("#editWin").data("kendoWindow").close();
+                            window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    //按人员发布
+    $("#public2").click(function(){
+        var grid = $("#gridUser").data('kendoGrid');
+        var checked = grid.selectedDataItems();
+        var selectIds = "";
+        for(var i in checked){
+            var mgtUserCommunity = checked[i];
+            var userId = mgtUserCommunity.userId;
+            selectIds += userId + ",";
+        }
+        selectIds.substring(0,selectIds.length-1);
+        if(selectIds == ""){
+            kendo.ui.showInfoDialog({
+                title:'提示信息',
+                message:'请选择人员!'
+            })
+        }else {
+            $.ajax({
+                url: "${base.contextPath}/articleNotify/publishToUser",
+                type: "post",
+                dataType: "json",
+                data: {articleId: '${RequestParameters.id!0}', selectUserIds: selectIds},
+                async: false,
+                success: function (data) {
+                    if (data.success == false) {
+                        kendo.ui.showErrorDialog({
+                            message: data.message
+                        });
+                    }
+                    else {
+                        kendo.ui.showInfoDialog({
+                            title: '提示信息',
+                            message: '已推送!'
+                        }).done(function (data) {
+                            window.parent.$("#editWin").data("kendoWindow").close();
+                            window.parent.$('#Grid').data('kendoGrid').dataSource.page(1);
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    $(document).ready(function() {
+
+        var url1 = '${base.contextPath}/articleNotify/publishForCommunity';
+        dataSource1 = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: url1,
+                    type: "POST",
+                    dataType: "json"
+                },
+                parameterMap: function (options, type) {
+                    if (type !== "read" && options.models) {
+                        var datas = Hap.prepareSubmitParameter(options, type)
+                        return kendo.stringify(datas);
+                    } else if (type === "read") {
+                        return Hap.prepareQueryParameter(viewModel.model.toJSON(), options)
+                    }
+                }
+            },
+            batch: true,
+            serverPaging: true,
+            pageSize: 10,
+            schema: {
+                data: 'rows',
+                total: 'total',
+                model: {
+                    id: "id",
+                    fields: {}
+                }
+            }
+        });
+
+        //项目列表
+        $("#gridCommunity").kendoGrid({
+            dataSource: dataSource1,
+            height: '80%',
+            resizable: true,
+            scrollable: true,
+            navigatable: false,
+            selectable: 'multiple, rowbox',
+            pageable: {
+                pageSizes: [5, 10, 20, 50],
+                refresh: true,
+                buttonCount: 5
+            },
+            columns: [
+                {
+                    field: "companyName",
+                    title: '公司',
+                    width: 120,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+                {
+                    field: "communityName",
+                    title: '项目',
+                    width: 120,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+            ],
+            editable: false
+        });
+
+        Hap.autoResizeGrid("#gridCommunity");
+
+        var url2 = '${base.contextPath}/articleNotify/publishForUser';
+        dataSource2 = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: url2,
+                    type: "POST",
+                    dataType: "json"
+                },
+                parameterMap: function (options, type) {
+                    if (type !== "read" && options.models) {
+                        var datas = Hap.prepareSubmitParameter(options, type)
+                        return kendo.stringify(datas);
+                    } else if (type === "read") {
+                        return Hap.prepareQueryParameter(userViewModel.userModel.toJSON(), options)
+                    }
+                }
+            },
+            batch: true,
+            serverPaging: true,
+            pageSize: 10,
+            schema: {
+                data: 'rows',
+                total: 'total',
+                model: {
+                    id: "id",
+                    fields: {}
+                }
+            }
+        });
+        //人员列表
+        $("#gridUser").kendoGrid({
+            dataSource: dataSource2,
+            height: '80%',
+            resizable: true,
+            scrollable: true,
+            navigatable: false,
+            selectable: 'multiple, rowbox',
+            pageable: {
+                pageSizes: [5, 10, 20, 50],
+                refresh: true,
+                buttonCount: 5
+            },
+            columns: [
+                {
+                    field: "companyName",
+                    title: '公司',
+                    width: 120,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+                {
+                    field: "communityName",
+                    title: '项目',
+                    width: 120,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+                {
+                    field: "userName",
+                    title: '人员',
+                    width: 120,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                },
+                {
+                    field: "mobile",
+                    title: '手机号',
+                    width: 100,
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center"
+                    },
+                    attributes: {style: "text-align:right"},
+                    template: function(dataItem){
+                        var v = dataItem.mobile;
+                        if(v != null && v != ""){
+                            v = v.substring(0,3) + "****" + v.substring(7);
+                        }
+                        return v;
+                    }
+                },
+            ],
+            editable: false
+        });
+
+        Hap.autoResizeGrid("#gridUser");
+    });
+    $("span[class='k-dropdown-wrap k-state-default']").css("height","26px");
+
+</script>
+</body>
+</html>

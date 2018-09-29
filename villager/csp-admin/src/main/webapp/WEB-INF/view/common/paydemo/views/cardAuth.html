@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>MiniCheckout</title>
+    <link rel="stylesheet" href="${base.contextPath}/resources/app/css/pinus.css">
+    <script src="${base.contextPath}/lib/js/dist/pingpp.js" type="text/javascript"></script>
+    <script src="${base.contextPath}/lib/kendoui/js/jquery.min.js"></script>
+</head>
+<body>
+<header>
+    <div class="h_content">
+        <span></span>
+    </div>
+</header>
+<body>
+<form id="orderInfo"  method="post"  >
+    <section class="block">
+        <div class="content2">
+            <div class="app">
+                <span class="iphone" ><img src="${base.contextPath}/resources/upload/logo.png" style="align:center;max-width:100px;max-height:100px;" ></span>
+                <div align="center" style="font-size:20px;color:#38a9ac;">模拟用户绑卡</div>
+                <div class="text_amount">
+                    <b>证件类型：</b>
+                    <select id="idType" name="idType">
+                        <option value="" >请选择...</option>
+                        <option value="I" selected >身份证</option>
+                        <option value="T">临时身份证</option>
+                        <option value="P">护照</option>
+                        <option value="H">港澳通行证</option>
+                        <option value="W">台胞通行证</option>
+                        <option value="Z">其他证件</option>
+                    </select>
+                </div>
+                <div class="text_amount">
+                    <b>证件号：</b><input type="text" id="idNo" name="idNo" value="130104190004050313" />
+                </div>
+                <div class="text_amount">
+                    <b>姓名：</b><input type="text" id="name" name="name" value="测试" />
+                </div>
+                <div class="text_amount">
+                    <b>银行编号：</b>
+                    <select id="bankCode" name="bankCode">
+                        <option value="" >请选择...</option>
+                        <option value="0001" >邮储银行</option>
+                        <option value="0002" >中国工商银行</option>
+                        <option value="0003" >中国农业银行</option>
+                        <option value="0004" >中国银行</option>
+                        <option value="0005" selected >中国建设银行</option>
+                        <option value="0006" >交通银行</option>
+                        <option value="0007" >中信银行</option>
+                        <option value="0008" >中国光大银行</option>
+                        <option value="0009" >中国民生银行</option>
+                        <option value="0010" >广东发展银行</option>
+                        <option value="0011" >深发展银行</option>
+                        <option value="0012" >招商银行</option>
+                        <option value="0013" >兴业银行</option>
+                        <option value="0014" >中国平安银行</option>
+                        <option value="0015" >浦发银行</option>
+                        <option value="0016" >徽商银行</option>
+                        <option value="0017" >上海银行</option>
+                        <option value="0018" >温州银行</option>
+                        <option value="0019" >重庆银行</option>
+                        <option value="0020" >大连银行</option>
+                        <option value="0021" >华夏银行</option>
+                        <option value="0022" >汉口银行</option>
+                        <option value="0023" >重庆农商行</option>
+                        <option value="0024" >北京银行</option>
+                        <option value="0025" >南京银行</option>
+                        <option value="0026" >青岛农商行</option>
+
+                    </select>
+                </div>
+                <div class="text_amount">
+                    <b>卡号：</b><input type="text" id="cardNo" name="cardNo" value="6227001217450011115" />
+                </div>
+                <div class="text_amount">
+                    <b>卡类型：</b>
+                    借记卡 <input type="radio" name="cardType" checked value="DEBIT" />
+                    贷记卡 <input type="radio" name="cardType" value="CREDIT" />
+                    预付卡 <input type="radio" name="cardType" value="PREPAID" />
+                </div>
+                <div class="text_amount">
+                    <b>银行预留手机号：</b><input type="text" id="bankMobile" name="bankMobile" value="18721359153" />
+                </div>
+
+                <div class="text_amount" style="display: none">
+                    <b>token：</b><input type="text" id="token" name="token" value="" />
+                </div>
+                <input type="hidden" id="merchantId" name="merchantId" value="300010000001">
+                <div align="center" >
+                    <button id="auth">绑卡</button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</form>
+</body>
+<script>
+
+
+    $(document).ready(function(){
+        var protocol=location.protocol;
+        var origin=location.origin;
+        var host=location.host;
+        var port=location.port;//默认为80的就为空
+        var pathname=location.pathname;
+
+        if(host.indexOf("localhost")>=0){
+            origin+="/hap";
+        }
+        $("#auth").click(function(){
+            $('#token').val(parent.$('#token').val());
+            console.log($('#orderInfo').serialize());
+
+            //参数签名
+            $.ajax({
+                url: origin+'/user/st/card/auth',
+                async:false,
+                type : "POST",
+                dataType : "json",
+                data : $('#orderInfo').serialize(),// 要提交的表单
+                success: function (args) {
+                    console.log(args);
+                    var status=args.status;
+                    if("1"==status){
+                        var cardId=args.data.cardId;
+                        parent.$('#cardId').val(cardId);
+                        //当你在iframe页面关闭自身时
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    }else{
+                        alert(args.message);
+                    }
+                }
+            });
+            return false;
+        });
+
+        $("#order").click(function(){
+            return false;
+        });
+    });
+
+</script>
+</body>
+</html>

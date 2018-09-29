@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.adv.mapper.AppAdvMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.adv.dto.AppAdv">
+        <result column="ADV_ID" property="advId" jdbcType="DECIMAL" />
+        <result column="TITLE" property="title" jdbcType="VARCHAR" />
+        <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+        <result column="URL_TYPE" property="urlType" jdbcType="VARCHAR" />
+        <result column="URL" property="url" jdbcType="VARCHAR" />
+        <result column="PIC" property="pic" jdbcType="VARCHAR" />
+        <result column="ADV_TYPE" property="advType" jdbcType="DECIMAL" />
+        <result column="IS_CAS" property="isCas" jdbcType="DECIMAL" />
+        <result column="STATUS" property="status" jdbcType="DECIMAL" />
+        <result column="ADV_RANK" property="advRank" jdbcType="DECIMAL" />
+        <result column="APPROVAL_BY" property="approvalBy" jdbcType="DECIMAL" />
+        <result column="APPROVAL_COMMENT" property="approvalComment" jdbcType="VARCHAR" />
+        <result column="ADV_BEGIN" property="advBegin" jdbcType="DECIMAL" />
+        <result column="ADV_END" property="advEnd" jdbcType="DECIMAL" />
+        <result column="GROUP_IDENTIFYING" property="groupIdentifying" jdbcType="VARCHAR" />
+        <result column="description_one" property="descriptionOne" jdbcType="VARCHAR" />
+        <result column="description_two" property="descriptionTne" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <resultMap id="AppBaseResultMap" type="com.cmig.future.csportal.module.adv.dto.AppAdvReq">
+        <result column="ADV_ID" property="advId" jdbcType="DECIMAL" />
+        <result column="TITLE" property="title" jdbcType="VARCHAR" />
+        <result column="URL" property="url" jdbcType="VARCHAR" />
+        <result column="URL_TYPE" property="urlType" jdbcType="VARCHAR" />
+        <result column="PIC" property="pic" jdbcType="VARCHAR" />
+        <result column="ADV_TYPE" property="advType" jdbcType="VARCHAR" />
+        <result column="IS_CAS" property="isCas" jdbcType="VARCHAR" />
+        <result column="STATUS" property="status" jdbcType="VARCHAR" />
+        <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE" />
+        <result column="GROUP_IDENTIFYING" property="groupIdentifying" jdbcType="VARCHAR" />
+        <result column="GROUP_SORT" property="groupSort" jdbcType="BIGINT" />
+    </resultMap>
+    
+    <sql id="appAdvPageColumns">
+    	adv.ADV_ID as "advId",
+		adv.TITLE as "title",
+		adv.ADV_TYPE as "advType",
+		adv.STATUS as "status",
+		adv.PIC as "pic",
+		adv.URL as "url",
+		adv.DESCRIPTION as "description",
+		adv.URL_TYPE as "urlType",
+		adv.ADV_RANK as "advRank",
+		adv.LAST_UPDATE_DATE as "lastUpdateDate",
+		adv.GROUP_IDENTIFYING as "groupIdentifying",
+		su.USER_NAME as "userName"
+    </sql>
+    
+
+	<!-- 根据状态查询 -->
+	<select id="queryAppAdv" resultMap="BaseResultMap">
+		SELECT
+			a.ADV_ID as advId,
+			a.ADV_TYPE as advType,
+			a.TITLE as title,
+			a.URL_TYPE as urlType,
+			a.PIC as pic,
+			a.URL as url,
+			a.IS_CAS as isCas,
+			a.ADV_RANK as advRank,
+			a.STATUS as status
+		FROM
+			csp_app_adv a
+		WHERE
+			a. STATUS = #{status}
+		ORDER BY
+			a.ADV_RANK
+	</select>	
+    
+    	<select id="selecteAdv"  resultMap="BaseResultMap">
+	SELECT
+	 	a.ADV_ID as advId,
+	 	a.TITLE as title,
+	 	a.URL as url,
+	 	a.PIC as pic,
+	 	a.STATUS as status,
+	 	a.IS_CAS as isCas,
+	 	a.ADV_BEGIN as advBegin
+	 FROM csp_app_adv a 	
+	</select>
+	
+	
+	<!-- 新接口 -->
+	<!-- 0.名称查询 -->
+	<!-- <select id="onlyAdvTitle" parameterType="String" resultType="String">
+		SELECT TITLE FROM csp_app_adv ag WHERE TITLE = #{title} GROUP BY ag.TITLE,ag.GROUP_IDENTIFYING
+	</select> -->
+	<!-- 1.增加广告 -->
+	<insert id="saveAdvList" parameterType="java.util.Map">
+		insert into csp_app_adv(title,description,url_type,url,pic,is_cas,adv_type,status,adv_rank,approval_comment,created_by,group_identifying,description_one,description_two) values
+		<foreach collection="list" item="appAdvs" index="index" separator=",">
+	        (
+	        #{appAdvs.title},#{appAdvs.description},#{appAdvs.urlType},#{appAdvs.url},#{appAdvs.pic},
+	        #{appAdvs.isCas},#{appAdvs.advType},#{appAdvs.status},#{appAdvs.advRank},#{appAdvs.approvalComment},
+	        #{appAdvs.createdBy},#{appAdvs.groupIdentifying},#{appAdvs.descriptionOne},#{appAdvs.descriptionTwo}
+	        )
+	    </foreach>
+	</insert>
+	<!-- 2.分页查询 -->
+	<select id="queryNewAdv" resultMap="AppBaseResultMap" parameterType="com.cmig.future.csportal.module.adv.dto.AppAdvReq">
+		SELECT 
+			<include refid="appAdvPageColumns" />
+		FROM 
+		csp_app_adv adv
+		 LEFT OUTER JOIN
+		 sys_user su 
+		ON 
+		su.USER_ID = adv.CREATED_BY 
+		WHERE 1=1
+		<if test="null != advId and '' != advId">
+       		AND adv.ADV_ID = #{advId}
+       	</if>
+       	<if test="null != title and '' != title">
+			AND adv.TITLE LIKE CONCAT('%',#{title},'%')
+       	</if>
+       	<if test="null != advType and '' != advType">
+			AND adv.ADV_TYPE = #{advType}
+       	</if>
+       	<if test="null != status and '' != status">
+			AND adv.STATUS = #{status}
+       	</if>
+		GROUP BY adv.CREATION_DATE,adv.GROUP_IDENTIFYING
+		ORDER BY adv.LAST_UPDATE_DATE DESC
+	</select>
+	<!-- 3.单组广告或单条查询 -->
+	<select id="getEditAdv" parameterType="com.cmig.future.csportal.module.adv.dto.AppAdv" resultMap="BaseResultMap">
+		SELECT 
+			adv.ADV_ID as advId,
+			adv.ADV_TYPE as advType,
+			adv.TITLE as title,
+			adv.URL_TYPE as urlType,
+			adv.URL as url,
+			adv.PIC as pic,
+			adv.IS_CAS as isCas,
+			adv.STATUS as status,
+			adv.ADV_RANK as advRank,
+			adv.description_one as descriptionOne,
+			adv.description_two as descriptionTwo,
+			adv.GROUP_IDENTIFYING as groupIdentifying
+		FROM 
+		csp_app_adv adv where 1=1 
+		<if test="null != advId and '' != advId">
+       		AND adv.ADV_ID = #{advId}
+       	</if>
+		<if test="null != groupIdentifying and '' != groupIdentifying">
+       		AND adv.GROUP_IDENTIFYING = #{groupIdentifying}
+       	</if>
+	</select>
+	<!-- 4.批量更新数据 -->
+	<update id="updateBatchAdv" parameterType="java.util.Map">
+		update csp_app_adv set
+		
+    	title = 
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.title}
+    	</foreach>
+    	END
+    	
+    	,adv_type = 
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.advType}
+    	</foreach>
+    	END
+    	
+    	,status = 
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.status}
+    	</foreach>
+    	END
+    	
+    	,LAST_UPDATE_DATE = 
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.lastUpdateDate}
+    	</foreach>
+    	END
+    	
+		<if test="null != appAdvs.descriptionTwo and '' != appAdvs.descriptionTwo">
+    	,description_two =
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.descriptionTwo}
+    	</foreach>
+    	END
+    	</if>
+    	
+		<if test="null != appAdvs.descriptionOne and '' != appAdvs.descriptionOne">
+    	,description_one =
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.descriptionOne}
+    	</foreach>
+    	END
+    	</if>
+		
+		<if test="null != appAdvs.approvalComment and '' != appAdvs.approvalComment">
+    	,approval_comment =
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.approvalComment}
+    	</foreach>
+    	END
+    	</if>
+    	
+		<if test="null != appAdvs.isCas and '' != appAdvs.isCas">
+    	,is_cas =
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.isCas}
+    	</foreach>
+    	END
+    	</if>
+		
+		<if test="null != appAdvs.pic and '' != appAdvs.pic">
+    	,pic =
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.pic}
+    	</foreach>
+    	END
+    	</if>
+    	
+		<if test="null != appAdvs.url and '' != appAdvs.url">
+    	,url =
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.url}
+    	</foreach>
+    	END
+    	</if>
+		
+		<if test="null != appAdvs.urlType and '' != appAdvs.urlType">
+    	,url_type =
+    	CASE ADV_ID
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.advId} THEN #{appAdvs.urlType}
+    	</foreach>
+    	END
+    	</if>
+    	
+    	where adv_id in
+    	<foreach collection="list" item="appAdvs" index="index" open="(" separator="," close=")">
+    		#{appAdvs.advId}
+		</foreach>
+	</update>
+	<!-- 5.向sub广告子表添加数据 -->
+	<insert id="saveAdvSub" parameterType="com.cmig.future.csportal.module.adv.dto.AppAdvSub">
+		INSERT INTO csp_app_adv_sub VALUES (#{groupIdentifyingId},#{groupSort})
+	</insert>
+	<!-- 6.更新sub广告子表数据 -->
+	<update id="updateAdvSub" parameterType="com.cmig.future.csportal.module.adv.dto.AppAdvSub">
+		UPDATE csp_app_adv_sub SET GROUP_SORT = #{groupSort} WHERE GROUP_IDENTIFYING_ID = #{groupIdentifyingId}
+	</update>
+	<!-- 7.查询广告相关表中顺序 -->
+	<select id="queryNewAdvOfStatus" resultMap="AppBaseResultMap" parameterType="com.cmig.future.csportal.module.adv.dto.AppAdvReq">
+		SELECT sub.*,adv.* FROM	csp_app_adv adv LEFT OUTER JOIN csp_app_adv_sub sub ON sub.GROUP_IDENTIFYING_ID = adv.GROUP_IDENTIFYING
+			WHERE 1=1
+			AND adv.STATUS = #{status}
+			GROUP BY adv.CREATION_DATE,adv.GROUP_IDENTIFYING
+			ORDER BY sub.GROUP_SORT asc
+	</select>
+	
+	<!-- 8.批量更新广告排序子表 -->
+	<update id="updateBatchAdvSub" parameterType="java.util.Map">
+		update csp_app_adv_sub set
+    	
+    	group_sort =
+    	CASE GROUP_IDENTIFYING_ID
+    	<foreach collection="list" item="appAdvSubs" index="index">
+    	WHEN #{appAdvSubs.groupIdentifyingId} THEN #{appAdvSubs.groupSort}
+    	</foreach>
+    	END
+    	
+    	where GROUP_IDENTIFYING_ID in
+    	<foreach collection="list" item="appAdvSubs" index="index" open="(" separator="," close=")">
+    		#{appAdvSubs.groupIdentifyingId}
+		</foreach>
+	</update>
+	
+	<!-- 9.根据组ID批量更新广告排序数据 -->
+	<update id="updateBatchAdvByGroupId" parameterType="java.util.Map">
+		update csp_app_adv set
+		
+    	status =
+    	CASE GROUP_IDENTIFYING
+    	<foreach collection="list" item="appAdvs" index="index">
+    	WHEN #{appAdvs.groupIdentifying} THEN #{appAdvs.status}
+    	</foreach>
+    	END
+    	
+    	where GROUP_IDENTIFYING in
+    	<foreach collection="list" item="appAdvs" index="index" open="(" separator="," close=")">
+    		#{appAdvs.groupIdentifying}
+		</foreach>
+	</update>
+	
+	<!-- 10.根据groupIdentifying更新数据 -->
+	<update id="updateAdvByGroupIdentifying" parameterType="com.cmig.future.csportal.module.adv.dto.AppAdv">
+		UPDATE csp_app_adv adv SET DESCRIPTION = #{description},status = #{status} WHERE GROUP_IDENTIFYING = #{groupIdentifying}
+	</update>
+	
+	<!-- 11.根据groupIdentifying批量删除数据 -->
+	<delete id="deleteBatchByGroupId" parameterType="java.lang.String">
+		DELETE csp_app_adv,csp_app_adv_sub FROM csp_app_adv LEFT JOIN csp_app_adv_sub ON csp_app_adv.GROUP_IDENTIFYING = csp_app_adv_sub.GROUP_IDENTIFYING_ID WHERE FIND_IN_SET(GROUP_IDENTIFYING,#{groupIdentifying})
+	</delete>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.family.mapper.HousingInfoMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.family.dto.HousingInfo">
+        <result column="id" property="id" jdbcType="DECIMAL" />
+        <result column="family_code" property="familyCode" jdbcType="VARCHAR" />
+        <result column="house_area" property="houseArea" jdbcType="VARCHAR" />
+        <result column="house_floors" property="houseFloors" jdbcType="BIGINT" />
+        <result column="homestead_area" property="homesteadArea" jdbcType="VARCHAR" />
+        <result column="is_certificate" property="isCertificate" jdbcType="VARCHAR" />
+        <result column="build_price" property="buildPrice" jdbcType="VARCHAR" />
+        <result column="build_year" property="buildYear" jdbcType="BIGINT" />
+        <result column="is_photovoltaic" property="isPhotovoltaic" jdbcType="VARCHAR" />
+        <result column="is_install_pho" property="isInstallPho" jdbcType="VARCHAR" />
+        <result column="Installable_pho_area" property="installablePhoArea" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <!-- 根据家庭编码查询 -->
+	<select id="selectByFamilyCode" resultMap="BaseResultMap">
+		SELECT
+			*
+		FROM
+			xl_housing_info a
+		WHERE
+			a.family_code = #{encodeStr}
+	</select>	
+
+	<!-- 根据家庭编码更新 -->
+	<update id="updateByFamilyCode" >
+		UPDATE
+		 	xl_housing_info 
+		set
+		 	build_year = #{1},build_price=#{2},house_floors=#{3},homestead_area=#{4},house_area=#{5}
+		where
+			family_code=#{0}
+	</update>	
+
+</mapper>

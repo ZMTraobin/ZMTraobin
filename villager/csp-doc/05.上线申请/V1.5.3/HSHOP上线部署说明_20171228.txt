@@ -1,0 +1,30 @@
+部署方案：
+
+1) 停止tomcat, 停止worker进程
+
+2）复制备份整个目录tomcat备份到 tomcat20171228
+
+3) 删除 tomcat/webapps下面的admin seller api wap web worker public内容。不需要动upload 和im目录。
+
+4) 复制ftp.cm-pro.cn上的文件 admin.war seller.war web.war api.war 到webapps
+
+5）复制ftp.cm-pro.cn上的目录 public worker 到webapps下
+
+6）复制ftp.cm-pro.cn上的src/wap.tgz解压到webapps下wap
+
+7) 启动tomcat等待 war文件全部解压
+
+8）关闭tomcat， 删除war文件，删除目录admin seller api web下的lib目录下的jar包
+
+9）复制文件ftp.cm-pro.cn/2017-12-28/src/base/target/base.jar 替换 tomcat/lib下的base*.jar
+
+10) 重启worker进程，在tomcat/webapps/worker 下
+   nohup java -cp b2b2c.jar net.shopnc.b2b2c.worker.WorkQueue 1>> /var/log/worker 2>>/dev/null &
+
+11）无运行脚本文件
+
+理论上配置文件不需要修改（注意配置文件使用和上次生产一样的配置）。
+
+应急回退方案：
+
+关闭tomcat， 将tomcat删除， 将备份的tomcat20171228改名tomcat 并启动

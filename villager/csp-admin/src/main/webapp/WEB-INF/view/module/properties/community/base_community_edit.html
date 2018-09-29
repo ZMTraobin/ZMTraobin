@@ -1,0 +1,484 @@
+<!-- * description: 我的项目修改 * version: 1.0 *
+author:bo-bu@hand-china.com * * -->
+<#include "../../../include/header.html"/>
+<link rel="stylesheet" type="text/css" href="${base.contextPath}/lib/cityselect/css/city-select.css?v=13">
+    <script src="${base.contextPath}/common/code?yesOrNo=SYS.YES_NO" type="text/javascript"></script>
+    <script src="${base.contextPath}/common/code?openSourceSystem=OPEN.SOURCE_SYSTEM" type="text/javascript"></script>
+<script src="${base.contextPath}/lib/cityselect/js/newcitydata.min.js?v=7" type="text/javascript"></script>
+<script src="${base.contextPath}/lib/cityselect/js/citySelect-1.0.0.js??v=5" type="text/javascript"></script>
+<body>
+<div id="editWin" style="clear: both" ></div>
+<div id="content-container">
+    <div id="page-content">
+    <form id="mainform" class="form-horizontal" method="post" enctype="application/json;charset=UTF-8">
+        <fieldset>
+            <legend style="font-size:10px;font-weight:normal;">基础信息:</legend>
+             <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">城市名称：</label>
+                        <div class="col-xs-3">
+                            <div class="city-select" id="single-select-1" style="width: 100%"></div>
+                            <input required type="hidden" style="width: 100%" id="cityId" name="cityId" data-bind="value:model.cityId,text:model.cityName" class="city-select k-textbox " />
+                        </div>
+                  <!--      <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="cityId" name="cityId" data-bind="value:model.cityId,text:model.cityName" class="k-textbox " />
+
+                        </div>-->
+                        <label class="col-xs-2  control-label" style="text-align: right">物业公司名称：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="companyName" name="companyName" data-bind="value:model.companyName" class="k-textbox" maxlength="50" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">项目编码：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="communityCode" name="communityCode" data-bind="value:model.communityCode" class="k-textbox"  maxlength="50" />
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">项目名称：</label>
+                        <div class="col-xs-3">
+                            <input required type="text" style="width: 100%" id="communityName" name="communityName" data-bind="value:model.communityName" class="k-textbox" maxlength="50" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-la  bel" style="text-align: right">占地面积(㎡)：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="area" name="area" data-bind="value:model.area" class="k-textbox" min="0" onkeyup='clearNoNum(this)'  maxlength="30"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">使用面积(㎡)：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="useArea" name="useArea" data-bind="value:model.useArea" class="k-textbox" min="0"  onkeyup='clearNoNum(this)' maxlength="30"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">绿化面积(㎡)：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="greenArea" name="greenArea" data-bind="value:model.greenArea" class="k-textbox" min="0" onkeyup='clearNoNum(this)' maxlength="30"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">经纬度（°）：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 48%;margin-right: 1.5%;" id="longitude" name="longitude" data-bind="value:model.longitude" class="k-textbox map"  readonly />
+                            <input type="text" style="width: 48%" id="latitude" name="latitude" data-bind="value:model.latitude" class="k-textbox map"  readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">栋数：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="floorNum" name="floorNum" data-bind="value:model.floorNum" class="k-textbox"  onkeyup='posInteger(this)' maxlength="11"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">服务时间：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 48%;margin-right: 1.5%;" id="workingTimeMor" name="workingTimeMor" data-bind="value:model.workingTimeMor" class="k-textbox"
+                                   maxlength="5" placeholder="xx:xx" pattern="^([0-1]{1}\d|2[0-3]):([0-5]\d)$" validationMessage="时间格式错误"/>
+                            <input type="text" style="width: 48%" id="workingTimeAft" name="workingTimeAft" data-bind="value:model.workingTimeAft" class="k-textbox"
+                                   maxlength="5" placeholder="xx:xx" pattern="^([0-1]{1}\d|2[0-3]):([0-5]\d)$" validationMessage="时间格式错误"/>
+                        </div>
+                        <div class="col-xs-2"  style="position: absolute;text-align: right;right: 20px;">
+                            <label class="col-xs-12 control-label"></label>
+                            <span data-for="workingTimeMor" class="k-invalid-msg"></span>
+                            <span data-for="workingTimeAft" class="k-invalid-msg"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">本项目客服电话：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="phone" name="phone" data-bind="value:model.phone" class="k-textbox"  maxlength="20" />
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">集团统一客服电话：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="groupphone" name="groupphone" data-bind="value:model.groupphone" class="k-textbox"  maxlength="20" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">地址：</label>
+                        <div class="col-xs-8">
+                            <input required type="text" style="width: 100%" id="address" name="address" data-bind="value:model.address" class="k-textbox"  maxlength="255" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+</fieldset>
+        <fieldset style="display: none;">
+            <legend style="font-size:10px;font-weight:normal;">管理信息:</legend>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">物管云服务器地址：</label>
+                        <div class="col-xs-3">
+                            <input  type="text" style="width: 100%" id="serverUrl" name="serverUrl" data-bind="value:model.serverUrl" class="k-textbox"   maxlength="500"/>
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">是否物管云项目：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="isRemoteAuthen" name="isRemoteAuthen" data-bind="value:model.isRemoteAuthen" class="k-textbox"   />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <#if accessService.access('SOURCE_SYSTEM')>
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">数据来源：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="sourceSystem" name="sourceSystem" data-bind="value:model.sourceSystem" class="k-textbox"  maxlength="20" />
+                        </div>
+                        <label class="col-xs-2  control-label" style="text-align: right">源系统ID：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="sourceSystemId" name="sourceSystemId" data-bind="value:model.sourceSystemId" class="k-textbox"  maxlength="100" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </#if>
+
+            <div class="row">
+                <div class="col-xs-11">
+                    <div class="form-group">
+                        <label class="col-xs-2  control-label" style="text-align: right">是否支持关系人管理：</label>
+                        <div class="col-xs-3">
+                            <input type="text" style="width: 100%" id="residentManager" name="phone" data-bind="value:model.residentManager" class="k-textbox" maxlength="20" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </fieldset>
+        <br>
+        <div class="col-sm-12">
+            <div class="form-group">
+                <div class="col-sm-12 text-center">
+                    <span class="btn btn-success" data-bind="click:save" type="submit"><i class="fa fa-save" style="margin-right:3px;"></i><@spring.message "hap.save"/></span>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //验证标识符
+    var isOK = true;
+    //判断面积是否合理
+    function chose() {
+        var useArea = $("#useArea").val();
+        var area = $("#area").val();
+        var green = $("#greenArea").val();
+        if (parseInt(useArea) > parseInt(area)) {
+            kendo.ui.showInfoDialog({
+                message:'使用面积应小于占地面积'
+            });
+            document.getElementById('useArea').value = "";
+            viewModel.model.useArea="";
+            isOK = false;
+        }
+        else{
+            isOK = true;
+        }
+        if (parseInt(green) > parseInt(area)) {
+            kendo.ui.showInfoDialog({
+                message:'绿化面积应小于占地面积'
+            });
+            document.getElementById('greenArea').value = "";
+            viewModel.model.greenArea="";
+            isOK = false;
+        }
+        else{
+            isOK = true;
+        }
+    }
+
+    //只能输入正数
+    function clearNoNum(obj) {
+        //先把非数字的都替换掉，除了数字和.
+        obj.value = obj.value.replace(/[^\d.]/g, "");
+        //必须保证第一个为数字而不是.
+        obj.value = obj.value.replace(/^\./g, "");
+        //保证只有出现一个.而没有多个.
+        obj.value = obj.value.replace(/\.{2,}/g, ".");
+        //保证.只出现一次，而不能出现两次以上
+        obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace(
+                "$#$", ".");
+    }
+    //栋数大于0
+    function posInteger(obj) {
+        obj.value=((obj.value=obj.value.replace(/\D/g,''))==''||(obj.value=obj.value.replace(/\D/g,''))==0)?'':parseInt(obj.value,10);
+    }
+
+    //名称验证
+    function validator_name(){
+        var reg = /^[\u0391-\uFFE5\w\(\)\-]+$/;
+        var str = document.getElementById('communityName').value.trim();
+        if(!reg.test(str)){
+            kendo.ui.showInfoDialog({
+                message:'项目名称只能包括中文字、英文字母、数字、括号、横线和下划线'
+            });
+            isOK = false;
+        }
+        else{
+            isOK = true;
+        }
+    }
+    //经纬度非空验证
+    function latAndlng(){
+        var lat = document.getElementById('longitude').value.trim();
+        var lng = document.getElementById('latitude').value.trim();
+        if(lat == null || lat == "" || lng == null || lng == ""){
+            kendo.ui.showInfoDialog({
+                message:'点击经纬度在地图页面选取!'
+            });
+            isOK = false;
+        }else{
+            isOK = true;
+        }
+    }
+    //时间插件初始化
+    $("#workingTimeMor,#workingTimeAft").kendoDateTimePicker({
+        format: "HH:mm",
+        culture: "zh-CN", //指定为中文
+        //interval: 15, //分钟间隔15分钟
+        animation: {close: {effects: "fadeOut zoom:out",duration: 300 },
+            open: {effects: "fadeIn zoom:in",duration: 300 }
+        }
+    });
+
+    //图标位置调整
+    $("#workingTimeMor").next().next().find("span").eq(0).css("display","none");
+    $("#workingTimeAft").next().next().find("span").eq(0).css("display","none");
+    $("#workingTimeMor").next().next().find("span").eq(1).css("top","4px");
+    $("#workingTimeMor").next().next().find("span").eq(1).css("right","1px");
+    $("#workingTimeAft").next().next().find("span").eq(1).css("top","4px");
+    $("#workingTimeAft").next().next().find("span").eq(1).css("right","1px");
+    $("#workingTimeMor,#workingTimeAft").next().next().css("width","27px");
+    $("#workingTimeMor,#workingTimeAft").next().css("right","23px");
+    $("#workingTimeMor,#workingTimeAft").css("width","132%");
+
+    //是否修改标识符(暂无用)
+    var isedit = '${RequestParameters.isedit!0}' == '1';
+    window.viewModel = kendo.observable({
+        model: {},
+        //保存事件
+        save:function(e){
+            chose();
+            validator_name();
+            latAndlng();
+            if(!isOK){
+                return;
+            }
+            var url ;
+             url = '${base.contextPath}/ljh/base/community/update';
+            //拼接时间字符串
+            var mor = $("#workingTimeMor").val();
+            var aft = $("#workingTimeAft").val();
+            var time = "";
+            if(mor != null && mor != ""){
+                time = mor;
+                if(aft != null && aft != ""){
+                    time = mor + "~" + aft;
+                }
+            }
+            viewModel.model.workingTime=time;
+            var validator = $("#mainform").data("kendoValidator");
+            if (validator.validate()) {
+                Hap.submitForm({
+                    url : url,
+                    formModel : viewModel.model,
+                    asArray : false,
+                    success : function (data) {
+                        var message = '保存成功!';
+                        if(!data.success){
+                            message = data.message;
+                            kendo.ui.showInfoDialog({
+                                title: '提示信息',
+                                message: message
+                            });
+                        }else {
+                            kendo.ui.showInfoDialog({
+                                title: '提示信息',
+                                message: message
+                            }).done(function (e) {
+                                window.parent.$("#editWin").data("kendoWindow").close();
+                                window.parent.$('#grid').data('kendoGrid').dataSource.page(1);
+                            });
+                        }
+                    }
+                });
+            }
+        },
+        //关闭窗口事件
+        closeWin :function(e){
+            //关闭该window
+            window.parent.$("#editWin").data("kendoWindow").close();
+        }
+    });
+
+    //绑定初始化
+    var container = $("#mainform");
+    kendo.init(container);
+    //必填验证
+    container.kendoValidator({
+        messages: {
+            required: "必填项"
+        },
+    });
+    kendo.bind($('#page-content'), viewModel);
+
+    //枚举数据下拉框
+    $("#isRemoteAuthen").kendoDropDownList({
+        valuePrimitive:true,
+        dataTextField: "meaning",
+        dataValueField: "value",
+        dataSource: yesOrNo
+    });
+
+    $("#residentManager").kendoDropDownList({
+        valuePrimitive:true,
+        dataTextField: "meaning",
+        dataValueField: "value",
+        dataSource: yesOrNo
+    });
+
+    $("#sourceSystem").kendoDropDownList({
+        valuePrimitive:true,
+        dataTextField: "meaning",
+        dataValueField: "value",
+        dataSource: openSourceSystem
+    });
+
+    //初始化form表单
+    var cityName = "";
+    var communityName = "";
+    $.ajax({
+        url: '${base.contextPath}/ljh/base/community/get',
+        type : "GET",
+        dataType : "json",
+        contentType : "application/json",
+        data : {id:'${RequestParameters.id!0}'},
+        success: function (args) {
+            var profile = args.dto||{};
+            for(var i in profile){
+                if(i == "workingTime"){
+                    var time = profile[i];
+                    if(time != null && time != ""){
+                        var mor = time.split("~")[0];
+                        var aft = time.split("~")[1];
+                        viewModel.set("model."+"workingTimeMor",mor);
+                        viewModel.set("model."+"workingTimeAft",aft);
+                    }
+                }
+                if(i == "cityName"){
+                    cityName = profile[i];
+                }
+                if(i == "communityName"){
+                    communityName = profile[i];
+                }
+                viewModel.set("model."+i,profile[i]);
+                $("#mapIframe").attr("src","bmap.html?cityName="+cityName+"&communityName="+communityName);
+            }
+        }
+    });
+
+    //根据百度地图点击的经纬度,地址,对model赋值
+    var setPoint = function(lng, lat,address) {
+        $("#longitude").val(lng);
+        viewModel.model.longitude=lng;
+        $("#latitude").val(lat);
+        viewModel.model.latitude=lat;
+        if(address!=""){
+            $("#address").val(address);
+            viewModel.model.address=address;
+        }
+        $("#latitude").focus();
+        $("#latitude").blur();
+    }
+
+    $(document).ready(function(){
+
+    });
+
+    $(".map").click(function(){
+        var cityName = viewModel.model.cityName == null ? "北京市":viewModel.model.cityName;
+        var communityName = viewModel.model.communityName == null ?"":viewModel.model.communityName ;
+        var url = 'base_community_map.html';
+        url = url + '?cityName='+cityName+'&communityName='+communityName;
+        var editWin = $("#editWin").kendoWindow({
+            actions: ["Maximize", "Minimize", "Close"],
+            width: "80%",
+            height: "80%",
+            title: '地图',
+            content:url,
+            scrollable: false,
+            resizable: false,
+            iframe: true,
+            visible: false,
+            modal: true,
+            close: function () {
+                //window 关闭  刷新 本页面的  Grid
+                //$('#Grid').data('kendoGrid').dataSource.page(1);
+            }
+        }).data("kendoWindow");
+        editWin.title('地图').center().open();
+    });
+
+    $(function(){
+        var cityNames = '${RequestParameters.cityName!""}';
+        var singleSelect1 = $('#single-select-1').citySelect({
+            dataJson: cityData,
+            convert: false,
+            multiSelect: false,
+            shorthand: true,
+            search: true,
+            hotCity:['北京市', '上海市', '广州市', '深圳市', '南京市', '杭州市', '天津市', '重庆市', '成都市', '武汉市','青岛市', '苏州市', '无锡市', '常州市', '温州市', '长沙市', '石家庄市', '南昌市', '三亚市', '合肥市'],
+            onInit: function () {
+                //console.log(this);
+            },
+            onTabsAfter: function (target) {
+                //console.log(target);
+            },
+            onCallerAfter: function (target, values) {
+                viewModel.model.set('cityId',values.id);
+                viewModel.model.set('cityName',values.name);
+                //console.log(JSON.stringify(values));
+            }
+        });
+        singleSelect1.setCityVal(cityNames);
+    });
+    //lov
+ /*   $("#cityId").kendoLov($.extend(<@lov "CITY_LOV"/>,
+    {
+        textField: 'cityName',valueField:'cityId',model:viewModel.model
+    },{
+        select: function(e){
+            viewModel.model.set('cityId',e.item.id);
+            viewModel.model.set('cityName',e.item.name);
+        }
+    }));
+    $($("input[name='cityId_input']").next()).css("margin-top","0px");
+    $($("input[name='cityId_input']").next().next().find("span")).css("margin-left","-7px");*/
+</script>
+</body>
+</html>

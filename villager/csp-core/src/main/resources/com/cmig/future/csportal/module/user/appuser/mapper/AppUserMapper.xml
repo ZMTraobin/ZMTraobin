@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.user.appuser.mapper.AppUserMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.user.appuser.dto.AppUser">
+        <result column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+        <result column="USER_TYPE" property="userType" jdbcType="VARCHAR" />
+        <result column="RELATION_FLAG" property="relationFlag" jdbcType="VARCHAR" />
+        <result column="RET_TIME" property="retTime" jdbcType="TIMESTAMP" />
+        <result column="LAST_TIME" property="lastTime" jdbcType="TIMESTAMP" />
+        <result column="LAST_IP" property="lastIp" jdbcType="VARCHAR" />
+        <result column="PASS_WORD" property="passWord" jdbcType="VARCHAR" />
+        <result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+        <result column="USER_ICON" property="userIcon" jdbcType="VARCHAR" />
+        <result column="NICK_NAME" property="nickName" jdbcType="VARCHAR" />
+        <result column="TWO_CODE" property="twoCode" jdbcType="VARCHAR" />
+        <result column="HOME_ATTRIBUTE" property="homeAttribute" jdbcType="VARCHAR" />
+        <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+        <result column="EMAIL" property="email" jdbcType="VARCHAR" />
+        <result column="SELF_INTRODUCTION" property="selfIntroduction" jdbcType="VARCHAR" />
+        <result column="ASSOCIATED_MOBILE1" property="associatedMobile1" jdbcType="VARCHAR" />
+        <result column="ASSOCIATED_MOBILE2" property="associatedMobile2" jdbcType="VARCHAR" />
+        <result column="ASSOCIATED_MOBILE3" property="associatedMobile3" jdbcType="VARCHAR" />
+        <result column="SIGN_COLLECTION_AGREEMENT_FLAG" property="signCollectionAgreementFlag" jdbcType="VARCHAR" />
+        <result column="REGISTRATION_INVITATION_CODE" property="registrationInvitationCode" jdbcType="VARCHAR" />
+        <result column="INTEGRAL_BALANCE" property="integralBalance" jdbcType="DECIMAL" />
+        <result column="SEX" property="sex" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM" property="sourceSystem" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM_ID" property="sourceSystemId" jdbcType="VARCHAR" />
+        <result column="SOURCE_SYSTEM_LAST_UPDATE_TIME" property="sourceSystemLastUpdateTime" jdbcType="DATE" />
+        <result column="COUNTRY" property="country" jdbcType="VARCHAR" />
+        <result column="PROVINCE" property="province" jdbcType="VARCHAR" />
+        <result column="CITY" property="city" jdbcType="VARCHAR" />
+        <result column="LOCATION" property="location" jdbcType="VARCHAR" />
+        <result column="MOBILE_PROVINCE" property="mobileProvince" jdbcType="VARCHAR" />
+        <result column="MOBILE_CITY" property="mobileCity" jdbcType="VARCHAR" />
+        <result column="MOBILE_SUPPLIER" property="mobileSupplier" jdbcType="VARCHAR" />
+        <result column="UPDATE_CORE_PASSWORD_FLAG" property="updateCorePasswordFlag" jdbcType="VARCHAR" />
+        <result column="OBJECT_VERSION_NUMBER" property="objectVersionNumber" jdbcType="DECIMAL" />
+        <result column="REQUEST_ID" property="requestId" jdbcType="DECIMAL" />
+        <result column="PROGRAM_ID" property="programId" jdbcType="DECIMAL" />
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL" />
+        <result column="CREATION_DATE" property="creationDate" jdbcType="TIMESTAMP" />
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL" />
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+        <result column="LAST_UPDATE_LOGIN" property="lastUpdateLogin" jdbcType="DECIMAL" />
+    </resultMap>
+
+    <select id="getByMobile" resultMap="BaseResultMap">
+        SELECT a.*
+        FROM csp_ljh_app_user a
+        WHERE a.MOBILE = #{mobile}
+    </select>
+
+    <update id="updateUserMobileInfo">
+        UPDATE csp_ljh_app_user SET
+        MOBILE_PROVINCE= #{mobileProvince},
+        MOBILE_CITY = #{mobileCity},
+        MOBILE_SUPPLIER = #{mobileSupplier}
+        WHERE ID = #{id}
+    </update>
+
+    <select id="getBySourceSystemId" resultMap="BaseResultMap">
+        SELECT a.*
+        FROM csp_ljh_app_user a
+        WHERE a.SOURCE_SYSTEM_ID = #{openid}
+    </select>
+
+    <!--date_format(#{beginTime}, '%Y.%m.%d. %H:%i%s')-->
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT a.*
+        FROM csp_ljh_app_user a
+        WHERE 1=1
+        <if test="mobile != null and mobile != '' ">
+            AND a.MOBILE = #{mobile}
+        </if>
+        <if test="nickName != null and nickName != '' ">
+            AND a.NICK_NAME = #{nickName}
+        </if>
+        <if test="beginTime != null and beginTime != '' ">
+            AND a.RET_TIME &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != '' ">
+            AND a.RET_TIME &lt;= #{endTime}
+        </if>
+        ORDER BY a.RET_TIME ASC
+    </select>
+
+    <select id="groupByTimeAndCateoryAndType" resultMap="BaseResultMap">
+        SELECT u.*
+        FROM csp_ljh_app_user u
+        LEFT JOIN csp_ljh_sys_notify_record a on a.APP_USER_ID = u.ID
+        WHERE
+        a.DEL_FLAG = #{DEL_FLAG_NORMAL}
+        <if test="category != null and category != '' ">
+            AND a.CATEGORY = #{category}
+        </if>
+        <if test="messageType != null and messageType != '' ">
+            AND a.MESSAGE_TYPE = #{messageType}
+        </if>
+        <if test="creationDate != null ">
+            AND a.CREATION_DATE = #{creationDate}
+        </if>
+        <if test="mobile != null and mobile != '' ">
+            AND u.MOBILE = #{mobile}
+        </if>
+        <if test="nickName != null and nickName != '' ">
+            AND u.NICK_NAME = #{nickName}
+        </if>
+        ORDER BY a.CREATION_DATE DESC
+    </select>
+
+    <update id="updateRelationFlag">
+        UPDATE csp_ljh_app_user SET
+        RELATION_FLAG= #{flag}
+        WHERE ID = #{id}
+    </update>
+
+</mapper>
