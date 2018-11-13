@@ -1,0 +1,156 @@
+<#--
+        * description: 后台发布视频
+        *author:su
+        * version: 1.0
+        *
+-->
+<#include "../../../include/header.html">
+<body>
+<script>
+    newViewModel = kendo.observable({
+        model: {}
+    });
+    // 标签下拉
+    $.ajax({
+            url    : '${base.contextPath}/csp/ljh/classifytag/findHomePageTagList',
+            async: false,
+            success: function (args) {
+            	newViewModel.model.types= args.rows;
+            }
+    });
+    // 系统用户下拉
+    $.ajax({
+        url    : '${base.contextPath}/csp/ljh/neighbor/findSysUserList',
+        async: false,
+        success: function (args) {
+        	newViewModel.model.users= args.rows;
+        }
+});
+
+</script>
+    <div id="page-content" >
+        <form class="form-horizontal" >
+            <div class="row" >
+                <div class="col-sm-6" style="height:80px;">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" style="text-align: right">话题内容</label>
+                            <div class="col-sm-10">
+                                <input id="topicContent" data-bind="value:model.topicContent" class="k-textbox" style="width: 100%;">
+                                <script>kendo.bind($('#topicContent'), newViewModel);</script>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="col-sm-6" style="height:80px;">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" style="text-align: right">发布用户</label>
+                        <div class="col-sm-10">
+                            <input type="hidden" id="publishId" type="text" data-bind="value:model.publishId" class="k-textbox" style="width: 100%;">
+                            <input id="publishIds" type="text" data-bind="value:model.publishIds" class="k-textbox" style="width: 100%;">
+                            <script>kendo.bind($('#publishIds'), newViewModel);</script>
+                        </div>
+                    </div>
+                </div>
+                
+                 <div class="col-sm-6" style="height:80px;">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" style="text-align: right">分类标签</label>
+                        <div class="col-sm-10">
+                            <input type="hidden" id="typeId" type="text" data-bind="value:model.typeId" class="k-textbox" style="width: 100%;">
+                            <input id="typeIds" type="text" data-bind="value:model.typeIds" class="k-textbox" style="width: 100%;">
+                            <script>kendo.bind($('#typeIds'), newViewModel);</script>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+                <div class="col-sm-6" >
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" style="text-align: right">视频</label>
+                        <div class="col-sm-10">
+                            <input  id="video" type="hidden" name="video" data-bind="value:model.video">
+                            <script>kendo.bind($('#video'), newViewModel);</script>
+                            <div id="videoDiv"
+                                 class="cmig_img_upload_div"
+                                 data-id="video"
+                                 data-readonly=false
+                                 data-minWidth=78
+                                 data-minHeight=70
+                                 data-showWidth=78
+                                 data-showHeight=70
+                                 data-maxNum=1
+                                 data-checkImageWidthHeightFlag=false
+                                 data-maxSize=2
+                                 data-required=false
+                                 data-medioType="video"
+                                 data-callBakFun="modelBindFunctionImg"
+                            >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <div class="text-right" style="bottom: 20px;position: fixed; right: 85px; float: left; background: #fff;">
+    	      <span class="btn btn-success" id="saveGrid" type="submit"><@spring.message "hap.save"/></span>
+	        </div>
+        </form>
+    </div>
+<script>
+ $(document).ready(function() {
+	 $("#typeIds").kendoComboBox({
+		  index: 0,
+	      dataTextField: "name",
+	      dataValueField: "id",
+	      filter: "contains",
+	      dataSource: newViewModel.model.types
+	 });
+	 $("#publishIds").kendoComboBox({
+		  index: 0,
+	      dataTextField: "userName",
+	      dataValueField: "id",
+	      filter: "contains",
+	      dataSource: newViewModel.model.users
+	 });
+ });
+
+$("#saveGrid").click(function () {
+	
+	console.info(newViewModel.model);
+    if(newViewModel.model.topicContent==''||newViewModel.model.topicContent==null){
+        kendo.ui.showInfoDialog({
+            message:'话题内容不能为空'
+        })
+    }else {
+    	
+        newViewModel.model.__status = 'add';
+        newViewModel.model.typeId = newViewModel.model.typeIds.id;
+        newViewModel.model.publishId = newViewModel.model.publishIds.id;
+        Hap.submitForm({
+            url: '${base.contextPath}/csp/ljh/neighbor/topic/publishTopic',
+            formModel: newViewModel.model,
+            success: function (data) {
+            	if( data.success==false){
+            		kendo.ui.showErrorDialog({
+                        message:'视频发布失败'
+                    });
+            	}	
+            	else{
+            		kendo.ui.showInfoDialog({
+                        message:'视频发布成功'
+                    });
+                } 
+            }
+        });
+    }
+});
+
+ function modelBindFunctionImg(){
+     newViewModel.model.set('urls',$("#video").val());
+ }
+</script>
+</body>
+</html>

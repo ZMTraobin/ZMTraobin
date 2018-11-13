@@ -1,0 +1,317 @@
+<#include "../../../include/header.html">
+<script src="${base.contextPath}/common/code?villagerFamilyYesno=villager.family.yesno" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?villagervouchertype=villager.voucher.type" type="text/javascript"></script>
+<script src="${base.contextPath}/common/code?villagervouchercycle=villager.voucher.cycle" type="text/javascript"></script>
+<script type="text/javascript">
+    var viewModel = kendo.observable({
+        model: {},
+        villagerFamilyYesno:villagerFamilyYesno,
+        villagervouchertype:villagervouchertype,
+        villagervouchercycle:villagervouchercycle,
+        createFunction: function () {
+            $('#Grid').data('kendoGrid').addRow();
+        },
+        saveFunction: function () {
+            $('#Grid').data('kendoGrid').saveChanges();
+        },
+        queryResource: function (e) {
+            $('#Grid').data('kendoGrid').dataSource.page(1);
+        }
+    });
+</script>
+<body>
+<div id="page-content">
+    <div class="pull-left" id="toolbar-btn" style="padding-bottom:10px;">
+        <span class="btn btn-primary k-grid-add" style="float:left;margin-right:5px;" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+        <span class="btn btn-success k-grid-save-changes" data-bind="click:saveFunction" style="float:left;margin-right:5px;"><@spring.message "hap.save"/></span>
+        <span onclick="deleteData()" class="btn btn-danger" style="float:left;"><@spring.message "hap.delete"/></span>
+    </div>
+    <script>kendo.bind($('#toolbar-btn'), viewModel);</script>
+    <div class="pull-right" id="query-form" style="padding-bottom:10px;">
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='兑换码'
+                   data-bind="value:model.exchangeCode" class="k-textbox">
+            <input type="text" data-role="maskedtextbox" style="float:left;width:150px;margin-right:5px;" placeholder='商品码'
+                   data-bind="value:model.goodCode" class="k-textbox">
+        <span class="btn btn-primary" style="float:left;width:70px" data-bind="click:queryResource" type="submit"><@spring.message "hap.query"/></span>
+        <div style="clear:both"></div>
+    </div>
+    <script>kendo.bind($('#query-form'), viewModel);</script>
+    <div style="clear:both">
+        <div id="Grid"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var BaseUrl = _basePath;
+    dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: BaseUrl + "/xl/voucher/info/query",
+                type: "POST",
+                dataType: "json"
+            },
+            update: {
+                url: BaseUrl + "/xl/voucher/info/submit",
+                type: "POST",
+                contentType: "application/json"
+            },
+            destroy: {
+                url: BaseUrl + "/xl/voucher/info/remove",
+                type: "POST",
+                contentType: "application/json"
+            },
+            create: {
+                url: BaseUrl + "/xl/voucher/info/submit",
+                type: "POST",
+                contentType: "application/json"
+            },
+            parameterMap: function (options, type) {
+                if (type !== "read" && options.models) {
+                    var datas = Hap.prepareSubmitParameter(options, type)
+                    return kendo.stringify(datas);
+                } else if (type === "read") {
+                    return Hap.prepareQueryParameter(viewModel.model.toJSON(), options)
+                }
+            }
+        },
+        batch: true,
+        serverPaging: true,
+        pageSize: 10,
+        schema: {
+            data: 'rows',
+            total: 'total',
+            model: {
+                id: "id",
+                fields: {
+                	voucherType : {validation : {required : true}},
+                	status : {validation : {required : true}},
+                	cycle : {validation : {required : true}},
+                }
+            }
+        }
+    });
+
+    $("#Grid").kendoGrid({
+        dataSource: dataSource,
+        height: '100%',
+        resizable: true,
+        scrollable: true,
+        navigatable: false,
+        selectable: 'multiple, rowbox',
+        pageable: {
+            pageSizes: [5, 10, 20, 50],
+            refresh: true,
+            buttonCount: 5
+        },
+        columns: [
+            /*{
+                field: "id",
+                title: '<@spring.message "VoucherInfo.id"/>',
+                width: 120
+            },*/
+                    {
+                field: "exchangeCode",
+                title: '兑换码',
+                width: 120
+            },
+                    {
+                field: "title",
+                title: '兑换券标题',
+                width: 120
+            },
+                    {
+                field: "content",
+                title: '内容',
+                width: 120
+            },
+                    {
+                field: "amount",
+                title: '抵扣金额',
+                width: 120
+            },
+                    {
+                field: "voucherType",
+                title: '类型',
+                width: 120,
+                template : function(dataItem) {
+                    var v = dataItem.voucherType;
+                    $.each(villagervouchertype,function(i,n) {
+                        if ((n.value || '').toLowerCase() == (v || '').toLowerCase()) {
+                            v = n.meaning;
+                            return false;
+                        }
+                    });
+                    return v;
+                },
+                editor:function(container,options)
+	             {
+	                 var input = $('<input />');
+	                 input.attr("name", options.field);
+	                 input.appendTo(container);
+	                 input.kendoComboBox({
+	                	 dataTextField:"meaning",
+	                	 dataValueField:"value",
+	                	 dataSource:villagervouchertype
+	                 });
+	             }
+            },
+                    {
+                field: "goodCode",
+                title: '商品码',
+                width: 120
+            },
+                    {
+                field: "image",
+                title: '券面图片',
+                width: 120
+            },
+                    {
+                field: "barCode",
+                title: '二维码',
+                width: 120
+            },
+                    {
+                field: "status",
+                title: '是否有效',
+                width: 120,
+                template : function(dataItem) {
+                    var v = dataItem.status;
+                    $.each(villagerFamilyYesno,function(i,n) {
+                        if ((n.value || '').toLowerCase() == (v || '').toLowerCase()) {
+                            v = n.meaning;
+                            return false;
+                        }
+                    });
+                    return v;
+                },
+                editor:function(container,options)
+	             {
+	                 var input = $('<input />');
+	                 input.attr("name", options.field);
+	                 input.appendTo(container);
+	                 input.kendoComboBox({
+	                	 dataTextField:"meaning",
+	                	 dataValueField:"value",
+	                	 dataSource:villagerFamilyYesno
+	                 });
+	             }
+            },
+                    {
+                field: "startDate",
+                title: '有效开始日期',
+                width: 120,
+                format: "{0:yyyy-MM-dd HH:mm:ss}",
+            	editor:function (container, options) {
+    		        var input = $('<input name="' + options.field + '"/>');
+    	                input.appendTo(container);
+    	        	input.kendoDateTimePicker({
+    	        	format:"yyyy-MM-dd HH:mm:ss"
+  				  });}
+            },
+                    {
+                field: "limitDate",
+                title: '截止日期',
+                width: 120,
+                format: "{0:yyyy-MM-dd HH:mm:ss}",
+            	editor:function (container, options) {
+    		        var input = $('<input name="' + options.field + '"/>');
+    	                input.appendTo(container);
+    	        	input.kendoDateTimePicker({
+    	        	format:"yyyy-MM-dd HH:mm:ss"
+  				  });}
+            },
+                    {
+                field: "describes",
+                title: '描述',
+                width: 120
+            },
+                    {
+                field: "validDays",
+                title: '券领取后有效期(天)',
+                width: 120
+            },
+                    {
+                field: "count",
+                title: '抵扣数量',
+                width: 120
+            },
+                    {
+                field: "cycle",
+                title: '领取频率',
+                width: 120,
+                template : function(dataItem) {
+                    var v = dataItem.cycle;
+                    $.each(villagervouchercycle,function(i,n) {
+                        if ((n.value || '').toLowerCase() == (v || '').toLowerCase()) {
+                            v = n.meaning;
+                            return false;
+                        }
+                    });
+                    return v;
+                },
+                editor:function(container,options)
+	             {
+	                 var input = $('<input />');
+	                 input.attr("name", options.field);
+	                 input.appendTo(container);
+	                 input.kendoComboBox({
+	                	 dataTextField:"meaning",
+	                	 dataValueField:"value",
+	                	 dataSource:villagervouchercycle
+	                 });
+	             }
+            },
+                    {
+                field: "cycleDesc",
+                title: '限制说明',
+                width: 120
+            },
+                    {
+                field: "useDesc",
+                title: '使用说明',
+                width: 120
+            },
+                    {
+                field: "usePlat",
+                title: '适用平台',
+                width: 120
+            },
+                    {
+                field: "useLimit",
+                title: '使用条件',
+                width: 120
+            },
+                    {
+                field: "useWay",
+                title: '使用方法',
+                width: 120
+            },
+                    {
+                field: "coverTitle",
+                title: '提醒标题',
+                width: 120
+            },
+                    {
+                field: "coverDesc",
+                title: '提醒描述',
+                width: 120
+            },
+        ],
+        editable: true
+    });
+
+    function deleteData() {
+
+        Hap.deleteGridSelection({
+            grid: $('#Grid')
+        });
+
+    }
+
+    Hap.autoResizeGrid("#Grid");
+
+
+</script>
+</body>
+</html>

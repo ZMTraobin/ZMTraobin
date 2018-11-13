@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.sns.mapper.PersonalSocietyApiMapper">
+
+<resultMap type="com.cmig.future.csportal.module.villager.sns.dto.PersonalSocietyUser" id="personalSocietyUserMap">
+   <id column="ID" property="societyUserId"/>
+   <result column="USER_NAME" property="societyUserName"/>
+   <result column="USER_ICON" property="societyUserIcon"/>
+   <result column="NICK_NAME" property="societyNickName"/>
+   <result column="everEntry" property="everEntryStatus"/>
+   <result column="COMMUNITY_ID" property="communityId"/>
+   <result column="isAttention" property="isAttention"/>
+</resultMap>
+
+
+<select id="PersonalSocietyUsers" parameterType="com.cmig.future.csportal.module.villager.sns.dto.PersonalSocietyUser" resultMap="personalSocietyUserMap">
+SELECT m.ID,m.USER_NAME,m.USER_ICON,m.NICK_NAME,m.COMMUNITY_ID,m.everEntry  FROM (
+SELECT
+	a.ID,a.USER_NAME,a.USER_ICON,a.NICK_NAME,c.COMMUNITY_ID ,CASE
+WHEN (select COUNT(l.id) from csp_ljh_login_log l where a.id=l.user_id and l.log_type = 'APP_USER')>0 THEN
+	1
+else	0
+END everEntry
+FROM
+	csp_ljh_app_user a
+LEFT JOIN csp_ljh_attention_community_user c ON a.id = c.USER_ID
+
+WHERE
+	c.COMMUNITY_ID =#{communityId} ORDER BY CONVERT( a.USER_NAME USING gbk ) ASC) as m where  m.ID !=#{societyUserId}
+</select>
+
+
+
+</mapper>

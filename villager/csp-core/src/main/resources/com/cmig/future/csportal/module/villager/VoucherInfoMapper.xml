@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.voucher.mapper.VoucherInfoMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.voucher.dto.VoucherInfo">
+        <result column="id" property="id" jdbcType="DECIMAL" />
+        <result column="exchange_code" property="exchangeCode" jdbcType="VARCHAR" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="amount" property="amount" jdbcType="VARCHAR" />
+        <result column="scores" property="scores" jdbcType="VARCHAR" />
+        <result column="voucher_type" property="voucherType" jdbcType="VARCHAR" />
+        <result column="good_code" property="goodCode" jdbcType="VARCHAR" />
+        <result column="image" property="image" jdbcType="VARCHAR" />
+        <result column="bar_code" property="barCode" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="limit_date" property="limitDate" jdbcType="TIMESTAMP" />
+        <result column="describes" property="describes" jdbcType="VARCHAR" />
+        <result column="valid_days" property="validDays" jdbcType="DECIMAL" />
+        <result column="count" property="count" jdbcType="VARCHAR" />
+        <result column="cycle" property="cycle" jdbcType="VARCHAR" />
+        <result column="cycle_desc" property="cycleDesc" jdbcType="VARCHAR" />
+        <result column="use_desc" property="useDesc" jdbcType="VARCHAR" />
+        <result column="use_plat" property="usePlat" jdbcType="VARCHAR" />
+        <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+        <result column="use_limit" property="useLimit" jdbcType="VARCHAR" />
+        <result column="use_way" property="useWay" jdbcType="VARCHAR" />
+        <result column="cover_title" property="coverTitle" jdbcType="VARCHAR" />
+        <result column="cover_desc" property="coverDesc" jdbcType="VARCHAR" />
+        <result column="isused" property="isused" jdbcType="VARCHAR" />
+        <result column="voucher_ReceiveId" property="voucher_ReceiveId" jdbcType="VARCHAR" />
+        <result column="stocks" property="stocks" jdbcType="VARCHAR" />
+        <result column="equals_price" property="equalsPrice" jdbcType="VARCHAR" />
+        <result column="units" property="units" jdbcType="VARCHAR" />
+    </resultMap>
+    
+   <sql id="voucherInfoColumns">
+        info.id,
+info.exchange_code,
+info.title,
+info.content,
+info.amount,
+info.scores,
+info.voucher_type,
+info.good_code,
+info.image,
+info.bar_code,
+info.status,
+info.limit_date,
+info.describes,
+info.valid_days,
+info.count,
+info.cycle,
+info.cycle_desc,
+info.use_desc,
+info.use_plat,
+info.start_date,
+info.use_limit,
+info.use_way,
+info.cover_title,
+info.cover_desc,
+info.stocks,
+info.equals_price,
+info.units
+    </sql>  
+  <select id="listVocherInfo" parameterType="com.cmig.future.csportal.module.villager.voucher.dto.VoucherReceive" resultMap="BaseResultMap">
+ SELECT 
+<include refid="voucherInfoColumns"/>
+ from xl_voucher_info info where info.limit_date &gt; (NOW()) and info.status=#{voucherRecive.status}
+ <if test="disableVoucherIds != null and disableVoucherIds.size  > 0">
+ and 
+info.id not in
+<foreach collection="disableVoucherIds" close=")" item="item" open="(" separator=",">
+#{item}
+</foreach>
+ </if>
+ <if test="voucherRecive.voucherId != null and voucherRecive.voucherId != ''">
+ and info.id=#{voucherRecive.voucherId}
+ </if>
+  </select>
+  
+  <!-- 查询该用户不能领取的所有的消费券信息 -->
+  <select id="listUserVocherInfo" parameterType="com.cmig.future.csportal.module.villager.voucher.dto.VoucherReceive" resultType="String">
+ SELECT  r.voucher_id as id
+from xl_voucher_receive r where r.app_user_id=#{appUserId} and r.status=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@VALID_STATUS} and isused=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@NOT_USED} and r.limit_date &gt; (NOW())
+ UNION all
+  SELECT  
+r.voucher_id as id
+from xl_voucher_receive r , xl_voucher_info info where r.voucher_id=info.id and r.app_user_id=#{appUserId}
+and info.cycle=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@ONCE_CYCLE} and r.status=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@VALID_STATUS} GROUP BY r.voucher_id
+ UNION all
+  SELECT  
+r.voucher_id as id
+from xl_voucher_receive r , xl_voucher_info info where r.voucher_id=info.id and r.app_user_id=#{appUserId}
+and info.cycle=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@DAYS_CYCLE} and r.status=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@VALID_STATUS} and date(r.CREATION_DATE) = curdate() GROUP BY r.voucher_id
+  </select>
+ 
+</mapper>

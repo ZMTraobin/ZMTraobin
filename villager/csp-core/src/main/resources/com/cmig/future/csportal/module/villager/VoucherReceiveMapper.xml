@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.voucher.mapper.VoucherReceiveMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.voucher.dto.VoucherReceive">
+        <result column="id" property="id" jdbcType="DECIMAL" />
+        <result column="voucher_id" property="voucherId" jdbcType="DECIMAL" />
+        <result column="app_user_id" property="appUserId" jdbcType="VARCHAR" />
+        <result column="mgt_user_id" property="mgtUserId" jdbcType="VARCHAR" />
+        <result column="receive_way" property="receiveWay" jdbcType="VARCHAR" />
+        <result column="image" property="image" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="isused" property="isused" jdbcType="VARCHAR" />
+        <result column="use_date" property="useDate" jdbcType="TIMESTAMP" />
+        <result column="limit_date" property="limitDate" jdbcType="TIMESTAMP" />
+        <result column="bar_code" property="barCode" jdbcType="VARCHAR" />
+        <result column="appUserName" property="appUserName" jdbcType="VARCHAR" /> 
+        <result column="userIcon" property="userIcon" jdbcType="VARCHAR" /> 
+        <result column="communityName" property="communityName" jdbcType="VARCHAR" /> 
+        <result column="count" property="count" jdbcType="VARCHAR" /> 
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    </resultMap>
+
+   <resultMap id="ReceiveBaseResultMap" type="com.cmig.future.csportal.module.villager.voucher.dto.VoucherInfo">
+        <result column="id" property="id" jdbcType="DECIMAL" />
+        <result column="exchange_code" property="exchangeCode" jdbcType="VARCHAR" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="amount" property="amount" jdbcType="VARCHAR" />
+        <result column="voucher_type" property="voucherType" jdbcType="VARCHAR" />
+        <result column="good_code" property="goodCode" jdbcType="VARCHAR" />
+        <result column="image" property="image" jdbcType="VARCHAR" />
+        <result column="bar_code" property="barCode" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="limit_date" property="limitDate" jdbcType="TIMESTAMP" />
+        <result column="describes" property="describes" jdbcType="VARCHAR" />
+        <result column="valid_days" property="validDays" jdbcType="DECIMAL" />
+        <result column="count" property="count" jdbcType="VARCHAR" />
+        <result column="cycle" property="cycle" jdbcType="VARCHAR" />
+        <result column="cycle_desc" property="cycleDesc" jdbcType="VARCHAR" />
+        <result column="use_desc" property="useDesc" jdbcType="VARCHAR" />
+        <result column="use_plat" property="usePlat" jdbcType="VARCHAR" />
+        <result column="start_date" property="startDate" jdbcType="TIMESTAMP" />
+        <result column="use_limit" property="useLimit" jdbcType="VARCHAR" />
+        <result column="use_way" property="useWay" jdbcType="VARCHAR" />
+        <result column="cover_title" property="coverTitle" jdbcType="VARCHAR" />
+        <result column="cover_desc" property="coverDesc" jdbcType="VARCHAR" />
+        <result column="isused" property="isused" jdbcType="VARCHAR" />
+        <result column="voucher_ReceiveId" property="voucher_ReceiveId" jdbcType="VARCHAR" />
+        <result column="stocks" property="stocks" jdbcType="VARCHAR" />
+        <result column="equals_price" property="equalsPrice" jdbcType="VARCHAR" />
+        <result column="units" property="units" jdbcType="VARCHAR" />
+         
+    </resultMap>
+    
+   <sql id="voucherReceiveInfoColumns">
+        info.id,
+info.exchange_code,
+info.title,
+info.content,
+info.amount,
+info.voucher_type,
+info.good_code,
+info.image,
+info.bar_code,
+info.status,
+r.limit_date,
+info.describes,
+info.valid_days,
+info.count,
+info.cycle,
+info.cycle_desc,
+info.use_desc,
+info.use_plat,
+info.start_date,
+info.use_limit,
+info.use_way,
+info.cover_title,
+info.cover_desc,
+info.stocks,
+info.equals_price,
+info.units
+    </sql>  
+   
+    <select id="listKindVocherReceiveInfo" parameterType="com.cmig.future.csportal.module.villager.voucher.dto.VoucherReceive" resultMap="ReceiveBaseResultMap">
+ SELECT 
+<include refid="voucherReceiveInfoColumns"/>
+,r.id as voucher_ReceiveId ,
+case when (r.isused=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@NOT_USED} and 
+r.limit_date &lt; (NOW()))
+then ${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@DISABLE_USED}
+else
+r.isused
+end isused
+ from xl_voucher_info info,xl_voucher_receive r where r.voucher_id=info.id and r.app_user_id=#{voucher.appUserId} and 
+info.status=#{voucher.status}  
+<choose>
+<when test="voucher.isused == @com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@DISABLE_USED">
+and r.isused=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@NOT_USED}
+and 
+r.limit_date &lt; (NOW())
+</when>
+<when test="voucher.isused == @com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@NOT_USED">
+and r.isused=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@NOT_USED}
+and 
+r.limit_date &gt; (NOW())
+</when>
+<otherwise>
+and r.isused=#{voucher.isused} or r.isused=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@IS_USEDING}
+</otherwise>
+</choose>
+and info.id in(
+select voucher_id from xl_voucher_receive re where re.app_user_id=#{voucher.appUserId}
+<choose>
+<when test="voucher.isused == @com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@USED">
+and re.isused=#{voucher.isused} or re.isused=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@IS_USEDING}
+</when>
+<when test="voucher.isused == @com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@NOT_USED">
+and re.isused=#{voucher.isused}
+and re.limit_date &gt; (NOW()) 
+</when>
+<otherwise>
+and re.isused=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@NOT_USED}
+and re.limit_date &lt; (NOW())
+</otherwise>
+</choose>
+)
+  </select>
+
+  <select id="existVoucher" parameterType="com.cmig.future.csportal.module.villager.voucher.dto.VoucherReceive" resultType="int">
+  select COUNT(id) from xl_voucher_receive r where r.app_user_id=#{appUserId} and r.voucher_id=#{voucherId}
+  </select>
+  
+    <select id="judgeChange" parameterType="com.cmig.future.csportal.module.villager.voucher.dto.VoucherReceive" resultType="int">
+    select count(id) from xl_voucher_receive r where r.id=#{id} and r.isused=#{isused}
+    </select> 
+    
+    <select id="judgeUseable" parameterType="com.cmig.future.csportal.module.villager.voucher.dto.VoucherReceive" resultType="int">
+    select COUNT(r.id) from xl_voucher_receive r LEFT JOIN xl_voucher_info i on i.id=r.voucher_id where r.id=#{id} and r.isused=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@NOT_USED} and r.limit_date &gt; (NOW()) and i.`status`=${@com.cmig.future.csportal.module.villager.voucher.dto.VoucherStatus@VALID_STATUS}
+    </select>
+    
+    <select id="getVoucherMessageById" parameterType="com.cmig.future.csportal.module.villager.voucher.dto.VoucherReceive" resultMap="BaseResultMap">
+    select r.id,u.USER_NAME as appUserName,b.COMMUNITY_NAME as communityName,u.USER_ICON as userIcon,i.count,i.content from xl_voucher_receive r LEFT JOIN xl_voucher_info i on r.voucher_id=i.id LEFT JOIN csp_ljh_app_user u on u.ID=r.app_user_id LEFT JOIN csp_ljh_attention_community_user c 
+on c.USER_ID=u.ID LEFT JOIN csp_ljh_base_community b on b.ID = c.COMMUNITY_ID
+where r.id=#{id} GROUP BY r.id
+    </select>
+    
+    <select id="selectByUseStatus" resultType="com.cmig.future.csportal.module.villager.voucher.dto.VoucherReceiveExcel">
+    select r.use_date as useDate, u.USER_NAME as appUserName,u.mobile as mobile 
+    from xl_voucher_receive r 
+    LEFT JOIN csp_ljh_app_user u on u.ID=r.app_user_id
+	where r.isused=#{useStatus}
+    </select>
+
+</mapper>

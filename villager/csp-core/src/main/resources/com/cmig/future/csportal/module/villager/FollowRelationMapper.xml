@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmig.future.csportal.module.villager.follow.mapper.FollowRelationMapper">
+    <resultMap id="BaseResultMap" type="com.cmig.future.csportal.module.villager.follow.dto.FollowRelation">
+        <result column="followed_id" property="followedId" jdbcType="VARCHAR" />
+        <result column="follower_id" property="followerId" jdbcType="VARCHAR" />
+        <result column="follow_date" property="followDate" jdbcType="DATE" />
+    </resultMap>
+<select id="findFolloweds" parameterType="com.cmig.future.csportal.module.user.appuser.dto.AppUser" resultType="String">
+     SELECT f.followed_id
+        FROM csp_ljh_app_user u LEFT JOIN xl_follow_relation f on u.ID=f.follower_id
+        WHERE f.follower_id=#{id} GROUP BY f.followed_id
+    </select>
+
+</mapper>
